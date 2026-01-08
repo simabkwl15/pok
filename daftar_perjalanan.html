@@ -16,7 +16,7 @@ h2 { margin-bottom:10px; }
 .table-container { max-height: calc(100vh - 160px); overflow:auto; background:white; border-radius:6px; box-shadow:0 2px 8px rgba(0,0,0,0.1);}
 table { border-collapse:collapse; width:100%; min-width:900px; font-size:13px; table-layout:fixed; }
 th, td { border:1px solid #ddd; padding:8px; word-wrap:break-word; }
-th { background:#8e44ad; color:white; position:sticky; top:0; z-index:1; text-align:left; white-space:normal; font-size:12px; } /* header lebih kecil */
+th { background:#8e44ad; color:white; position:sticky; top:0; z-index:1; text-align:left; white-space:normal; font-size:12px; }
 
 .btn-back { padding:6px 12px; background:green; color:white; border:none; border-radius:4px; cursor:pointer; font-size:14px; }
 .btn-back:hover { opacity:0.85; }
@@ -64,9 +64,10 @@ function formatDate(str) {
     return `${yyyy}-${mm}-${dd}`;
 }
 
-// Format angka dengan ribuan separator
+// Format angka ribuan
 function formatRupiah(num) {
     if(num == null || num === "") return "";
+    if(isNaN(num)) return num; // jika bukan angka, kembalikan apa adanya
     return Number(num).toLocaleString('id-ID', {maximumFractionDigits:0});
 }
 
@@ -101,7 +102,7 @@ function renderTable() {
 
         // filter combobox
         if(filterVal === "Belum Terbayar"){
-            const status = row[row.length - 1]; // ambil kolom terakhir sebagai Status
+            const status = row[row.length - 1]; // kolom terakhir = Status
             if(status === "Terbayar" || status === "Selesai") continue;
         }
 
@@ -109,21 +110,19 @@ function renderTable() {
         row.forEach((c, idx)=>{
             const td = document.createElement("td");
 
-            // Kolom Selisih LPT, Selisih Bayar, Jumlah
-            const isSelisihLPT = (idx === row.length - 5);
-            const isSelisihBayar = (idx === row.length - 4);
-            const isJumlahCol = (idx === row.length - 3);
-
-            if(isSelisihLPT || isSelisihBayar){
+            // Sesuaikan kolom:
+            // - Selisih LPT (index 9), Selisih Bayar (index 10) => align center
+            // - Jumlah (index 11) => align kanan + format ribuan
+            if(idx === 9 || idx === 10){
                 td.textContent = c ?? "";
-                td.style.textAlign = "center"; // align tengah
+                td.style.textAlign = "center";
             }
-            else if(isJumlahCol){
+            else if(idx === 11){
                 td.textContent = formatRupiah(c);
-                td.style.textAlign = "right"; // align kanan
+                td.style.textAlign = "right";
             }
-            // format tanggal jika bisa
-            else if(!isNaN(Date.parse(c))){
+            // format tanggal kecuali kolom Jumlah
+            else if(!isNaN(Date.parse(c)) && idx !== 11){
                 td.textContent = formatDate(c);
             }
             else{
