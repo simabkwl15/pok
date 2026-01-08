@@ -12,7 +12,6 @@ body {
     color: #333;
 }
 h2 { margin-bottom: 10px; }
-
 .filter-bar {
     margin-bottom: 10px;
     display: flex;
@@ -25,7 +24,6 @@ h2 { margin-bottom: 10px; }
     font-size: 13px;
     flex: 1;
 }
-
 .table-container {
     max-height: calc(100vh - 120px);
     overflow: auto;
@@ -69,31 +67,8 @@ th {
 </div>
 
 <script>
-const URL_GAS = "// GAS: Code.gs
-function doGet(e) {
-  return ContentService
-           .createTextOutput(JSON.stringify(getFilteredData()))
-           .setMimeType(ContentService.MimeType.JSON);
-}
+const URL_GAS = "https://script.google.com/macros/s/AKfycbykREZ8_zYqLkOgv3HCxPdsL8JBDPgQM7ziFH9wSKgcokLsjyUxqz6xxBZ9_xlAV8AAqQ/exec"; // ganti dengan URL Web App GAS
 
-function getFilteredData() {
-  const ss = SpreadsheetApp.openById("10JQ3ysZai7yNXHMWw81UeztwbxSPwsCMiykJj2w5AHE"); // ganti dengan ID spreadsheetmu
-  const sheet = ss.getSheetByName("Data_Kegiatan_2026");
-  const data = sheet.getDataRange().getValues(); // ambil semua data
-
-  // Filter: hanya kolom A–P (0–15)
-  const filtered = data
-    .filter((row, index) => {
-      if(index === 0) return true; // tetap tampilkan header
-      const kode = row[1] ? row[1].toString().trim() : ""; // kolom B = indeks 1
-      const key = kode.slice(-9, -3); // ambil 6 karakter mulai dari 9 dari kanan
-      return key === "524111" || key === "524113";
-    })
-    .map(row => row.slice(0,16)); // ambil kolom A–P saja
-
-  return filtered;
-}
-"; // ganti dengan URL GAS-mu
 const tblData = document.getElementById("tblData");
 const txtCari = document.getElementById("txtCari");
 let data = [];
@@ -118,7 +93,7 @@ function renderTable() {
 
     // HEADER
     const trh = document.createElement("tr");
-    data[0].forEach(h=>{
+    data[0].forEach(h => {
         const th = document.createElement("th");
         th.textContent = h;
         trh.appendChild(th);
@@ -135,7 +110,7 @@ function renderTable() {
         if(keyword && !rowText.includes(keyword)) continue;
 
         const tr = document.createElement("tr");
-        row.forEach(c=>{
+        row.forEach(c => {
             const td = document.createElement("td");
             td.textContent = c ?? "";
             tr.appendChild(td);
@@ -152,4 +127,3 @@ window.addEventListener("DOMContentLoaded", loadData);
 
 </body>
 </html>
-
