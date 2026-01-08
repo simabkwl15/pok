@@ -3,60 +3,166 @@
 <head>
 <meta charset="UTF-8">
 <title>Login SiMAB</title>
+
 <style>
-body { margin:0; height:100vh; display:flex; justify-content:center; align-items:center; background:#f0f2f5; font-family:Arial,sans-serif; }
-.login-box { background:white; padding:30px; width:360px; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.15); }
-h2 { text-align:center; margin-bottom:25px; }
-label { font-weight:bold; font-size:13px; }
-input { width:100%; padding:8px; margin:6px 0 14px; }
-button { width:100%; padding:10px; background:#0066cc; color:white; border:none; font-weight:bold; cursor:pointer; }
-.error { margin-top:10px; color:red; text-align:center; font-size:12px; }
+body {
+    margin:0;
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:#f0f2f5;
+    font-family:Arial,sans-serif;
+}
+
+.login-box {
+    background:white;
+    padding:30px;
+    width:360px;
+    border-radius:8px;
+    box-shadow:0 4px 12px rgba(0,0,0,0.15);
+    position:relative;
+}
+
+h2 {
+    text-align:center;
+    margin-bottom:25px;
+}
+
+label {
+    font-weight:bold;
+    font-size:13px;
+}
+
+input {
+    width:100%;
+    padding:8px;
+    margin:6px 0 14px;
+}
+
+button {
+    width:100%;
+    padding:10px;
+    background:#0066cc;
+    color:white;
+    border:none;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+button:disabled {
+    background:#9bbbe6;
+    cursor:not-allowed;
+}
+
+.error {
+    margin-top:10px;
+    color:red;
+    text-align:center;
+    font-size:12px;
+}
+
+/* ===== LOADING OVERLAY ===== */
+.loading {
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:rgba(255,255,255,0.8);
+    display:none;
+    justify-content:center;
+    align-items:center;
+    z-index:999;
+}
+
+.spinner {
+    width:50px;
+    height:50px;
+    border:5px solid #ddd;
+    border-top:5px solid #0066cc;
+    border-radius:50%;
+    animation:spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.loading-text {
+    margin-top:10px;
+    font-size:13px;
+    color:#333;
+    text-align:center;
+}
 </style>
 </head>
+
 <body>
+
+<!-- LOADING -->
+<div class="loading" id="loading">
+    <div>
+        <div class="spinner"></div>
+        <div class="loading-text">Memeriksa data...</div>
+    </div>
+</div>
+
 <div class="login-box">
     <h2>Selamat Datang di<br>SiMAB KPKNL Denpasar</h2>
+
     <label>NIP</label>
     <input type="text" id="nip">
+
     <label>Password</label>
     <input type="password" id="password">
-    <button onclick="login()">Login</button>
+
+    <button id="btnLogin" onclick="login()">Login</button>
     <div class="error" id="errorMsg"></div>
 </div>
 
 <script>
 const apiURL = "https://script.google.com/macros/s/AKfycbxHKH05r3PLwpxvH0wD7pHrphCoKr3c9wCuw1GMhcMDKp_qffSsgrVDR0mvrlBfHADO/exec";
 
+function showLoading(show){
+    document.getElementById("loading").style.display = show ? "flex" : "none";
+    document.getElementById("btnLogin").disabled = show;
+}
+
 async function login() {
     const nip = document.getElementById("nip").value.trim();
     const password = document.getElementById("password").value.trim();
     const errorMsg = document.getElementById("errorMsg");
 
-    if(!nip || !password){ 
-        errorMsg.textContent="NIP dan Password wajib diisi"; 
-        return; 
+    errorMsg.textContent = "";
+
+    if(!nip || !password){
+        errorMsg.textContent = "NIP dan Password wajib diisi";
+        return;
     }
 
-    errorMsg.textContent="Memeriksa data...";
+    showLoading(true);
 
     try {
-        // GET request dengan query parameter
         const url = `${apiURL}?nip=${encodeURIComponent(nip)}&password=${encodeURIComponent(password)}`;
         const response = await fetch(url);
         const result = await response.json();
 
-        if(result.status==="success"){
+        if(result.status === "success"){
             sessionStorage.setItem("nama", result.nama);
             sessionStorage.setItem("unit", result.unit);
-            window.location.href="/pok/data_pok.html";
+            window.location.href = "/pok/data_pok.html";
         } else {
-            errorMsg.textContent=result.message;
+            showLoading(false);
+            errorMsg.textContent = result.message;
         }
-    } catch(err){
+    } catch (err){
         console.error(err);
-        errorMsg.textContent="Gagal terhubung ke server";
+        showLoading(false);
+        errorMsg.textContent = "Gagal terhubung ke server";
     }
 }
 </script>
+
 </body>
 </html>
