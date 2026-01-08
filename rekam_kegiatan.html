@@ -207,22 +207,24 @@ document.addEventListener("DOMContentLoaded", () => {
     const txtStatusDana = document.getElementById("txtStatusDana");
 
     function hitungSisa() {
-        const pagu = toNumber(txtPagu.value);
-        const blokir = toNumber(txtBlokir.value);
-        const realisasi = toNumber(txtRealisasi.value);
-        const jumlah = toNumber(txtJumlah.value);
+    const pagu       = toNumber(txtPagu.value);
+    const blokir     = toNumber(txtBlokir.value);
+    const realisasi  = toNumber(txtRealisasi.value);
+    const jumlah     = toNumber(txtJumlah.value);
 
-        const sisa = pagu - blokir - realisasi - jumlah;
+    const sisa = pagu - blokir - realisasi - jumlah;
 
-        txtSisa.value = sisa.toLocaleString("id-ID");
+    // FORMAT SISA PAKAI KOMA
+    txtSisa.value = formatNumber(sisa);
 
-        if (sisa < 0) {
-            txtStatusDana.value = "Dana Tidak Mencukupi";
-            txtStatusDana.style.color = "red";
-        } else {
-            txtStatusDana.value = "Dana Cukup";
-            txtStatusDana.style.color = "green";
-        }
+    // STATUS DANA
+    if (sisa < 0) {
+        txtStatusDana.value = "Dana Tidak Mencukupi";
+        txtStatusDana.style.color = "red";
+    } else {
+        txtStatusDana.value = "Dana Cukup";
+        txtStatusDana.style.color = "green";
+    }
     }
 
     txtJumlah.addEventListener("input", () => {
@@ -236,6 +238,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
