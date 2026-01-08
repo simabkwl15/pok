@@ -142,6 +142,9 @@ th {
 <script>
 // === GLOBAL FUNCTION ===
 function daftarPerjadin() {
+    // Set flag sementara di sessionStorage
+    sessionStorage.setItem("allowDaftar", "true");
+    // Buka halaman daftar_perjalanan.html
     window.location.href = "/pok/daftar_perjalanan.html";
 }
 
@@ -322,5 +325,6 @@ window.addEventListener("DOMContentLoaded", () => {
 </script>
 </body>
 </html>
+
 
 
