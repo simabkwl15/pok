@@ -12,6 +12,7 @@ body {
     color: #333;
 }
 h2 { margin-bottom: 10px; }
+
 .filter-bar {
     margin-bottom: 10px;
     display: flex;
@@ -19,10 +20,11 @@ h2 { margin-bottom: 10px; }
     gap: 10px;
 }
 .filter-bar label { font-size: 14px; }
-.filter-bar select {
+.filter-bar select, .filter-bar input {
     padding: 6px;
     font-size: 13px;
 }
+.filter-bar input { flex: 1; } /* textbox mengisi sisa ruang */
 
 .table-container {
     max-height: calc(100vh - 150px);
@@ -62,6 +64,7 @@ th {
         <option value="BelumTerbayar">Belum Terbayar</option>
         <option value="Terbayar">Terbayar</option>
     </select>
+    <input type="text" id="txtCari" placeholder="Ketik kata kunci...">
 </div>
 
 <div class="table-container">
@@ -72,10 +75,11 @@ th {
 </div>
 
 <script>
-const URL_GAS = "https://script.google.com/macros/s/AKfycbxFiX8IJYwpRvu9pVR_41M_e-SApAyKxGcU9TvKbeEmIwvgx7syWYVKQyGwz-KonnR9/exec"; // ganti dengan URL GASmu
+const URL_GAS = "https://script.google.com/macros/s/AKfycbxFiX8IJYwpRvu9pVR_41M_e-SApAyKxGcU9TvKbeEmIwvgx7syWYVKQyGwz-KonnR9/exec"; // ganti URL GASmu
 
 const tblData = document.getElementById("tblData");
 const cmbFilter = document.getElementById("cmbFilter");
+const txtCari = document.getElementById("txtCari");
 
 let data = [];
 
@@ -106,22 +110,48 @@ function renderTable() {
     });
     thead.appendChild(trh);
 
+    const filter = cmbFilter.value.toLowerCase();
+    const keyword = txtCari.value.toLowerCase();
+
     // DATA
-    const filter = cmbFilter.value;
     for(let i=1; i<data.length; i++){
         const row = data[i];
-        const tr = document.createElement("tr");
 
+        // Filter berdasarkan combobox + textbox
+        let include = true;
+        if(keyword){
+            const colIndex = getColumnIndex(filter);
+            if(colIndex !== -1){
+                const val = row[colIndex]?.toString().toLowerCase() || "";
+                include = val.includes(keyword);
+            }
+        }
+        if(!include) continue;
+
+        const tr = document.createElement("tr");
         row.forEach(c=>{
             const td = document.createElement("td");
             td.textContent = c ?? "";
             tr.appendChild(td);
         });
-
         tbody.appendChild(tr);
     }
 }
 
+// Helper: ambil indeks kolom berdasarkan nama filter
+function getColumnIndex(name){
+    const header = data[0].map(h => h.toString().toLowerCase());
+    switch(name){
+        case "nama": return header.indexOf("nama");
+        case "nomorst": return header.indexOf("nomor st");
+        case "belumterbayar": return header.indexOf("belum terbayar");
+        case "terbayar": return header.indexOf("terbayar");
+        default: return -1;
+    }
+}
+
+// Event listener textbox & combobox
+txtCari.addEventListener("input", renderTable);
 cmbFilter.addEventListener("change", renderTable);
 
 window.addEventListener("DOMContentLoaded", loadData);
@@ -129,4 +159,3 @@ window.addEventListener("DOMContentLoaded", loadData);
 
 </body>
 </html>
-
