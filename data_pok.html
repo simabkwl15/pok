@@ -1,12 +1,84 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>POK</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<style>
+body {
+    font-family: 'Inter', Arial, sans-serif;
+    margin: 20px;
+    background: #f5f6fa;
+    color: #333;
+}
+h2 {
+    margin-bottom: 5px;
+}
+#welcome {
+    font-size: 14px;
+    margin-bottom: 15px;
+    color: #555;
+}
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+.topbar select, .topbar input {
+    padding: 6px;
+    font-size: 13px;
+}
+button {
+    padding: 7px 14px;
+    background: #0066cc;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+}
+button:hover { background: #0052a3; }
+
+.table-container {
+    overflow-x: auto;
+    background: white;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+table {
+    border-collapse: collapse;
+    width: 100%;
+    min-width: 900px;
+    font-size: 13px;
+}
+th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+th {
+    background: #0066cc;
+    color: white;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    text-align: left;
+}
+.rm { background-color: #e0f7fa; }      /* RM */
+.pnbp { background-color: #fff3e0; }    /* PNBP */
+#lastUpdate {
+    font-size: 12px;
+    color: #666;
+    margin-top: 5px;
+}
+</style>
+</head>
 <body>
-<div class="menu">
-    <a href="pok.html">POK</a>
-    <a href="kegiatan.html">Kegiatan</a>
-</div>
 
 <h2>POK</h2>
-
-<p id="welcome"></p> <!-- <-- wajib ada -->
+<p id="welcome"></p>
 
 <div class="topbar">
     <div>
@@ -20,31 +92,25 @@
             <option value="HI">HI</option>
             <option value="KI">KI</option>
         </select>
-
         <input type="text" id="txtCari" placeholder="Cari Kode / Uraian...">
     </div>
-
     <button onclick="downloadPDF()">Download PDF</button>
 </div>
 
-<div style="font-size:12px;color:#666;margin-bottom:6px;">
-    Last update: <span id="lastUpdate">-</span>
+<div id="lastUpdateContainer">Last update: <span id="lastUpdate">-</span></div>
+
+<div class="table-container" id="areaPDF">
+    <table id="tblData">
+        <thead></thead>
+        <tbody></tbody>
+    </table>
 </div>
 
-<div id="areaPDF">
-<table id="tblData">
-    <thead></thead>
-    <tbody></tbody>
-</table>
-</div>
-
-<!-- SCRIPT di bawah supaya body sudah siap -->
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-
 <script>
 window.addEventListener("DOMContentLoaded", () => {
-    // SESSION & welcome
+    // SESSION
     const nama = sessionStorage.getItem("nama");
     const unit = sessionStorage.getItem("unit");
     if(!nama){
@@ -54,7 +120,7 @@ window.addEventListener("DOMContentLoaded", () => {
         document.getElementById("welcome").textContent = `Selamat datang, ${nama} (${unit})`;
     }
 
-    const BASE_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSi8QhfAg_PpNxxZ8XYaSF3g5ZB2rYJ4IwG8Zq3vHEGWvOLgsc21aO5V-18qOudsfJ-kkAxF_SyRbok/pub?gid=111618598&single=true&output=csv";
+    const BASE_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSi8QhfAg_PpNxxZ8XYaSF3g5ZB2rYJ4IwG8Zq3vHEGWvOLgsc21aO5V-18qOudsfJ-kkAxF_SyRbok/pubhtml?gid=111618598&single=true";
     let data = [];
     let col = {};
 
@@ -163,4 +229,5 @@ window.addEventListener("DOMContentLoaded", () => {
     setInterval(loadData, 60000);
 });
 </script>
-
+</body>
+</html>
