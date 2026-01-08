@@ -234,28 +234,35 @@ function batal(){
     }
 }
 
+function generateKodeUnik() {
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    let result = "";
+    for (let i = 0; i < 10; i++) {
+        result += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return result;
+}
+
+    
 const URL_SIMPAN = "https://script.google.com/macros/s/AKfycbwNqVdAPXyMTJcprZnxFoejXu7nG0UxtjqP7_rpmvTpgqIH2115i-oV9h3093dIaIsgiw/exec";
 
 function simpan() {
 
-    if (!txtNoST.value || !txtTujuan.value || !txtJumlah.value) {
-    alert("Lengkapi data terlebih dahulu");
-    return;
-    }
-    
+    const kodeUnik = generateKodeUnik(); // 🔥 KODE A
+    const now = new Date().toISOString();
+
     const data = new URLSearchParams();
-
-    data.append("id", Date.now()); // atau ID lain
-    data.append("mak", document.getElementById("txtMAK").value);
-    data.append("uraian", document.getElementById("txtUraian").value);
-    data.append("tgl_st", document.getElementById("txtTanggal").value);
-    data.append("alamat", document.getElementById("txtTujuan").value);
-    data.append("jumlah", document.getElementById("txtJumlah").value.replace(/,/g,""));
+    data.append("id", kodeUnik);                    // ⬅️ Kolom A
+    data.append("mak", txtMAK.value);
+    data.append("uraian", txtUraian.value);
+    data.append("tgl_st", txtTanggal.value);
+    data.append("alamat", txtTujuan.value);
+    data.append("jumlah", txtJumlah.value.replace(/,/g, ""));
     data.append("nama", sessionStorage.getItem("nama") || "");
-    data.append("tgl_input", new Date().toISOString());
-    data.append("status", document.getElementById("txtStatusDana").value);
+    data.append("tgl_input", now);
+    data.append("status", "Rekam Data");            // ⬅️ Kolom P
 
-    fetch(URL_SIMPAN, {
+    fetch("URL_GAS_DOPOST_KAMU", {
         method: "POST",
         body: data
     })
@@ -265,7 +272,7 @@ function simpan() {
             alert("Data berhasil disimpan");
             window.location.href = "/pok/data_pok.html";
         } else {
-            alert("Gagal menyimpan:\n" + res);
+            alert("Gagal simpan: " + res);
         }
     })
     .catch(err => {
@@ -400,6 +407,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
