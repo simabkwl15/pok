@@ -277,7 +277,7 @@ window.logout = function(){
     }
 }
 
-<script>
+
 window.rekamKegiatan = function(kode, uraian) {
     // simpan data row terpilih
     sessionStorage.setItem("mak", kode);
@@ -286,7 +286,7 @@ window.rekamKegiatan = function(kode, uraian) {
     // pindah halaman
     window.location.href = "/pok/rekam_kegiatan.html";
 };
-</script>
+
 
 loadData();
 setInterval(loadData,60000);
@@ -294,6 +294,7 @@ setInterval(loadData,60000);
 </script>
 </body>
 </html>
+
 
 
 
