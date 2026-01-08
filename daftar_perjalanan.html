@@ -20,6 +20,13 @@ th { background:#8e44ad; color:white; position:sticky; top:0; z-index:1; text-al
 
 .btn-back { padding:6px 12px; background:green; color:white; border:none; border-radius:4px; cursor:pointer; font-size:14px; }
 .btn-back:hover { opacity:0.85; }
+
+/* Warna dusty */
+.status-dusty-pink { background:#D8A7B1; }   /* Rekam Data */
+.status-dusty-gray { background:#B0B0B0; }   /* Terlaksana */
+.status-dusty-yellow { background:#F0E68C; } /* LPT */
+.status-dusty-green { background:#A3D9A5; }  /* Terbayar */
+.status-dusty-blue { background:#A0C4FF; }   /* Selesai */
 </style>
 </head>
 <body>
@@ -71,6 +78,19 @@ function formatRupiah(num) {
     return Number(num).toLocaleString('id-ID', {maximumFractionDigits:0});
 }
 
+// Fungsi kasih class warna baris sesuai status
+function getStatusClass(status){
+    switch(status){
+        case "Rekam Data": return "status-dusty-pink";
+        case "Terlaksana": return "status-dusty-gray";
+        case "LPT": return "status-dusty-yellow";
+        case "Terbayar": return "status-dusty-green";
+        case "Selesai": return "status-dusty-blue";
+        default: return "";
+    }
+}
+
+// Render tabel
 function renderTable() {
     if(!data || data.length<1) return;
 
@@ -79,7 +99,6 @@ function renderTable() {
     thead.innerHTML = "";
     tbody.innerHTML = "";
 
-    // Gunakan header dari data[0]
     const header = data[0];
     const trh = document.createElement("tr");
     header.forEach(h => {
@@ -92,20 +111,36 @@ function renderTable() {
     const keyword = txtCari.value.toLowerCase();
     const filterVal = cmbFilter.value;
 
-    for(let i=1; i<data.length; i++){
-        const row = data[i];
-        const rowText = row.join(" ").toLowerCase();
+    // Mulai dari index 1 karena index 0 header
+    let rows = data.slice(1);
 
-        // filter cari
-        if(keyword && !rowText.includes(keyword)) continue;
+    // Filter "Belum Terbayar"
+    if(filterVal === "Belum Terbayar"){
+        rows = rows.filter(r => {
+            const status = r[r.length-1];
+            return status !== "Terbayar" && status !== "Selesai";
+        });
+    }
 
-        // filter combobox
-        if(filterVal === "Belum Terbayar"){
-            const status = row[row.length - 1]; // kolom terakhir = Status
-            if(status === "Terbayar" || status === "Selesai") continue;
-        }
+    // Filter cari
+    if(keyword){
+        rows = rows.filter(r => r.join(" ").toLowerCase().includes(keyword));
+    }
 
+    // Sort berdasarkan Tgl Mulai (index 5), ascending (paling sekarang di atas)
+    rows.sort((a,b)=>{
+        const d1 = new Date(a[5]);
+        const d2 = new Date(b[5]);
+        return d1 - d2;
+    });
+
+    // Render tiap row
+    rows.forEach(row=>{
         const tr = document.createElement("tr");
+
+        // kasih class warna baris
+        tr.className = getStatusClass(row[row.length-1]);
+
         row.forEach((c, idx)=>{
             const td = document.createElement("td");
 
@@ -129,8 +164,9 @@ function renderTable() {
 
             tr.appendChild(td);
         });
+
         tbody.appendChild(tr);
-    }
+    });
 }
 
 txtCari.addEventListener("input", renderTable);
