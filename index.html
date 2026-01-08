@@ -2,98 +2,160 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<title>Login SiMAB</title>
+<title>Login | SiMAB KPKNL Denpasar</title>
 
 <style>
+* {
+    box-sizing: border-box;
+}
+
 body {
-    margin:0;
-    height:100vh;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    background:#f0f2f5;
-    font-family:Arial,sans-serif;
+    margin: 0;
+    height: 100vh;
+    background: linear-gradient(135deg,#1e3c72,#2a5298);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: "Segoe UI", Arial, sans-serif;
 }
 
-.login-box {
-    background:white;
-    padding:30px;
-    width:360px;
-    border-radius:8px;
-    box-shadow:0 4px 12px rgba(0,0,0,0.15);
-    position:relative;
+/* ===== LOGIN CARD ===== */
+.login-card {
+    background: #fff;
+    width: 380px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.25);
 }
 
-h2 {
-    text-align:center;
-    margin-bottom:25px;
+/* HEADER */
+.login-header {
+    background: linear-gradient(135deg,#005bea,#00c6fb);
+    padding: 22px;
+    text-align: center;
+    color: white;
+}
+
+.login-header h1 {
+    margin: 0;
+    font-size: 20px;
+}
+
+.login-header small {
+    opacity: 0.9;
+}
+
+/* BODY */
+.login-body {
+    padding: 25px;
 }
 
 label {
-    font-weight:bold;
-    font-size:13px;
+    font-size: 13px;
+    font-weight: bold;
+    display: block;
+    margin-top: 15px;
 }
 
 input {
-    width:100%;
-    padding:8px;
-    margin:6px 0 14px;
+    width: 100%;
+    padding: 10px;
+    margin-top: 6px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 14px;
 }
 
+input:focus {
+    outline: none;
+    border-color: #005bea;
+}
+
+/* PASSWORD WRAP */
+.pass-wrap {
+    position: relative;
+}
+
+.toggle-pass {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    font-size: 12px;
+    color: #005bea;
+}
+
+/* BUTTON */
 button {
-    width:100%;
-    padding:10px;
-    background:#0066cc;
-    color:white;
-    border:none;
-    font-weight:bold;
-    cursor:pointer;
+    margin-top: 22px;
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    background: #005bea;
+    color: white;
+    font-weight: bold;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #0047c7;
 }
 
 button:disabled {
-    background:#9bbbe6;
-    cursor:not-allowed;
+    background: #9bbcf5;
+    cursor: not-allowed;
 }
 
+/* FOOTER */
+.footer {
+    margin-top: 15px;
+    text-align: center;
+    font-size: 11px;
+    color: #777;
+}
+
+/* ERROR */
 .error {
-    margin-top:10px;
-    color:red;
-    text-align:center;
-    font-size:12px;
+    margin-top: 12px;
+    color: #d40000;
+    text-align: center;
+    font-size: 12px;
 }
 
-/* ===== LOADING OVERLAY ===== */
+/* ===== LOADING ===== */
 .loading {
-    position:fixed;
-    top:0;
-    left:0;
-    width:100%;
-    height:100%;
-    background:rgba(255,255,255,0.8);
-    display:none;
-    justify-content:center;
-    align-items:center;
-    z-index:999;
+    position: fixed;
+    inset: 0;
+    background: rgba(255,255,255,0.85);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+}
+
+.loader-box {
+    text-align: center;
 }
 
 .spinner {
-    width:50px;
-    height:50px;
-    border:5px solid #ddd;
-    border-top:5px solid #0066cc;
-    border-radius:50%;
-    animation:spin 1s linear infinite;
+    width: 45px;
+    height: 45px;
+    border: 5px solid #ddd;
+    border-top: 5px solid #005bea;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
     to { transform: rotate(360deg); }
 }
 
-.loading-text {
-    margin-top:10px;
-    font-size:13px;
-    color:#333;
-    text-align:center;
+.loader-box div {
+    margin-top: 10px;
+    font-size: 13px;
 }
 </style>
 </head>
@@ -102,34 +164,51 @@ button:disabled {
 
 <!-- LOADING -->
 <div class="loading" id="loading">
-    <div>
+    <div class="loader-box">
         <div class="spinner"></div>
-        <div class="loading-text">Memeriksa data...</div>
+        <div>Memeriksa data...</div>
     </div>
 </div>
 
-<div class="login-box">
-    <h2>Selamat Datang di<br>SiMAB KPKNL Denpasar</h2>
+<div class="login-card">
+    <div class="login-header">
+        <h1>SiMAB</h1>
+        <small>KPKNL Denpasar</small>
+    </div>
 
-    <label>NIP</label>
-    <input type="text" id="nip">
+    <div class="login-body">
+        <label>NIP</label>
+        <input type="text" id="nip" placeholder="Masukkan NIP">
 
-    <label>Password</label>
-    <input type="password" id="password">
+        <label>Password</label>
+        <div class="pass-wrap">
+            <input type="password" id="password" placeholder="Masukkan Password">
+            <span class="toggle-pass" onclick="togglePass()">lihat</span>
+        </div>
 
-    <button id="btnLogin" onclick="login()">Login</button>
-    <div class="error" id="errorMsg"></div>
+        <button id="btnLogin" onclick="login()">LOGIN</button>
+        <div class="error" id="errorMsg"></div>
+
+        <div class="footer">
+            © 2026 KPKNL Denpasar
+        </div>
+    </div>
 </div>
 
 <script>
-const apiURL = "https://script.google.com/macros/s/AKfycbwcsSQ8PVW6fmIOKNytOCJ-9kRbF1wMPiT_QtVFdGknHfczTFG1zmOZElMlcb18t7G2/exec";
+const apiURL = "https://script.google.com/macros/s/AKfycbxHKH05r3PLwpxvH0wD7pHrphCoKr3c9wCuw1GMhcMDKp_qffSsgrVDR0mvrlBfHADO/exec";
 
 function showLoading(show){
     document.getElementById("loading").style.display = show ? "flex" : "none";
     document.getElementById("btnLogin").disabled = show;
 }
 
-async function login() {
+function togglePass(){
+    const p = document.getElementById("password");
+    p.type = p.type === "password" ? "text" : "password";
+}
+
+async function login(){
     const nip = document.getElementById("nip").value.trim();
     const password = document.getElementById("password").value.trim();
     const errorMsg = document.getElementById("errorMsg");
@@ -143,10 +222,10 @@ async function login() {
 
     showLoading(true);
 
-    try {
+    try{
         const url = `${apiURL}?nip=${encodeURIComponent(nip)}&password=${encodeURIComponent(password)}`;
-        const response = await fetch(url);
-        const result = await response.json();
+        const res = await fetch(url);
+        const result = await res.json();
 
         if(result.status === "success"){
             sessionStorage.setItem("nama", result.nama);
@@ -156,14 +235,17 @@ async function login() {
             showLoading(false);
             errorMsg.textContent = result.message;
         }
-    } catch (err){
-        console.error(err);
+    } catch(e){
         showLoading(false);
         errorMsg.textContent = "Gagal terhubung ke server";
     }
 }
+
+/* ENTER KEY */
+document.addEventListener("keydown", e => {
+    if(e.key === "Enter") login();
+});
 </script>
 
 </body>
 </html>
-
