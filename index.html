@@ -1,115 +1,42 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-<meta charset="UTF-8">
-<title>Login SiMAB</title>
-
-<style>
-body {
-    margin: 0;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: #f0f2f5;
-    font-family: Arial, sans-serif;
-}
-
-.login-box {
-    background: white;
-    padding: 30px;
-    width: 360px;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-}
-
-h2 {
-    text-align: center;
-    margin-bottom: 25px;
-}
-
-label {
-    font-weight: bold;
-    font-size: 13px;
-}
-
-input {
-    width: 100%;
-    padding: 8px;
-    margin: 6px 0 14px;
-}
-
-button {
-    width: 100%;
-    padding: 10px;
-    background: #0066cc;
-    color: white;
-    border: none;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-.error {
-    margin-top: 10px;
-    color: red;
-    text-align: center;
-    font-size: 12px;
-}
-</style>
-</head>
-
-<body>
-
-<div class="login-box">
-    <h2>Selamat Datang di<br>SiMAB KPKNL Denpasar</h2>
-
-    <label>NIP</label>
-    <input type="text" id="nip">
-
-    <label>Password</label>
-    <input type="password" id="password">
-
-    <button onclick="login()">Login</button>
-
-    <div class="error" id="errorMsg"></div>
-</div>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 <script>
-const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSi8QhfAg_PpNxxZ8XYaSF3g5ZB2rYJ4IwG8Zq3vHEGWvOLgsc21aO5V-18qOudsfJ-kkAxF_SyRbok/pubhtml?gid=111618598&single=true";
+const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSi8QhfAg_PpNxxZ8XYaSF3g5ZB2rYJ4IwG8Zq3vHEGWvOLgsc21aO5V-18qOudsfJ-kkAxF_SyRbok/pub?gid=1082476110&single=true&output=csv";
 
 async function login() {
     const nipInput = document.getElementById("nip").value.trim();
     const passInput = document.getElementById("password").value.trim();
     const errorMsg = document.getElementById("errorMsg");
-
     errorMsg.textContent = "Memeriksa data...";
 
-    const response = await fetch(sheetURL + "&t=" + new Date().getTime());
-    const text = await response.text();
+    try {
+        const response = await fetch(sheetURL + "&t=" + new Date().getTime());
+        const csvText = await response.text();
 
-    const rows = text.split("\n").slice(1); // skip header
-    let found = false;
+        Papa.parse(csvText, {
+            header: true,
+            skipEmptyLines: true,
+            complete: function(results) {
+                const data = results.data;
+                let found = false;
 
-    for (let row of rows) {
-        const cols = row.split(",");
+                for (let row of data) {
+                    if (row.NIP?.trim() === nipInput && row.Password?.trim() === passInput) {
+                        found = true;
+                        break;
+                    }
+                }
 
-        const nip = cols[1]?.trim();   // kolom B
-        const pass = cols[6]?.trim();  // kolom G
+                if (found) {
+                    window.location.href = "index.html";
+                } else {
+                    errorMsg.textContent = "NIP atau Password salah";
+                }
+            }
+        });
 
-        if (nip === nipInput && pass === passInput) {
-            found = true;
-            break;
-        }
-    }
-
-    if (found) {
-        window.location.href = "index.html";
-    } else {
-        errorMsg.textContent = "NIP atau Password salah";
+    } catch (err) {
+        console.error(err);
+        errorMsg.textContent = "Terjadi kesalahan saat memeriksa data";
     }
 }
 </script>
-
-</body>
-</html>
-
