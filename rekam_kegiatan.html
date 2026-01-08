@@ -234,8 +234,44 @@ function batal(){
     }
 }
 
-function simpan(){
-    alert("Simpan ke Google Sheet (belum dihubungkan)");
+const URL_SIMPAN = "https://script.google.com/macros/s/AKfycbwNqVdAPXyMTJcprZnxFoejXu7nG0UxtjqP7_rpmvTpgqIH2115i-oV9h3093dIaIsgiw/exec";
+
+function simpan() {
+
+    if (!txtNoST.value || !txtTujuan.value || !txtJumlah.value) {
+    alert("Lengkapi data terlebih dahulu");
+    return;
+    }
+    
+    const data = new URLSearchParams();
+
+    data.append("id", Date.now()); // atau ID lain
+    data.append("mak", document.getElementById("txtMAK").value);
+    data.append("uraian", document.getElementById("txtUraian").value);
+    data.append("tgl_st", document.getElementById("txtTanggal").value);
+    data.append("alamat", document.getElementById("txtTujuan").value);
+    data.append("jumlah", document.getElementById("txtJumlah").value.replace(/,/g,""));
+    data.append("nama", sessionStorage.getItem("nama") || "");
+    data.append("tgl_input", new Date().toISOString());
+    data.append("status", document.getElementById("txtStatusDana").value);
+
+    fetch(URL_SIMPAN, {
+        method: "POST",
+        body: data
+    })
+    .then(res => res.text())
+    .then(res => {
+        if (res === "OK") {
+            alert("Data berhasil disimpan");
+            window.location.href = "/pok/data_pok.html";
+        } else {
+            alert("Gagal menyimpan:\n" + res);
+        }
+    })
+    .catch(err => {
+        alert("Error koneksi");
+        console.error(err);
+    });
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -364,6 +400,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
