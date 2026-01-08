@@ -186,9 +186,48 @@ function batal(){
 function simpan(){
     alert("Simpan ke Google Sheet (belum dihubungkan)");
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    function toNumber(val) {
+        if (!val) return 0;
+        return parseFloat(val.toString().replace(/,/g, "")) || 0;
+    }
+
+    const txtPagu = document.getElementById("txtPagu");
+    const txtBlokir = document.getElementById("txtBlokir");
+    const txtRealisasi = document.getElementById("txtRealisasi");
+    const txtJumlah = document.getElementById("txtJumlah");
+    const txtSisa = document.getElementById("txtSisa");
+    const txtStatusDana = document.getElementById("txtStatusDana");
+
+    function hitungSisa() {
+        const pagu = toNumber(txtPagu.value);
+        const blokir = toNumber(txtBlokir.value);
+        const realisasi = toNumber(txtRealisasi.value);
+        const jumlah = toNumber(txtJumlah.value);
+
+        const sisa = pagu - blokir - realisasi - jumlah;
+
+        txtSisa.value = sisa.toLocaleString("id-ID");
+
+        if (sisa < 0) {
+            txtStatusDana.value = "Dana Tidak Mencukupi";
+            txtStatusDana.style.color = "red";
+        } else {
+            txtStatusDana.value = "Dana Cukup";
+            txtStatusDana.style.color = "green";
+        }
+    }
+
+    // Hitung saat JUMLAH berubah
+    txtJumlah.addEventListener("input", hitungSisa);
+
+});
 </script>
 
 </body>
 </html>
+
 
 
