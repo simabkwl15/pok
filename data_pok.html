@@ -1,87 +1,12 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-<meta charset="UTF-8">
-<title>POK</title>
-
-<script>
-const nama = sessionStorage.getItem("nama");
-const unit = sessionStorage.getItem("unit");
-
-if(!nama){
-    // Belum login → redirect ke login.html
-    window.location.href="/pok/index.html";
-} else {
-    document.getElementById("welcome").textContent = `Selamat datang, ${nama} (${unit})`;
-}
-    
-<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-
-<style>
-body {
-    font-family: Arial;
-    margin: 20px;
-}
-
-.topbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-}
-
-input[type="text"] {
-    padding: 6px;
-    width: 300px;
-}
-
-select {
-    padding: 6px;
-}
-
-table {
-    border-collapse: collapse;
-    width: 100%;
-    font-size: 13px;
-}
-
-th, td {
-    border: 1px solid #ccc;
-    padding: 6px;
-}
-
-th {
-    background: #f2f2f2;
-}
-
-.rm {
-    color: blue;
-    font-weight: bold;
-}
-
-.pnbp {
-    color: orange;
-    font-weight: bold;
-}
-
-.menu a {
-    margin-right: 15px;
-    text-decoration: none;
-    font-weight: bold;
-    color: #0066cc;
-}
-</style>
-</head>
-
 <body>
-
 <div class="menu">
     <a href="pok.html">POK</a>
     <a href="kegiatan.html">Kegiatan</a>
 </div>
 
 <h2>POK</h2>
+
+<p id="welcome"></p> <!-- <-- wajib ada -->
 
 <div class="topbar">
     <div>
@@ -113,130 +38,128 @@ th {
 </table>
 </div>
 
+<!-- SCRIPT di bawah supaya body sudah siap -->
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
 <script>
-const BASE_CSV =
-"https://docs.google.com/spreadsheets/d/e/2PACX-1vSi8QhfAg_PpNxxZ8XYaSF3g5ZB2rYJ4IwG8Zq3vHEGWvOLgsc21aO5V-18qOudsfJ-kkAxF_SyRbok/pubhtml?gid=111618598&single=true";
-
-let data = [];
-let col = {};
-
-function loadData() {
-    Papa.parse(BASE_CSV + "&t=" + Date.now(), {
-        download: true,
-        skipEmptyLines: true,
-        complete: res => {
-            data = res.data;
-            mapKolom();
-            renderTable();
-            lastUpdate.textContent = new Date().toLocaleTimeString();
-        }
-    });
-}
-
-cmbFilter.addEventListener("change", renderTable);
-txtCari.addEventListener("input", renderTable);
-
-function mapKolom() {
-    col = {};
-    data[0].forEach((h, i) => col[h.trim().toUpperCase()] = i);
-}
-
-function renderTable() {
-    const thead = tblData.tHead || tblData.createTHead();
-    const tbody = tblData.tBodies[0] || tblData.createTBody();
-    thead.innerHTML = "";
-    tbody.innerHTML = "";
-
-    if (data.length < 2) return;
-
-    const idxKode = col["KODE"];
-    const idxUraian = col["URAIAN"];
-    const idxSD = col["SD"];
-    const idxSeksi = col["SEKSI"];
-    const idxVol = col["VOL"];
-    const idxPagu = col["PAGU"];
-    const idxBlokir = col["BLOKIR"];
-    const idxRealisasi = col["REALISASI"];
-    const idxSisa = col["SISA"];
-
-    const filter = cmbFilter.value;
-    const keyword = txtCari.value.toLowerCase();
-    const uniqueKode = new Set();
-
-    // HEADER
-    const trh = document.createElement("tr");
-    data[0].forEach((h, i) => {
-        if (i === idxSeksi) return;
-        const th = document.createElement("th");
-        th.textContent = h;
-        trh.appendChild(th);
-    });
-    thead.appendChild(trh);
-
-    // DATA
-    for (let i = 1; i < data.length; i++) {
-        const r = data[i];
-        const kode = r[idxKode]?.trim();
-        const uraian = r[idxUraian]?.toLowerCase() || "";
-        const sd = r[idxSD]?.trim().toUpperCase();
-        const seksi = r[idxSeksi]?.trim();
-
-        if (!kode) continue;
-        if (filter !== "Semua" && seksi !== filter) continue;
-
-        if (filter === "Semua") {
-            if (uniqueKode.has(kode)) continue;
-            uniqueKode.add(kode);
-        }
-
-        if (
-            keyword &&
-            !kode.toLowerCase().includes(keyword) &&
-            !uraian.includes(keyword)
-        ) continue;
-
-        const tr = document.createElement("tr");
-
-        if (kode.length > 27 && sd === "RM") tr.className = "rm";
-        if (kode.length > 27 && sd === "PNBP") tr.className = "pnbp";
-
-        r.forEach((c, idx) => {
-            if (idx === idxSeksi) return;
-
-            const td = document.createElement("td");
-            td.textContent = c ?? "";
-
-            if (idx === idxVol) td.style.textAlign = "center";
-            if ([idxPagu, idxBlokir, idxRealisasi, idxSisa].includes(idx))
-                td.style.textAlign = "right";
-
-            tr.appendChild(td);
-        });
-
-        tbody.appendChild(tr);
+window.addEventListener("DOMContentLoaded", () => {
+    // SESSION & welcome
+    const nama = sessionStorage.getItem("nama");
+    const unit = sessionStorage.getItem("unit");
+    if(!nama){
+        window.location.href="/pok/index.html";
+        return;
+    } else {
+        document.getElementById("welcome").textContent = `Selamat datang, ${nama} (${unit})`;
     }
-}
 
-function downloadPDF() {
-    html2pdf()
-        .set({
-            margin: 5,
-            filename: 'POK.pdf',
-            html2canvas: { scale: 2 },
-            jsPDF: { orientation: 'landscape' }
-        })
-        .from(document.getElementById("areaPDF"))
-        .save();
-}
+    const BASE_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSi8QhfAg_PpNxxZ8XYaSF3g5ZB2rYJ4IwG8Zq3vHEGWvOLgsc21aO5V-18qOudsfJ-kkAxF_SyRbok/pubhtml?gid=111618598&single=true";
+    let data = [];
+    let col = {};
 
-loadData();
-setInterval(loadData, 60000);
+    const tblData = document.getElementById("tblData");
+    const cmbFilter = document.getElementById("cmbFilter");
+    const txtCari = document.getElementById("txtCari");
+    const lastUpdate = document.getElementById("lastUpdate");
+
+    function loadData() {
+        Papa.parse(BASE_CSV + "&t=" + Date.now(), {
+            download: true,
+            skipEmptyLines: true,
+            complete: res => {
+                data = res.data;
+                mapKolom();
+                renderTable();
+                lastUpdate.textContent = new Date().toLocaleTimeString();
+            }
+        });
+    }
+
+    cmbFilter.addEventListener("change", renderTable);
+    txtCari.addEventListener("input", renderTable);
+
+    function mapKolom() {
+        col = {};
+        data[0].forEach((h, i) => col[h.trim().toUpperCase()] = i);
+    }
+
+    function renderTable() {
+        const thead = tblData.tHead || tblData.createTHead();
+        const tbody = tblData.tBodies[0] || tblData.createTBody();
+        thead.innerHTML = "";
+        tbody.innerHTML = "";
+
+        if (data.length < 2) return;
+
+        const idxKode = col["KODE"];
+        const idxUraian = col["URAIAN"];
+        const idxSD = col["SD"];
+        const idxSeksi = col["SEKSI"];
+        const idxVol = col["VOL"];
+        const idxPagu = col["PAGU"];
+        const idxBlokir = col["BLOKIR"];
+        const idxRealisasi = col["REALISASI"];
+        const idxSisa = col["SISA"];
+
+        const filter = cmbFilter.value;
+        const keyword = txtCari.value.toLowerCase();
+        const uniqueKode = new Set();
+
+        // HEADER
+        const trh = document.createElement("tr");
+        data[0].forEach((h, i) => {
+            if (i === idxSeksi) return;
+            const th = document.createElement("th");
+            th.textContent = h;
+            trh.appendChild(th);
+        });
+        thead.appendChild(trh);
+
+        // DATA
+        for (let i = 1; i < data.length; i++) {
+            const r = data[i];
+            const kode = r[idxKode]?.trim();
+            const uraian = r[idxUraian]?.toLowerCase() || "";
+            const sd = r[idxSD]?.trim().toUpperCase();
+            const seksi = r[idxSeksi]?.trim();
+
+            if (!kode) continue;
+            if (filter !== "Semua" && seksi !== filter) continue;
+
+            if (filter === "Semua") {
+                if (uniqueKode.has(kode)) continue;
+                uniqueKode.add(kode);
+            }
+
+            if (keyword && !kode.toLowerCase().includes(keyword) && !uraian.includes(keyword)) continue;
+
+            const tr = document.createElement("tr");
+            if (kode.length > 27 && sd === "RM") tr.className = "rm";
+            if (kode.length > 27 && sd === "PNBP") tr.className = "pnbp";
+
+            r.forEach((c, idx) => {
+                if (idx === idxSeksi) return;
+                const td = document.createElement("td");
+                td.textContent = c ?? "";
+                if (idx === idxVol) td.style.textAlign = "center";
+                if ([idxPagu, idxBlokir, idxRealisasi, idxSisa].includes(idx)) td.style.textAlign = "right";
+                tr.appendChild(td);
+            });
+            tbody.appendChild(tr);
+        }
+    }
+
+    function downloadPDF() {
+        html2pdf()
+            .set({margin:5, filename:'POK.pdf', html2canvas:{scale:2}, jsPDF:{orientation:'landscape'}})
+            .from(document.getElementById("areaPDF"))
+            .save();
+    }
+
+    window.downloadPDF = downloadPDF;
+
+    loadData();
+    setInterval(loadData, 60000);
+});
 </script>
-
-</body>
-</html>
-
-
-
-
-
