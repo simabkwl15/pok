@@ -1,82 +1,150 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>POK</title>
+
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+
+<style>
+body {
+    font-family: Arial;
+    margin: 20px;
+}
+
+select {
+    padding: 6px;
+    margin-bottom: 15px;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 13px;
+}
+
+th, td {
+    border: 1px solid #ccc;
+    padding: 6px;
+}
+
+th {
+    background: #f2f2f2;
+}
+
+/* ===== WARNA ROW ===== */
+.rm {
+    color: blue;
+    font-weight: bold;
+}
+
+.pnbp {
+    color: orange;
+    font-weight: bold;
+}
+</style>
+</head>
+
+<body>
+
+<h2>POK</h2>
+
+<select id="cmbFilter">
+    <option value="Semua">Semua</option>
+    <option value="Umum">Umum</option>
+    <option value="PKN">PKN</option>
+    <option value="PN">PN</option>
+    <option value="Penilaian">Penilaian</option>
+    <option value="Lelang">Lelang</option>
+    <option value="HI">HI</option>
+    <option value="KI">KI</option>
+</select>
+
+<table id="tblData">
+    <thead></thead>
+    <tbody></tbody>
+</table>
+
 <script>
 const CSV_URL =
 "https://docs.google.com/spreadsheets/d/e/2PACX-1vSi8QhfAg_PpNxxZ8XYaSF3g5ZB2rYJ4IwG8Zq3vHEGWvOLgsc21aO5V-18qOudsfJ-kkAxF_SyRbok/pub?output=csv";
 
 let data = [];
-let colIndex = {};
+let col = {};
 
 Papa.parse(CSV_URL, {
     download: true,
     skipEmptyLines: true,
-    complete: function(res) {
+    complete: res => {
         data = res.data;
-        mapColumnIndex();
-        render();
+        mapKolom();
+        renderTable();
     }
 });
 
-cmbFilter.addEventListener("change", render);
+cmbFilter.addEventListener("change", renderTable);
 
-function mapColumnIndex() {
-    colIndex = {};
+function mapKolom() {
+    col = {};
     data[0].forEach((h, i) => {
-        const key = h.toString().trim().toUpperCase();
-        colIndex[key] = i;
+        col[h.trim().toUpperCase()] = i;
     });
 }
 
-function render() {
+function renderTable() {
     const thead = tblData.tHead || tblData.createTHead();
     const tbody = tblData.tBodies[0] || tblData.createTBody();
-
     thead.innerHTML = "";
     tbody.innerHTML = "";
 
-    if (data.length <= 1) return;
+    if (data.length < 2) return;
 
-    // HEADER
+    const idxKode = col["KODE"];
+    const idxSD = col["SD"];
+    const idxSeksi = col["SEKSI"];
+    const idxVol = col["VOL"];
+    const idxPagu = col["PAGU"];
+    const idxBlokir = col["BLOKIR"];
+    const idxRealisasi = col["REALISASI"];
+    const idxSisa = col["SISA"];
+
+    /* ===== HEADER ===== */
     const trh = document.createElement("tr");
-    data[0].forEach(h => {
+    data[0].forEach((h, i) => {
+        if (i === idxSeksi) return; // hide SEKSI
         const th = document.createElement("th");
         th.textContent = h;
         trh.appendChild(th);
     });
     thead.appendChild(trh);
 
-    const seenKode = new Set();
     const filter = cmbFilter.value;
+    const uniqueKode = new Set();
 
-    const idxKode = colIndex["KODE"];
-    const idxSD   = colIndex["SD"];
-    const idxFilter = colIndex["SEKSI"] ?? colIndex["I"];
-
-    const idxVol = colIndex["VOL"];
-    const idxPagu = colIndex["PAGU"];
-    const idxBlokir = colIndex["BLOKIR"];
-    const idxRealisasi = colIndex["REALISASI"];
-    const idxSisa = colIndex["SISA"];
-
+    /* ===== DATA ===== */
     for (let i = 1; i < data.length; i++) {
         const r = data[i];
+
         const kode = r[idxKode]?.trim();
-        const sd   = r[idxSD]?.trim();
+        const sd = r[idxSD]?.trim().toUpperCase();
+        const seksi = r[idxSeksi]?.trim();
 
         if (!kode) continue;
-
-        if (filter !== "Semua" && r[idxFilter]?.trim() !== filter) continue;
+        if (filter !== "Semua" && seksi !== filter) continue;
 
         if (filter === "Semua") {
-            if (seenKode.has(kode)) continue;
-            seenKode.add(kode);
+            if (uniqueKode.has(kode)) continue;
+            uniqueKode.add(kode);
         }
 
         const tr = document.createElement("tr");
-        const sdVal = (sd || "").toUpperCase();
 
-        if (kode.length > 27 && sdVal === "RM") tr.className = "rm";
-        else if (kode.length > 27 && sdVal === "PNBP") tr.className = "pnbp";
+        if (kode.length > 27 && sd === "RM") tr.className = "rm";
+        if (kode.length > 27 && sd === "PNBP") tr.className = "pnbp";
 
         r.forEach((c, idx) => {
+            if (idx === idxSeksi) return; // hide SEKSI
+
             const td = document.createElement("td");
             td.textContent = c ?? "";
 
@@ -91,3 +159,6 @@ function render() {
     }
 }
 </script>
+
+</body>
+</html>
