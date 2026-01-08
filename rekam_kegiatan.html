@@ -201,6 +201,16 @@ input[readonly] {
 </div>
 
 <script>
+
+function showLoading() {
+    document.getElementById("loadingOverlay").style.display = "flex";
+}
+
+function hideLoading() {
+    document.getElementById("loadingOverlay").style.display = "none";
+}
+
+    
 document.addEventListener("DOMContentLoaded", () => {
     const mak = sessionStorage.getItem("mak");
     const uraian = sessionStorage.getItem("uraian");
@@ -247,12 +257,17 @@ function generateKodeUnik() {
 const URL_SIMPAN = "https://script.google.com/macros/s/AKfycbzwoonc0qSpnWgHu-04EJP6jN8ksqbffM856FmJT2oPhs3HqTR2t1KJ7AoGqJ-h8Xtl/exec";
 
 function simpan() {
-
-    const kodeUnik = generateKodeUnik(); // 🔥 KODE A
+    const kodeUnik = generateKodeUnik();
     const now = new Date().toISOString();
 
+    // CEK DANA CUKUP
+    if (txtSisa.value.includes("-")) {
+        alert("Dana tidak mencukupi, tidak bisa menyimpan!");
+        return;
+    }
+
     const data = new URLSearchParams();
-    data.append("id", kodeUnik);                    // ⬅️ Kolom A
+    data.append("id", kodeUnik);
     data.append("mak", txtMAK.value);
     data.append("uraian", txtUraian.value);
     data.append("tgl_st", txtTanggal.value);
@@ -260,22 +275,17 @@ function simpan() {
     data.append("jumlah", txtJumlah.value.replace(/,/g, ""));
     data.append("nama", sessionStorage.getItem("nama") || "");
     data.append("tgl_input", now);
-    data.append("status", "Rekam Data");            // ⬅️ Kolom P
+    data.append("status", "Rekam Data");
+
+    showLoading(); // tampilkan loading
 
     fetch(URL_SIMPAN, {
         method: "POST",
-        body: new URLSearchParams({
-            mak: txtMAK.value,
-            uraian: txtUraian.value,
-            alamat: txtTujuan.value,
-            tgl_st: txtTanggal.value,
-            jumlah: txtJumlah.value.replace(/,/g, ""),
-            nama: sessionStorage.getItem("nama"),
-            tgl_input: new Date().toISOString().split("T")[0]
-        })
+        body: data
     })
     .then(res => res.text())
     .then(res => {
+        hideLoading(); // sembunyikan loading
         if(res === "OK"){
             alert("Data berhasil disimpan");
             window.location.href = "/pok/data_pok.html";
@@ -283,9 +293,13 @@ function simpan() {
             alert("Gagal: " + res);
         }
     })
-    .catch(err => alert("ERROR: " + err));
-
+    .catch(err => {
+        hideLoading(); // sembunyikan loading
+        alert("ERROR: " + err);
+    });
 }
+
+
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -430,6 +444,7 @@ document.addEventListener("DOMContentLoaded", () => {
     
 </body>
 </html>
+
 
 
 
