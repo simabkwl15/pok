@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>POK</title>
+
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+
+<style>
+body { font-family: Arial; margin: 20px; }
+select { padding: 6px; margin-bottom: 15px; }
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 13px;
+}
+
+th, td {
+    border: 1px solid #ccc;
+    padding: 6px;
+}
+
+th { background: #f2f2f2; }
+
+.rm { color: blue; font-weight: bold; }
+.pnbp { color: orange; font-weight: bold; }
+</style>
+</head>
+
+<body>
+
+<h2>POK</h2>
+
+<select id="cmbFilter">
+    <option value="Semua">Semua</option>
+    <option value="Umum">Umum</option>
+    <option value="PKN">PKN</option>
+    <option value="PN">PN</option>
+    <option value="Penilaian">Penilaian</option>
+    <option value="Lelang">Lelang</option>
+    <option value="HI">HI</option>
+    <option value="KI">KI</option>
+</select>
+
+<table id="tblData">
+    <thead></thead>
+    <tbody></tbody>
+</table>
+
+<script>
+const CSV_URL = "PASTE_LINK_PUBLISH_CSV_DI_SINI";
+
+let allData = [];
+
+Papa.parse(CSV_URL, {
+    download: true,
+    header: false,
+    skipEmptyLines: true,
+    complete: function(results) {
+        allData = results.data;
+        renderTable();
+    }
+});
+
+document.getElementById("cmbFilter").addEventListener("change", renderTable);
+
+function renderTable() {
+    const filter = cmbFilter.value;
+    const thead = tblData.querySelector("thead");
+    const tbody = tblData.querySelector("tbody");
+
+    thead.innerHTML = "";
+    tbody.innerHTML = "";
+
+    if (allData.length === 0) return;
+
+    // HEADER
+    let h = "<tr>";
+    allData[0].forEach(col => h += `<th>${col}</th>`);
+    h += "</tr>";
+    thead.innerHTML = h;
+
+    const uniqueKode = new Set();
+
+    // DATA
+    for (let i = 1; i < allData.length; i++) {
+        const r = allData[i];
+
+        const kode = r[0]?.trim();
+        const sd   = r[1]?.trim();
+        const kolI = r[8]?.trim();
+
+        if (!kode) continue;
+
+        if (filter !== "Semua" && kolI !== filter) continue;
+
+        if (uniqueKode.has(kode)) continue;
+        uniqueKode.add(kode);
+
+        let cls = "";
+        if (kode.length > 27 && sd === "RM") cls = "rm";
+        if (kode.length > 27 && sd === "PNBP") cls = "pnbp";
+
+        let tr = `<tr class="${cls}">`;
+        r.forEach(c => tr += `<td>${c ?? ""}</td>`);
+        tr += "</tr>";
+
+        tbody.innerHTML += tr;
+    }
+}
+</script>
+
+</body>
+</html>
