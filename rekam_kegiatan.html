@@ -193,7 +193,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function toNumber(val) {
         if (!val) return 0;
-        return parseFloat(val.toString().replace(/,/g, "")) || 0;
+        return parseInt(val.toString().replace(/[^0-9]/g, "")) || 0;
+    }
+
+    function formatNumber(val) {
+        return val.toLocaleString("id-ID");
     }
 
     const txtPagu = document.getElementById("txtPagu");
@@ -222,14 +226,18 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // Hitung saat JUMLAH berubah
-    txtJumlah.addEventListener("input", hitungSisa);
+    txtJumlah.addEventListener("input", () => {
+        const angka = toNumber(txtJumlah.value);
+        txtJumlah.value = formatNumber(angka);
+        hitungSisa();
+    });
 
 });
 </script>
 
 </body>
 </html>
+
 
 
 
