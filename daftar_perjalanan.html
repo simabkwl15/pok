@@ -78,32 +78,12 @@ function renderTable() {
     thead.innerHTML = "";
     tbody.innerHTML = "";
 
-    // HEADER MANUAL
-    const headers = [
-        {text:"", hidden:true},           // kolom 1 hidden
-        {text:"MAK"},                      // kolom 2
-        {text:"Nomor ST"},                 // kolom 3
-        {text:"Tgl ST"},                   // kolom 4
-        {text:"Nama"},                      // kolom 5
-        {text:"Kota"},                      // kolom 6
-        {text:"Tgl ST", date:true},        // kolom 7
-        {text:"Tgl Mulai", date:true},     // kolom 8
-        {text:"Tgl Selesai", date:true},   // kolom 9
-        {text:"Tgl LPT", date:true},       // kolom 10
-        {text:"Tgl Bayar", date:true},     // kolom 11
-        {text:"Selisih LPT"},              // kolom 12
-        {text:"Selisih Bayar"},            // kolom 13
-        {text:"Jumlah", rupiah:true},      // kolom 14
-        {text:"", hidden:true},            // kolom 15 hidden
-        {text:"", hidden:true},            // kolom 16 hidden
-        {text:"Status"}                    // kolom 17
-    ];
-
+    // Gunakan header dari data[0]
+    const header = data[0];
     const trh = document.createElement("tr");
-    headers.forEach(h=>{
+    header.forEach(h => {
         const th = document.createElement("th");
-        th.textContent = h.text;
-        if(h.hidden) th.style.display = "none";
+        th.textContent = h ?? "";
         trh.appendChild(th);
     });
     thead.appendChild(trh);
@@ -111,6 +91,7 @@ function renderTable() {
     const keyword = txtCari.value.toLowerCase();
     const filterVal = cmbFilter.value;
 
+    // mulai dari index 1 karena index 0 header
     for(let i=1; i<data.length; i++){
         const row = data[i];
         const rowText = row.join(" ").toLowerCase();
@@ -120,7 +101,7 @@ function renderTable() {
 
         // filter combobox
         if(filterVal === "Belum Terbayar"){
-            const status = row[16]; // kolom 17 = Status
+            const status = row[row.length - 1]; // ambil kolom terakhir sebagai Status
             if(status === "Terbayar" || status === "Selesai") continue;
         }
 
@@ -128,21 +109,15 @@ function renderTable() {
         row.forEach((c, idx)=>{
             const td = document.createElement("td");
 
-            // sembunyikan kolom hidden
-            if(headers[idx]?.hidden){
-                td.style.display = "none";
-            }
-
-            // format tanggal
-            else if(headers[idx]?.date){
+            // coba format tanggal jika bisa
+            const isDate = !isNaN(Date.parse(c));
+            if(isDate){
                 td.textContent = formatDate(c);
             }
-
-            // format rupiah
-            else if(headers[idx]?.rupiah){
+            // coba format rupiah untuk angka
+            else if(!isNaN(c) && c !== "") {
                 td.textContent = formatRupiah(c);
             }
-
             else{
                 td.textContent = c ?? "";
             }
@@ -166,4 +141,3 @@ window.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
-
