@@ -191,13 +191,12 @@ function simpan(){
 
 document.addEventListener("DOMContentLoaded", () => {
 
-    function toNumber(val) {
-        if (!val) return 0;
-        return parseInt(val.toString().replace(/[^0-9]/g, "")) || 0;
+    function formatNumber(num) {
+    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     }
-
-    function formatNumber(val) {
-        return val.toLocaleString("id-ID");
+    
+    function toNumber(str) {
+        return parseInt(str.replace(/,/g, "")) || 0;
     }
 
     const txtPagu = document.getElementById("txtPagu");
@@ -227,9 +226,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     txtJumlah.addEventListener("input", () => {
-        const angka = toNumber(txtJumlah.value);
-        txtJumlah.value = formatNumber(angka);
-        hitungSisa();
+    const angka = toNumber(txtJumlah.value);
+    txtJumlah.value = formatNumber(angka);
+    hitungSisa();
     });
 
 });
@@ -237,6 +236,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
