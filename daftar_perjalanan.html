@@ -69,7 +69,31 @@ th {
 </div>
 
 <script>
-const URL_GAS = "https://script.google.com/macros/s/YOUR_GAS_URL/exec"; // ganti dengan URL GAS-mu
+const URL_GAS = "// GAS: Code.gs
+function doGet(e) {
+  return ContentService
+           .createTextOutput(JSON.stringify(getFilteredData()))
+           .setMimeType(ContentService.MimeType.JSON);
+}
+
+function getFilteredData() {
+  const ss = SpreadsheetApp.openById("10JQ3ysZai7yNXHMWw81UeztwbxSPwsCMiykJj2w5AHE"); // ganti dengan ID spreadsheetmu
+  const sheet = ss.getSheetByName("Data_Kegiatan_2026");
+  const data = sheet.getDataRange().getValues(); // ambil semua data
+
+  // Filter: hanya kolom A–P (0–15)
+  const filtered = data
+    .filter((row, index) => {
+      if(index === 0) return true; // tetap tampilkan header
+      const kode = row[1] ? row[1].toString().trim() : ""; // kolom B = indeks 1
+      const key = kode.slice(-9, -3); // ambil 6 karakter mulai dari 9 dari kanan
+      return key === "524111" || key === "524113";
+    })
+    .map(row => row.slice(0,16)); // ambil kolom A–P saja
+
+  return filtered;
+}
+"; // ganti dengan URL GAS-mu
 const tblData = document.getElementById("tblData");
 const txtCari = document.getElementById("txtCari");
 let data = [];
@@ -128,3 +152,4 @@ window.addEventListener("DOMContentLoaded", loadData);
 
 </body>
 </html>
+
