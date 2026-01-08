@@ -3,88 +3,59 @@
 <head>
 <meta charset="UTF-8">
 <title>Login SiMAB</title>
-
 <style>
-body {
-    margin: 0;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: #f0f2f5;
-    font-family: Arial, sans-serif;
-}
-
-.login-box {
-    background: white;
-    padding: 30px;
-    width: 360px;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-}
-
-h2 { text-align: center; margin-bottom: 25px; }
-label { font-weight: bold; font-size: 13px; }
-input { width: 100%; padding: 8px; margin: 6px 0 14px; }
-button { width: 100%; padding: 10px; background: #0066cc; color: white; border: none; font-weight: bold; cursor: pointer; }
-.error { margin-top: 10px; color: red; text-align: center; font-size: 12px; }
+body { margin:0; height:100vh; display:flex; justify-content:center; align-items:center; background:#f0f2f5; font-family:Arial,sans-serif; }
+.login-box { background:white; padding:30px; width:360px; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.15); }
+h2 { text-align:center; margin-bottom:25px; }
+label { font-weight:bold; font-size:13px; }
+input { width:100%; padding:8px; margin:6px 0 14px; }
+button { width:100%; padding:10px; background:#0066cc; color:white; border:none; font-weight:bold; cursor:pointer; }
+.error { margin-top:10px; color:red; text-align:center; font-size:12px; }
 </style>
 </head>
-
 <body>
 <div class="login-box">
     <h2>Selamat Datang di<br>SiMAB KPKNL Denpasar</h2>
-
     <label>NIP</label>
     <input type="text" id="nip">
-
     <label>Password</label>
     <input type="password" id="password">
-
     <button onclick="login()">Login</button>
-
     <div class="error" id="errorMsg"></div>
 </div>
 
 <script>
-const apiURL = "https://script.google.com/macros/s/AKfycbzhJo2Va5KXE8uGoMtg8o-TkldyuU1FlVVeRWi96zx-yCoSVXMSwYGk_8GAwQZ8EA4/exec";
+const apiURL = "https://script.google.com/macros/s/AKfycbx3R4nXVwcpGIqz8RZ6IzkFstfWjV-Pn77lCxtsUYQZzCnDDErWyZ_hmS6WKSHnkEFL/exec"; // ganti dengan link exec GAS
 
 async function login() {
     const nip = document.getElementById("nip").value.trim();
     const password = document.getElementById("password").value.trim();
     const errorMsg = document.getElementById("errorMsg");
 
-    if (!nip || !password) {
-        errorMsg.textContent = "NIP dan Password wajib diisi";
-        return;
-    }
-
-    errorMsg.textContent = "Memeriksa data...";
+    if(!nip || !password){ errorMsg.textContent="NIP dan Password wajib diisi"; return; }
+    errorMsg.textContent="Memeriksa data...";
 
     try {
-        const response = await fetch(apiURL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ nip: nip, password: password })
+        const response = await fetch(apiURL,{
+            method:"POST",
+            headers:{"Content-Type":"application/json"},
+            body:JSON.stringify({nip, password})
         });
 
         const result = await response.json();
 
-        if (result.status === "success") {
-            // Simpan info user di sessionStorage
+        if(result.status==="success"){
             sessionStorage.setItem("nama", result.nama);
             sessionStorage.setItem("unit", result.unit);
-            window.location.href = "/pok/data_pok.html";
+            window.location.href="/pok/data_pok.html";
         } else {
-            errorMsg.textContent = result.message;
+            errorMsg.textContent=result.message;
         }
-
-    } catch (err) {
+    } catch(err){
         console.error(err);
-        errorMsg.textContent = "Gagal terhubung ke server";
+        errorMsg.textContent="Gagal terhubung ke server";
     }
 }
 </script>
-
 </body>
 </html>
