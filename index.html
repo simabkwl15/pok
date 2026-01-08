@@ -11,14 +11,14 @@ body { font-family: Arial; margin: 20px; }
 select { padding: 6px; margin-bottom: 15px; }
 
 table {
-    border-collapse: collapse;
-    width: 100%;
-    font-size: 13px;
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 13px;
 }
 
 th, td {
-    border: 1px solid #ccc;
-    padding: 6px;
+  border: 1px solid #ccc;
+  padding: 6px;
 }
 
 th { background: #f2f2f2; }
@@ -33,84 +33,87 @@ th { background: #f2f2f2; }
 <h2>POK</h2>
 
 <select id="cmbFilter">
-    <option value="Semua">Semua</option>
-    <option value="Umum">Umum</option>
-    <option value="PKN">PKN</option>
-    <option value="PN">PN</option>
-    <option value="Penilaian">Penilaian</option>
-    <option value="Lelang">Lelang</option>
-    <option value="HI">HI</option>
-    <option value="KI">KI</option>
+  <option value="Semua">Semua</option>
+  <option>Umum</option>
+  <option>PKN</option>
+  <option>PN</option>
+  <option>Penilaian</option>
+  <option>Lelang</option>
+  <option>HI</option>
+  <option>KI</option>
 </select>
 
 <table id="tblData">
-    <thead></thead>
-    <tbody></tbody>
+  <thead></thead>
+  <tbody></tbody>
 </table>
 
 <script>
-const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSi8QhfAg_PpNxxZ8XYaSF3g5ZB2rYJ4IwG8Zq3vHEGWvOLgsc21aO5V-18qOudsfJ-kkAxF_SyRbok/pub?gid=111618598&single=true&output=csv";
+const CSV_URL =
+"https://docs.google.com/spreadsheets/d/e/2PACX-1vSi8QhfAg_PpNxxZ8XYaSF3g5ZB2rYJ4IwG8Zq3vHEGWvOLgsc21aO5V-18qOudsfJ-kkAxF_SyRbok/pub?output=csv";
 
-let allData = [];
+let data = [];
 
 Papa.parse(CSV_URL, {
-    download: true,
-    skipEmptyLines: true,
-    complete: function(results) {
-        allData = results.data;
-        renderTable();
-    }
+  download: true,
+  skipEmptyLines: true,
+  complete: res => {
+    data = res.data;
+    console.log("ROW COUNT:", data.length); // DEBUG
+    render();
+  }
 });
 
-document.getElementById("cmbFilter").addEventListener("change", renderTable);
+cmbFilter.onchange = render;
 
-function renderTable() {
-    const filter = cmbFilter.value;
-    const thead = tblData.querySelector("thead");
-    const tbody = tblData.querySelector("tbody");
+function render() {
+  const thead = tblData.tHead || tblData.createTHead();
+  const tbody = tblData.tBodies[0] || tblData.createTBody();
 
-    thead.innerHTML = "";
-    tbody.innerHTML = "";
+  thead.innerHTML = "";
+  tbody.innerHTML = "";
 
-    if (allData.length === 0) return;
+  if (data.length <= 1) return;
 
-    // HEADER
-    let h = "<tr>";
-    allData[0].forEach(col => h += `<th>${col}</th>`);
-    h += "</tr>";
-    thead.innerHTML = h;
+  // HEADER
+  const hr = document.createElement("tr");
+  data[0].forEach(h => {
+    const th = document.createElement("th");
+    th.textContent = h;
+    hr.appendChild(th);
+  });
+  thead.appendChild(hr);
 
-    const uniqueKode = new Set();
+  const seen = new Set();
+  const filter = cmbFilter.value;
 
-    // DATA
-    for (let i = 1; i < allData.length; i++) {
-        const r = allData[i];
+  for (let i = 1; i < data.length; i++) {
+    const r = data[i];
+    const kode = r[0]?.trim();
+    const sd   = r[1]?.trim();
+    const seksi= r[8]?.trim();
 
-        const A = r[0]?.trim();   // KODE
-        const H = r[1]?.trim();   // SD
-        const I = r[8]?.trim();   // FILTER (kolom I)
+    if (!kode) continue;
+    if (filter !== "Semua" && seksi !== filter) continue;
 
-        if (!A) continue;
-
-        // FILTER
-        if (filter !== "Semua" && I !== filter) continue;
-
-        // HAPUS DUPLIKAT HANYA JIKA "Semua"
-        if (filter === "Semua") {
-            if (uniqueKode.has(A)) continue;
-            uniqueKode.add(A);
-        }
-
-        let cls = "";
-        if (A.length > 27 && H === "RM") cls = "rm";
-        if (A.length > 27 && H === "PNBP") cls = "pnbp";
-
-        let tr = `<tr class="${cls}">`;
-        r.forEach(c => tr += `<td>${c ?? ""}</td>`);
-        tr += "</tr>";
-
-        tbody.innerHTML += tr;
+    if (filter === "Semua") {
+      if (seen.has(kode)) continue;
+      seen.add(kode);
     }
+
+    const tr = document.createElement("tr");
+
+    if (kode.length > 27 && sd === "RM") tr.className = "rm";
+    if (kode.length > 27 && sd === "PNBP") tr.className = "pnbp";
+
+    r.forEach(c => {
+      const td = document.createElement("td");
+      td.textContent = c ?? "";
+      tr.appendChild(td);
+    });
+
+    tbody.appendChild(tr);
+  }
 }
 </script>
 
