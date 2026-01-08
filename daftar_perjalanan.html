@@ -64,12 +64,6 @@ function formatDate(str) {
     return `${yyyy}-${mm}-${dd}`;
 }
 
-// Format angka dengan ribuan separator
-function formatRupiah(num) {
-    if(num == null || num === "") return "";
-    return Number(num).toLocaleString('id-ID', {maximumFractionDigits:0});
-}
-
 function renderTable() {
     if(!data || data.length<1) return;
 
@@ -109,14 +103,21 @@ function renderTable() {
         row.forEach((c, idx)=>{
             const td = document.createElement("td");
 
-            // coba format tanggal jika bisa
-            const isDate = !isNaN(Date.parse(c));
-            if(isDate){
-                td.textContent = formatDate(c);
+            // Kolom Jumlah dan Selisih tidak diformat
+            const isJumlahCol = (idx === row.length - 3); // Jumlah
+            const isSelisihLPT = (idx === row.length - 5); // Selisih LPT
+            const isSelisihBayar = (idx === row.length - 4); // Selisih Bayar
+
+            if(isJumlahCol){
+                td.textContent = c ?? "";
+                td.style.textAlign = "right"; // alignment kanan
             }
-            // coba format rupiah untuk angka
-            else if(!isNaN(c) && c !== "") {
-                td.textContent = formatRupiah(c);
+            else if(isSelisihLPT || isSelisihBayar){
+                td.textContent = c ?? "";
+            }
+            // format tanggal jika bisa
+            else if(!isNaN(Date.parse(c))){
+                td.textContent = formatDate(c);
             }
             else{
                 td.textContent = c ?? "";
@@ -141,5 +142,3 @@ window.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
-
-
