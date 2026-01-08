@@ -25,23 +25,24 @@ button { width:100%; padding:10px; background:#0066cc; color:white; border:none;
 </div>
 
 <script>
-const apiURL = "https://script.google.com/macros/s/AKfycbx3R4nXVwcpGIqz8RZ6IzkFstfWjV-Pn77lCxtsUYQZzCnDDErWyZ_hmS6WKSHnkEFL/exec"; // ganti dengan link exec GAS
+const apiURL = "https://script.google.com/macros/s/AKfycbxHKH05r3PLwpxvH0wD7pHrphCoKr3c9wCuw1GMhcMDKp_qffSsgrVDR0mvrlBfHADO/exec";
 
 async function login() {
     const nip = document.getElementById("nip").value.trim();
     const password = document.getElementById("password").value.trim();
     const errorMsg = document.getElementById("errorMsg");
 
-    if(!nip || !password){ errorMsg.textContent="NIP dan Password wajib diisi"; return; }
+    if(!nip || !password){ 
+        errorMsg.textContent="NIP dan Password wajib diisi"; 
+        return; 
+    }
+
     errorMsg.textContent="Memeriksa data...";
 
     try {
-        const response = await fetch(apiURL,{
-            method:"POST",
-            headers:{"Content-Type":"application/json"},
-            body:JSON.stringify({nip, password})
-        });
-
+        // GET request dengan query parameter
+        const url = `${apiURL}?nip=${encodeURIComponent(nip)}&password=${encodeURIComponent(password)}`;
+        const response = await fetch(url);
         const result = await response.json();
 
         if(result.status==="success"){
