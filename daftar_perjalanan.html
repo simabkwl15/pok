@@ -10,7 +10,9 @@ h2 { margin-bottom:10px; }
 
 .filter-bar { margin-bottom:10px; display:flex; align-items:center; gap:10px; }
 .filter-bar label { font-size:14px; }
-.filter-bar input { padding:6px; font-size:13px; flex:1; }
+.filter-bar select, .filter-bar input { padding:6px; font-size:13px; }
+
+.filter-bar input { flex:1; }
 
 .table-container { max-height: calc(100vh - 120px); overflow:auto; background:white; border-radius:6px; box-shadow:0 2px 8px rgba(0,0,0,0.1);}
 table { border-collapse:collapse; width:100%; min-width:900px; font-size:13px; }
@@ -23,6 +25,12 @@ th { background:#8e44ad; color:white; position:sticky; top:0; z-index:1; text-al
 <h2>Daftar Perjalanan Dinas</h2>
 
 <div class="filter-bar">
+    <label>Filter:</label>
+    <select id="cmbFilter">
+        <option value="Semua">Semua</option>
+        <option value="Belum Terbayar">Belum Terbayar</option>
+    </select>
+
     <label>Cari:</label>
     <input type="text" id="txtCari" placeholder="Cari data...">
 </div>
@@ -35,9 +43,10 @@ th { background:#8e44ad; color:white; position:sticky; top:0; z-index:1; text-al
 </div>
 
 <script>
-const URL_GAS = "https://script.google.com/macros/s/AKfycby9JpwyKhJGLnfca9KKxUsvJLShZ7w1p8H4YOxxD4iG6G-SqfD9kqHQ8QrD1HZ0uUQmeQ/exec"; // ganti URL GAS
+const URL_GAS = "https://script.google.com/macros/s/AKfycby9JpwyKhJGLnfca9KKxUsvJLShZ7w1p8H4YOxxD4iG6G-SqfD9kqHQ8QrD1HZ0uUQmeQ/exec"; 
 const tblData = document.getElementById("tblData");
 const txtCari = document.getElementById("txtCari");
+const cmbFilter = document.getElementById("cmbFilter");
 let data = [];
 
 function loadData() {
@@ -70,12 +79,21 @@ function renderTable() {
     thead.appendChild(trh);
 
     const keyword = txtCari.value.toLowerCase();
+    const filterVal = cmbFilter.value;
 
     // data = mulai index 1
     for(let i=1; i<data.length; i++){
         const row = data[i];
         const rowText = row.join(" ").toLowerCase();
+
+        // filter cari
         if(keyword && !rowText.includes(keyword)) continue;
+
+        // filter combobox (misal kolom status ada di index terakhir, bisa sesuaikan)
+        if(filterVal !== "Semua") {
+            const status = row[row.length - 1]; // misal kolom terakhir adalah status
+            if(status !== filterVal) continue;
+        }
 
         const tr = document.createElement("tr");
         row.forEach(c=>{
@@ -88,6 +106,7 @@ function renderTable() {
 }
 
 txtCari.addEventListener("input", renderTable);
+cmbFilter.addEventListener("change", renderTable);
 window.addEventListener("DOMContentLoaded", loadData);
 </script>
 
