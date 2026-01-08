@@ -13,20 +13,27 @@ h2 { margin-bottom:10px; }
 .filter-bar select, .filter-bar input { padding:6px; font-size:13px; }
 .filter-bar input { flex:1; min-width:150px; }
 
-.table-container { max-height: calc(100vh - 160px); overflow:auto; background:white; border-radius:6px; box-shadow:0 2px 8px rgba(0,0,0,0.1);}
+.last-update { font-size:12px; color:#555; margin-left:4px; }
+
+.table-container { max-height: calc(100vh - 180px); overflow:auto; background:white; border-radius:6px; box-shadow:0 2px 8px rgba(0,0,0,0.1);}
 table { border-collapse:collapse; width:100%; min-width:900px; font-size:13px; table-layout:fixed; }
 th, td { border:1px solid #ddd; padding:8px; word-wrap:break-word; }
 th { background:#8e44ad; color:white; position:sticky; top:0; z-index:1; text-align:left; white-space:normal; font-size:12px; }
 
+/* Kolom khusus */
+td.col-nowrap { white-space: nowrap; }        /* kolom 0 & 1 */
+td.col-small { font-size: 9px; }             /* kolom 9 & 10 */
+td.col-right { text-align:right; }           /* kolom jumlah */
+
+// Warna dusty
+.status-dusty-pink { background:#D8A7B1; }   /* Rekam Data */
+.status-dusty-gray { background:#B0B0B0; }   /* Terlaksana */
+.status-dusty-yellow { background:#F0E68C; } /* LPT */
+.status-dusty-green { background:#A3D9A5; }  /* Terbayar */
+.status-dusty-blue { background:#A0C4FF; }   /* Selesai */
+
 .btn-back { padding:6px 12px; background:green; color:white; border:none; border-radius:4px; cursor:pointer; font-size:14px; }
 .btn-back:hover { opacity:0.85; }
-
-/* Warna dusty */
-.status-dusty-pink { background:#FAEBD7; }   /* Rekam Data */
-.status-dusty-gray { background:#F5F5DC; }   /* Terlaksana */
-.status-dusty-yellow { background:#F0FFFF; } /* LPT */
-.status-dusty-green { background:#E6E6FA; }  /* Terbayar */
-.status-dusty-blue { background:#ADD8E6; }   /* Selesai */
 </style>
 </head>
 <body>
@@ -46,6 +53,8 @@ th { background:#8e44ad; color:white; position:sticky; top:0; z-index:1; text-al
     <button class="btn-back" onclick="window.location.href='data_pok.html'">Kembali</button>
 </div>
 
+<div class="last-update">Last Update: <span id="lblLastUpdate">-</span></div>
+
 <div class="table-container">
     <table id="tblData">
         <thead></thead>
@@ -58,6 +67,7 @@ const URL_GAS = "https://script.google.com/macros/s/AKfycbyCoVfbvOtnM08_VLs3k20_
 const tblData = document.getElementById("tblData");
 const txtCari = document.getElementById("txtCari");
 const cmbFilter = document.getElementById("cmbFilter");
+const lblLastUpdate = document.getElementById("lblLastUpdate");
 let data = [];
 
 // Format tanggal ke yyyy-MM-dd
@@ -111,7 +121,6 @@ function renderTable() {
     const keyword = txtCari.value.toLowerCase();
     const filterVal = cmbFilter.value;
 
-    // Mulai dari index 1
     let rows = data.slice(1);
 
     // Filter Belum Terbayar
@@ -127,7 +136,7 @@ function renderTable() {
         rows = rows.filter(r => r.join(" ").toLowerCase().includes(keyword));
     }
 
-    // Sort berdasarkan Tgl Mulai (index 5), descending
+    // Sort descending berdasarkan Tgl Mulai (index 5)
     rows.sort((a,b)=>{
         const d1 = new Date(a[5]);
         const d2 = new Date(b[5]);
@@ -142,15 +151,20 @@ function renderTable() {
         row.forEach((c, idx)=>{
             const td = document.createElement("td");
 
-            // Selisih LPT & Selisih Bayar => tengah
-            if(idx === 9 || idx === 10){
+            // Kolom 0 & 1 => nowrap
+            if(idx === 0 || idx === 1){
+                td.classList.add("col-nowrap");
+            }
+            // Selisih LPT & Selisih Bayar => tengah + font kecil
+            else if(idx === 9 || idx === 10){
                 td.textContent = c ?? "";
+                td.classList.add("col-small");
                 td.style.textAlign = "center";
             }
             // Jumlah => kanan + ribuan
             else if(idx === 11){
                 td.textContent = formatRupiah(c);
-                td.style.textAlign = "right";
+                td.classList.add("col-right");
             }
             // Kolom tanggal
             else if([4,5,6,7,8].includes(idx)){
@@ -171,19 +185,26 @@ function renderTable() {
 function loadData() {
     fetch(URL_GAS + "?t=" + Date.now())
         .then(res => res.json())
-        .then(json => { data=json; renderTable(); })
+        .then(json => {
+            data=json;
+            renderTable();
+            // Update Last Update label
+            const now = new Date();
+            const hh = String(now.getHours()).padStart(2,'0');
+            const mm = String(now.getMinutes()).padStart(2,'0');
+            const ss = String(now.getSeconds()).padStart(2,'0');
+            lblLastUpdate.textContent = `${hh}:${mm}:${ss}`;
+        })
         .catch(err => console.error(err));
 }
 
 txtCari.addEventListener("input", renderTable);
 cmbFilter.addEventListener("change", renderTable);
 
-// Load awal
+// Load awal + auto reload tiap 1 menit
 window.addEventListener("DOMContentLoaded", () => {
     loadData();
-
-    // Auto reload tiap 1 menit
-    setInterval(loadData, 60000); // 60.000 ms = 1 menit
+    setInterval(loadData, 60000);
 });
 </script>
 
