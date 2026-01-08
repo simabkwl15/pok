@@ -1,85 +1,29 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-<meta charset="UTF-8">
-<title>POK</title>
-
-<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-
-<style>
-body {
-    font-family: Arial;
-    margin: 20px;
-}
-
-select {
-    padding: 6px;
-    margin-bottom: 15px;
-}
-
-table {
-    border-collapse: collapse;
-    width: 100%;
-    font-size: 13px;
-}
-
-th, td {
-    border: 1px solid #ccc;
-    padding: 6px;
-}
-
-th {
-    background: #f2f2f2;
-}
-
-.rm {
-    color: blue;
-    font-weight: bold;
-}
-
-.pnbp {
-    color: orange;
-    font-weight: bold;
-}
-</style>
-</head>
-
-<body>
-
-<h2>POK</h2>
-
-<select id="cmbFilter">
-    <option value="Semua">Semua</option>
-    <option>Umum</option>
-    <option>PKN</option>
-    <option>PN</option>
-    <option>Penilaian</option>
-    <option>Lelang</option>
-    <option>HI</option>
-    <option>KI</option>
-</select>
-
-<table id="tblData">
-    <thead></thead>
-    <tbody></tbody>
-</table>
-
 <script>
 const CSV_URL =
 "https://docs.google.com/spreadsheets/d/e/2PACX-1vSi8QhfAg_PpNxxZ8XYaSF3g5ZB2rYJ4IwG8Zq3vHEGWvOLgsc21aO5V-18qOudsfJ-kkAxF_SyRbok/pub?output=csv";
 
 let data = [];
+let colIndex = {};
 
 Papa.parse(CSV_URL, {
     download: true,
     skipEmptyLines: true,
     complete: function(res) {
         data = res.data;
+        mapColumnIndex();
         render();
     }
 });
 
 cmbFilter.addEventListener("change", render);
+
+function mapColumnIndex() {
+    colIndex = {};
+    data[0].forEach((h, i) => {
+        const key = h.toString().trim().toUpperCase();
+        colIndex[key] = i;
+    });
+}
 
 function render() {
     const thead = tblData.tHead || tblData.createTHead();
@@ -102,17 +46,24 @@ function render() {
     const seenKode = new Set();
     const filter = cmbFilter.value;
 
-    // DATA
+    const idxKode = colIndex["KODE"];
+    const idxSD   = colIndex["SD"];
+    const idxFilter = colIndex["SEKSI"] ?? colIndex["I"];
+
+    const idxVol = colIndex["VOL"];
+    const idxPagu = colIndex["PAGU"];
+    const idxBlokir = colIndex["BLOKIR"];
+    const idxRealisasi = colIndex["REALISASI"];
+    const idxSisa = colIndex["SISA"];
+
     for (let i = 1; i < data.length; i++) {
         const r = data[i];
-
-        const kode = r[0]?.trim(); // KODE
-        const sd   = r[1]?.trim(); // SD
-        const seksi= r[8]?.trim(); // FILTER
+        const kode = r[idxKode]?.trim();
+        const sd   = r[idxSD]?.trim();
 
         if (!kode) continue;
 
-        if (filter !== "Semua" && seksi !== filter) continue;
+        if (filter !== "Semua" && r[idxFilter]?.trim() !== filter) continue;
 
         if (filter === "Semua") {
             if (seenKode.has(kode)) continue;
@@ -120,29 +71,18 @@ function render() {
         }
 
         const tr = document.createElement("tr");
-
         const sdVal = (sd || "").toUpperCase();
 
-        // WARNA + TEBAL
-        if (kode.length > 27 && sdVal === "RM") {
-            tr.className = "rm";
-        } 
-        else if (kode.length > 27 && sdVal === "PNBP") {
-            tr.className = "pnbp";
-        }
+        if (kode.length > 27 && sdVal === "RM") tr.className = "rm";
+        else if (kode.length > 27 && sdVal === "PNBP") tr.className = "pnbp";
 
-        // ISI CELL + ALIGNMENT
         r.forEach((c, idx) => {
             const td = document.createElement("td");
             td.textContent = c ?? "";
 
-            // ALIGNMENT KHUSUS
-            if (idx === 2) {                 // VOL
-                td.style.textAlign = "center";
-            }
-            else if ([3,4,5,6].includes(idx)) { // PAGU, BLOKIR, REALISASI, SISA
+            if (idx === idxVol) td.style.textAlign = "center";
+            if ([idxPagu, idxBlokir, idxRealisasi, idxSisa].includes(idx))
                 td.style.textAlign = "right";
-            }
 
             tr.appendChild(td);
         });
@@ -151,6 +91,3 @@ function render() {
     }
 }
 </script>
-
-</body>
-</html>
