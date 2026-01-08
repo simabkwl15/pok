@@ -95,6 +95,7 @@ th {
         <input type="text" id="txtCari" placeholder="Cari Kode / Uraian...">
     </div>
     <button onclick="downloadPDF()">Download PDF</button>
+    <button onclick="logOut()">Log Out</button>
 </div>
 
 <div id="lastUpdateContainer">Last update: <span id="lastUpdate">-</span></div>
@@ -223,6 +224,13 @@ window.addEventListener("DOMContentLoaded", () => {
             .save();
     }
 
+    function logOut() {
+        html2pdf()
+            .set({margin:5, filename:'POK.pdf', html2canvas:{scale:2}, jsPDF:{orientation:'landscape'}})
+            .from(document.getElementById("areaPDF"))
+            .save();
+    }
+
     window.downloadPDF = downloadPDF;
 
     loadData();
@@ -231,5 +239,6 @@ window.addEventListener("DOMContentLoaded", () => {
 </script>
 </body>
 </html>
+
 
 
