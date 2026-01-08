@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+f<!DOCTYPE html>
 <html lang="id">
 <head>
 <meta charset="UTF-8">
@@ -235,27 +235,32 @@ function renderTable(){
 
         // === AKSI ===
         const tdAksi = document.createElement("td");
-        if(kode.length>27){
+        if(kode.length > 27){
             const div = document.createElement("div");
             div.className="aksi-btn";
-
+        
             const btnR = document.createElement("button");
-            btnR.textContent="Rekam";
-            btnR.className="btn-rekam";
-            btnR.onclick = () => rekamKegiatan(
-                kode,
-                r[idxUraian] ?? ""
-            );
-
-
+            btnR.textContent = "Rekam";
+            btnR.className = "btn-rekam";
+            btnR.onclick = () => {
+                sessionStorage.setItem("mak", r[idxKode]);
+                sessionStorage.setItem("uraian", r[idxUraian]);
+                sessionStorage.setItem("pagu", r[idxPagu]);
+                sessionStorage.setItem("blokir", r[idxBlokir]);
+                sessionStorage.setItem("realisasi", r[idxRealisasi]);
+                sessionStorage.setItem("sisa", r[idxSisa]);
+                window.location.href = "/pok/rekam_kegiatan.html";
+            };
+        
             const btnD = document.createElement("button");
             btnD.textContent="Detil";
             btnD.className="btn-detil";
             btnD.onclick=()=>alert("Detil:\n"+kode);
-
-            div.append(btnR,btnD);
+        
+            div.append(btnR, btnD);
             tdAksi.appendChild(div);
         }
+
         tr.appendChild(tdAksi);
         tbody.appendChild(tr);
     }
@@ -298,6 +303,7 @@ setInterval(loadData,60000);
 </script>
 </body>
 </html>
+
 
 
 
