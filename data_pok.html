@@ -166,6 +166,21 @@ window.downloadPDF = function(){
     }).from(document.getElementById("areaPDF")).save();
 }
 
+function profil() {
+    // Ambil nama pegawai dari sessionStorage
+    const nama = sessionStorage.getItem("nama"); // misal key "nama" disimpan saat login
+    if(!nama){
+        alert("Data pegawai tidak tersedia!");
+        return;
+    }
+
+    // Simpan nama ke sessionStorage untuk page profil.html
+    sessionStorage.setItem("pegawai_nama", nama);
+
+    // Arahkan ke profil.html
+    window.location.href = "profil.html";
+}
+    
 window.logout = function(){
     if(confirm("Yakin ingin logout?")){
         sessionStorage.clear();
@@ -329,6 +344,7 @@ window.addEventListener("DOMContentLoaded", () => {
 </script>
 </body>
 </html>
+
 
 
 
