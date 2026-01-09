@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Profil Pegawai</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<style>
+body {
+    font-family: 'Inter', Arial, sans-serif;
+    margin:0;
+    padding:20px;
+    background:#eef2f7;
+    color:#333;
+}
+.container {
+    max-width: 900px;
+    margin: 20px auto;
+    background:white;
+    padding:20px;
+    border-radius:12px;
+    box-shadow:0 6px 20px rgba(0,0,0,0.1);
+}
+h2.header-title {
+    margin-bottom:20px;
+    color:#8e44ad;
+}
+.header {
+    display:flex;
+    gap:20px;
+    align-items:center;
+    flex-wrap:wrap;
+}
+.profile-pic {
+    width:150px;
+    height:150px;
+    border-radius:50%;
+    object-fit:cover;
+    border:3px solid #8e44ad;
+}
+.info {
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+}
+.info div span.label {
+    font-weight:600;
+    width:100px;
+    display:inline-block;
+}
+.info div span.value {
+    color:#555;
+}
+.btn-small {
+    padding:6px 12px;
+    font-size:12px;
+    border:none;
+    border-radius:6px;
+    cursor:pointer;
+}
+.btn-reset {
+    background:#e67e22;
+    color:white;
+}
+.btn-back {
+    background:#8e44ad;
+    color:white;
+    margin-left:10px;
+}
+
+.table-container {
+    margin-top:20px;
+    max-height:400px;
+    overflow:auto;
+    border-radius:6px;
+    box-shadow:0 2px 8px rgba(0,0,0,0.1);
+}
+table {
+    border-collapse:collapse;
+    width:100%;
+    font-size:13px;
+    min-width:600px;
+}
+th, td {
+    border:1px solid #ddd;
+    padding:8px;
+}
+th {
+    background:#8e44ad;
+    color:white;
+    position:sticky;
+    top:0;
+    text-align:left;
+}
+td.right { text-align:right; }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h2 class="header-title">Data Pegawai</h2>
+
+    <div class="header">
+        <img id="foto" class="profile-pic" src="https://via.placeholder.com/150" alt="Foto Pegawai">
+        <div class="info">
+            <div><span class="label">Nama:</span> <span id="nama" class="value">John Doe</span></div>
+            <div><span class="label">NIP:</span> <span id="nip" class="value">123456789</span></div>
+            <div><span class="label">Jabatan:</span> <span id="jabatan" class="value">Staf</span></div>
+            <div><span class="label">Pangkat:</span> <span id="pangkat" class="value">Penata Muda</span></div>
+
+            <div style="margin-top:10px;">
+                <button class="btn-small btn-reset" onclick="resetPassword()">Reset Password</button>
+                <button class="btn-small btn-back" onclick="window.location.href='data_pok.html'">Kembali</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-container">
+        <table id="tblST">
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Tanggal</th>
+                    <th>Kegiatan</th>
+                    <th>Jumlah</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+// Ambil data pegawai dari sessionStorage
+const dataPegawai = {
+    nama: sessionStorage.getItem("pegawai_nama") || "John Doe",
+    nip: sessionStorage.getItem("pegawai_nip") || "123456789",
+    jabatan: sessionStorage.getItem("pegawai_jabatan") || "Staf",
+    pangkat: sessionStorage.getItem("pegawai_pangkat") || "Penata Muda",
+    foto: sessionStorage.getItem("pegawai_foto") || "https://via.placeholder.com/150"
+};
+
+document.getElementById("nama").textContent = dataPegawai.nama;
+document.getElementById("nip").textContent = dataPegawai.nip;
+document.getElementById("jabatan").textContent = dataPegawai.jabatan;
+document.getElementById("pangkat").textContent = dataPegawai.pangkat;
+document.getElementById("foto").src = dataPegawai.foto;
+
+// Contoh data ST
+const dataST = [
+    ["1","2026-01-01","Kegiatan A", 500000],
+    ["2","2026-01-05","Kegiatan B", 1200000],
+    ["3","2026-01-08","Kegiatan C", 750000]
+];
+
+function renderST(){
+    const tbody = document.querySelector("#tblST tbody");
+    tbody.innerHTML = "";
+    dataST.forEach(r=>{
+        const tr = document.createElement("tr");
+        r.forEach((c,idx)=>{
+            const td = document.createElement("td");
+            if(idx===3) td.className="right"; // jumlah
+            td.textContent = idx===3 ? Number(c).toLocaleString('id-ID') : c;
+            tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
+    });
+}
+renderST();
+
+function resetPassword(){
+    if(confirm("Reset password pegawai ini?")){
+        alert("Password berhasil direset (simulasi).");
+        // Implementasi reset sebenarnya via backend
+    }
+}
+</script>
+
+</body>
+</html>
