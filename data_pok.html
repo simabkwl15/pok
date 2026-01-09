@@ -304,16 +304,17 @@ window.addEventListener("DOMContentLoaded", () => {
                 };
 
                 const btnD = document.createElement("button");
-                btnD.textContent="Detil";
-                btnD.className="btn-detil";
-                btnD.onclick = () => {
-                    sessionStorage.setItem("selectedKode", kode);
-                    sessionStorage.setItem("selectedUraian", r[idxUraian]);
-                    window.location.href = "/pok/daftar_perjalanan.html"; // ganti jika halaman tujuan beda
-                };
+                    btnD.textContent="Detil";
+                    btnD.className="btn-detil";
+                    btnD.onclick = () => {
+                        sessionStorage.setItem("selectedKode", kode);          // kirim kode
+                        sessionStorage.setItem("selectedUraian", r[idxUraian]); // opsional, bisa ditampilkan
+                        window.location.href = "/pok/daftar_kegiatan.html";     // buka halaman daftar_kegiatan
+                    };
+                    
+                    div.append(btnR, btnD);
+                    tdAksi.appendChild(div);
 
-                div.append(btnR, btnD);
-                tdAksi.appendChild(div);
             }
 
             tr.appendChild(tdAksi);
@@ -327,3 +328,4 @@ window.addEventListener("DOMContentLoaded", () => {
 </script>
 </body>
 </html>
+
