@@ -54,7 +54,6 @@ h2.header-title {
     color:white;
     margin-left:10px;
 }
-
 .table-container {
     margin-top:10px;
     max-height:400px;
@@ -92,56 +91,54 @@ td.right { text-align:right; }
     min-width:200px;
 }
 
-/* --- POPUP --- */
-#popupReset {
+/* --- POPUP RESET PASSWORD --- */
+.popup {
     display:none;
-    position:fixed;
-    top:0; left:0;
-    width:100%; height:100%;
-    background:rgba(0,0,0,0.5);
+    position: fixed;
+    top:0; left:0; right:0; bottom:0;
+    background: rgba(0,0,0,0.5);
     justify-content:center;
     align-items:center;
     z-index:1000;
 }
-#popupReset .popup-content {
+.popup-content {
     background:white;
     padding:20px;
-    border-radius:8px;
-    width:350px;
-    box-shadow:0 4px 12px rgba(0,0,0,0.3);
+    border-radius:12px;
+    max-width:400px;
+    width:100%;
+    box-shadow:0 4px 20px rgba(0,0,0,0.3);
     display:flex;
     flex-direction:column;
     gap:10px;
 }
-#popupReset label {
+.popup-content label {
     font-weight:600;
 }
-#popupReset input[type="password"] {
+.popup-content input[type=password] {
     padding:6px;
     width:100%;
-    border:1px solid #ccc;
     border-radius:6px;
+    border:1px solid #ccc;
 }
-#popupReset button {
+.popup-content button {
     padding:6px 12px;
     border:none;
     border-radius:6px;
     cursor:pointer;
 }
-#popupReset .btn-submit { background:#8e44ad; color:white; }
-#popupReset .btn-cancel { background:#e67e22; color:white; }
-#popupReset .btn-show {
-    background:#ccc;
-    color:#333;
-    margin-left:5px;
-    font-size:12px;
+.popup-content .btn-save {
+    background:#27ae60;
+    color:white;
 }
-.password-row {
-    display:flex;
-    align-items:center;
+.popup-content .btn-cancel {
+    background:#c0392b;
+    color:white;
 }
-.password-row input {
-    flex:1;
+.popup-content .btn-show {
+    background:#3498db;
+    color:white;
+    margin-top:4px;
 }
 </style>
 </head>
@@ -157,7 +154,7 @@ td.right { text-align:right; }
         <div><span class="label">Pangkat:</span> <span id="pangkat" class="value">-</span></div>
 
         <div style="margin-top:10px;">
-            <button class="btn-small btn-reset" onclick="showPopup()">Reset Password</button>
+            <button class="btn-small btn-reset" onclick="openPopup()">Reset Password</button>
             <button class="btn-small btn-back" onclick="window.location.href='data_pok.html'">Kembali</button>
         </div>
     </div>
@@ -176,30 +173,20 @@ td.right { text-align:right; }
 </div>
 
 <!-- POPUP RESET PASSWORD -->
-<div id="popupReset">
+<div class="popup" id="popupReset">
     <div class="popup-content">
-        <h3>Reset Password</h3>
+        <label>Password Lama</label>
+        <input type="password" id="pwdOld">
 
-        <div class="password-row">
-            <label>Password Lama:</label>
-            <input type="password" id="oldPass">
-            <button type="button" class="btn-show" onclick="togglePassword('oldPass')">👁️</button>
-        </div>
+        <label>Password Baru</label>
+        <input type="password" id="pwdNew">
 
-        <div class="password-row">
-            <label>Password Baru:</label>
-            <input type="password" id="newPass">
-            <button type="button" class="btn-show" onclick="togglePassword('newPass')">👁️</button>
-        </div>
+        <label>Konfirmasi Password Baru</label>
+        <input type="password" id="pwdConfirm">
 
-        <div class="password-row">
-            <label>Konfirmasi Password:</label>
-            <input type="password" id="confPass">
-            <button type="button" class="btn-show" onclick="togglePassword('confPass')">👁️</button>
-        </div>
-
-        <div style="margin-top:10px; display:flex; justify-content:flex-end; gap:10px;">
-            <button class="btn-submit" onclick="savePassword()">Simpan</button>
+        <button type="button" class="btn-show" onclick="toggleShow()">Lihat Password</button>
+        <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:10px;">
+            <button class="btn-save" onclick="savePassword()">Simpan</button>
             <button class="btn-cancel" onclick="closePopup()">Batal</button>
         </div>
     </div>
@@ -213,49 +200,119 @@ if(!namaPegawai){
     window.location.href = "data_pok.html";
 }
 
-// --- KONFIG GAS RESET PASSWORD (BERBEDA) ---
-const URL_GAS_RESET = "https://script.google.com/macros/s/AKfycbxZ3287zMLWvvlxzUu0b-7JG3hs69p-uvV6BbqtI-pzHCQMAERQigEY6oLwiew9EGBvnw/exec";
+// --- GAS LOAD DATA ---
+const URL_GAS = "https://script.google.com/macros/s/AKfycbxDEtsDD9z_ANY7ILixej0NzNP3OuU2pzLXf_viAHWNjIQPTGjB0n6LztzrjrsxzQjcMw/exec";
+let stData = [];
 
-// --- POPUP ---
-function showPopup(){ document.getElementById("popupReset").style.display="flex"; }
-function closePopup(){ document.getElementById("popupReset").style.display="none"; }
-
-function togglePassword(id){
-    const input = document.getElementById(id);
-    input.type = input.type === "password" ? "text" : "password";
+// --- FORMAT TANGGAL ---
+function formatDate(str){
+    if(!str) return "";
+    const d = new Date(str);
+    if(isNaN(d)) return str;
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth()+1).padStart(2,'0');
+    const dd = String(d.getDate()).padStart(2,'0');
+    return `${yyyy}-${mm}-${dd}`;
 }
 
-// --- SIMPAN PASSWORD --- 
+// --- RENDER TABEL ST ---
+function renderST(filter=""){
+    const tbody = document.querySelector("#tblST tbody");
+    tbody.innerHTML = "";
+
+    stData
+        .filter(r => r.join(" ").toLowerCase().includes(filter.toLowerCase()))
+        .sort((a,b)=> new Date(b[4]) - new Date(a[4])) // descending kolom 5
+        .forEach((r,i)=>{
+            const tr = document.createElement("tr");
+            const tdNo = document.createElement("td");
+            tdNo.textContent = i+1;
+            tr.appendChild(tdNo);
+
+            r.forEach((c,idx)=>{
+                const td = document.createElement("td");
+                if(idx===4){ td.textContent = formatDate(c); }
+                else if(idx===5){ td.className="right"; td.textContent = Number(c).toLocaleString('id-ID'); }
+                else if(idx===6){ td.textContent = c ?? ""; }
+                else { td.textContent = c ?? ""; }
+                tr.appendChild(td);
+            });
+
+            tbody.appendChild(tr);
+        });
+}
+
+// --- FETCH DATA ---
+fetch(URL_GAS + "?nama=" + encodeURIComponent(namaPegawai))
+.then(res => res.json())
+.then(res=>{
+    if(res.error){ alert(res.error); return; }
+
+    if(res.pegawai && res.pegawai.length>0){
+        const p = res.pegawai[0];
+        document.getElementById("nama").textContent = p.nama;
+        document.getElementById("nip").textContent = p.nip;
+        document.getElementById("jabatan").textContent = p.jabatan;
+        document.getElementById("pangkat").textContent = p.pangkat;
+    }
+
+    // Header ST
+    const theadTr = document.getElementById("theadST");
+    theadTr.innerHTML="<th>No</th>";
+    if(res.headerST && res.headerST.length>0){
+        const idxs=[1,2,3,4,6,12,15];
+        idxs.forEach(i=>{
+            const th = document.createElement("th");
+            th.textContent = res.headerST[i]??"";
+            theadTr.appendChild(th);
+        });
+    }
+
+    stData = res.st || [];
+    renderST();
+})
+.catch(err=>{ console.error(err); alert("Gagal mengambil data pegawai/ST."); });
+
+// --- FILTER ---
+document.getElementById("txtCariST").addEventListener("input", e=> renderST(e.target.value));
+
+// --- POPUP ---
+const popup = document.getElementById("popupReset");
+function openPopup(){ popup.style.display="flex"; }
+function closePopup(){ popup.style.display="none"; }
+
+// --- LIHAT PASSWORD ---
+let showPwd=false;
+function toggleShow(){
+    showPwd = !showPwd;
+    ['pwdOld','pwdNew','pwdConfirm'].forEach(id=>{
+        document.getElementById(id).type = showPwd?"text":"password";
+    });
+}
+
+// --- GAS RESET PASSWORD ---
+const URL_GAS_RESET = "https://script.google.com/macros/s/AKfycbxZ3287zMLWvvlxzUu0b-7JG3hs69p-uvV6BbqtI-pzHCQMAERQigEY6oLwiew9EGBvnw/exec";
 function savePassword(){
-    const oldPass = document.getElementById("oldPass").value;
-    const newPass = document.getElementById("newPass").value;
-    const confPass = document.getElementById("confPass").value;
+    const oldPwd = document.getElementById("pwdOld").value;
+    const newPwd = document.getElementById("pwdNew").value;
+    const confirmPwd = document.getElementById("pwdConfirm").value;
 
-    if(!oldPass || !newPass || !confPass){
-        alert("Semua kolom harus diisi");
-        return;
-    }
-    if(newPass !== confPass){
-        alert("Password baru dan konfirmasi tidak sama");
-        return;
-    }
+    if(!oldPwd || !newPwd || !confirmPwd){ alert("Lengkapi semua kolom!"); return; }
+    if(newPwd !== confirmPwd){ alert("Password baru dan konfirmasi tidak sama!"); return; }
 
-    fetch(`${URL_GAS_RESET}?action=resetPassword&nama=${encodeURIComponent(namaPegawai)}&current=${encodeURIComponent(oldPass)}&new=${encodeURIComponent(newPass)}`)
-    .then(res => res.json())
-    .then(res => {
+    fetch(`${URL_GAS_RESET}?nip=${encodeURIComponent(namaPegawai)}&oldPwd=${encodeURIComponent(oldPwd)}&newPwd=${encodeURIComponent(newPwd)}`)
+    .then(res=>res.json())
+    .then(res=>{
         if(res.success){
-            alert("Password berhasil diubah");
+            alert("Password berhasil diubah.");
             closePopup();
-            document.getElementById("oldPass").value="";
-            document.getElementById("newPass").value="";
-            document.getElementById("confPass").value="";
         } else {
-            alert(res.error || "Gagal mereset password");
+            alert(res.error ?? "Gagal mereset password.");
         }
     })
-    .catch(err => {
+    .catch(err=>{
         console.error(err);
-        alert("Gagal menghubungi server reset password");
+        alert("Gagal menghubungi server.");
     });
 }
 </script>
