@@ -54,17 +54,15 @@ th { background:#8e44ad; color:white; position:sticky; top:0; z-index:1; text-al
 </div>
 
 <script>
-// Ambil kode yang dikirim dari data_pok.html
+// Ambil kode yang dikirim dari tombol Detil
 const kodeFilter = sessionStorage.getItem("selectedKode") || "";
 
-// Cek apakah halaman diakses via tombol
+// Cek akses halaman
 if(!kodeFilter){
     alert("Anda tidak bisa membuka halaman ini langsung!");
-    window.location.href = "data_pok.html"; // redirect ke page asal
-} else {
-    // hapus flag supaya tidak bisa reload langsung
-    sessionStorage.removeItem("selectedKode");
+    window.location.href = "data_pok.html";
 }
+// jangan hapus selectedKode di sini, biarkan dipakai untuk fetch
 
 const URL_GAS = "https://script.google.com/macros/s/AKfycbw-eg3L56fuD5NGj8VKE8jds8ZwUwRrMKs0cYulMXGHP-E8bb97SQWa8jYgpsRSG82XnQ/exec";
 const tblData = document.getElementById("tblData");
@@ -81,13 +79,6 @@ function formatDate(str) {
     const mm = String(d.getMonth()+1).padStart(2,'0');
     const dd = String(d.getDate()).padStart(2,'0');
     return `${yyyy}-${mm}-${dd}`;
-}
-
-// Format angka ribuan
-function formatRupiah(num) {
-    if(num == null || num === "") return "";
-    if(isNaN(num)) return num;
-    return Number(num).toLocaleString('id-ID', {maximumFractionDigits:0});
 }
 
 // Warna baris berdasarkan status (kolom terakhir = P)
@@ -126,7 +117,7 @@ function renderTable() {
     // Mulai dari index 1
     let rows = data.slice(1);
 
-    // Filter Belum Terbayar (status ada di kolom terakhir = P)
+    // Filter Belum Terbayar
     if(filterVal === "Belum Terbayar"){
         rows = rows.filter(r => {
             const status = r[r.length-1];
@@ -172,7 +163,12 @@ function renderTable() {
 function loadData() {
     fetch(URL_GAS + "?kode=" + encodeURIComponent(kodeFilter) + "&t=" + Date.now())
         .then(res => res.json())
-        .then(json => { data=json; renderTable(); })
+        .then(json => { 
+            data = json; 
+            renderTable(); 
+            // Bisa hapus selectedKode setelah render jika ingin mencegah reload men-trigger alert
+            // sessionStorage.removeItem("selectedKode");
+        })
         .catch(err => console.error(err));
 }
 
@@ -184,7 +180,7 @@ window.addEventListener("DOMContentLoaded", () => {
     loadData();
 
     // Auto reload tiap 1 menit
-    setInterval(loadData, 60000); // 60.000 ms = 1 menit
+    setInterval(loadData, 60000);
 });
 </script>
 
