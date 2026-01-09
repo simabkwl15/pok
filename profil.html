@@ -5,33 +5,92 @@
 <title>Profil Pegawai</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 <style>
-body { font-family:'Inter',Arial,sans-serif; margin:0; padding:20px; background:#eef2f7; color:#333; }
-.container { max-width:1200px; margin:20px auto; background:white; padding:20px; border-radius:12px; box-shadow:0 6px 20px rgba(0,0,0,0.1); }
-h2.header-title { margin-bottom:10px; color:#8e44ad; }
-.info { display:flex; flex-direction:column; gap:8px; margin-bottom:10px; }
-.info div span.label { font-weight:600; width:100px; display:inline-block; }
-.info div span.value { color:#555; }
-.btn-small { padding:6px 12px; font-size:12px; border:none; border-radius:6px; cursor:pointer; }
-.btn-reset { background:#e67e22; color:white; }
-.btn-back { background:#8e44ad; color:white; margin-left:10px; }
+body {
+    font-family: 'Inter', Arial, sans-serif;
+    margin:0;
+    padding:20px;
+    background:#eef2f7;
+    color:#333;
+}
+.container {
+    max-width: 1200px;
+    margin: 20px auto;
+    background:white;
+    padding:20px;
+    border-radius:12px;
+    box-shadow:0 6px 20px rgba(0,0,0,0.1);
+}
+h2.header-title {
+    margin-bottom:10px;
+    color:#8e44ad;
+}
+.info {
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    margin-bottom:10px;
+}
+.info div span.label {
+    font-weight:600;
+    width:100px;
+    display:inline-block;
+}
+.info div span.value {
+    color:#555;
+}
+.btn-small {
+    padding:6px 12px;
+    font-size:12px;
+    border:none;
+    border-radius:6px;
+    cursor:pointer;
+}
+.btn-reset {
+    background:#e67e22;
+    color:white;
+}
+.btn-back {
+    background:#8e44ad;
+    color:white;
+    margin-left:10px;
+}
 
-.table-container { margin-top:10px; max-height:400px; overflow:auto; border-radius:6px; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
-table { border-collapse:collapse; width:100%; font-size:13px; min-width:800px; }
-th, td { border:1px solid #ddd; padding:8px; }
-th { background:#8e44ad; color:white; position:sticky; top:0; text-align:left; }
+.table-container {
+    margin-top:10px;
+    max-height:400px;
+    overflow:auto;
+    border-radius:6px;
+    box-shadow:0 2px 8px rgba(0,0,0,0.1);
+}
+table {
+    border-collapse:collapse;
+    width:100%;
+    font-size:13px;
+    min-width:800px;
+}
+th, td {
+    border:1px solid #ddd;
+    padding:8px;
+}
+th {
+    background:#8e44ad;
+    color:white;
+    position:sticky;
+    top:0;
+    text-align:left;
+}
 td.right { text-align:right; }
-.filter-bar { margin:10px 0; display:flex; gap:10px; align-items:center; }
-.filter-bar input { padding:5px; flex:1; min-width:200px; }
-
-/* POPUP RESET PASSWORD */
-.modal { display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; overflow:auto; background:rgba(0,0,0,0.5); }
-.modal-content { background:white; margin:80px auto; padding:20px; border-radius:10px; width:400px; position:relative; }
-.modal-content h3 { margin-top:0; color:#8e44ad; }
-.modal-content label { display:block; margin-top:10px; font-weight:600; }
-.modal-content input { width:100%; padding:6px; margin-top:4px; border:1px solid #ccc; border-radius:4px; font-size:14px; }
-.modal-content .btn-small { margin-top:15px; }
-.modal-content .btn-close { position:absolute; top:10px; right:10px; background:#ccc; color:#333; }
-.toggle-pass { margin-top:5px; font-size:12px; cursor:pointer; color:#8e44ad; background:none; border:none; }
+.filter-bar {
+    margin:10px 0;
+    display:flex;
+    gap:10px;
+    align-items:center;
+}
+.filter-bar input {
+    padding:5px;
+    flex:1;
+    min-width:200px;
+}
 </style>
 </head>
 <body>
@@ -46,7 +105,7 @@ td.right { text-align:right; }
         <div><span class="label">Pangkat:</span> <span id="pangkat" class="value">-</span></div>
 
         <div style="margin-top:10px;">
-            <button class="btn-small btn-reset" onclick="openModal()">Reset Password</button>
+            <button class="btn-small btn-reset" onclick="resetPassword()">Reset Password</button>
             <button class="btn-small btn-back" onclick="window.location.href='data_pok.html'">Kembali</button>
         </div>
     </div>
@@ -64,76 +123,119 @@ td.right { text-align:right; }
     </div>
 </div>
 
-<!-- MODAL RESET PASSWORD -->
-<div id="modalReset" class="modal">
-    <div class="modal-content">
-        <button class="btn-close" onclick="closeModal()">X</button>
-        <h3>Reset Password</h3>
-
-        <label for="currentPass">Password Sekarang</label>
-        <input type="password" id="currentPass">
-        <button class="toggle-pass" onclick="togglePassword('currentPass', this)">Lihat/Hide</button>
-
-        <label for="newPass">Password Baru</label>
-        <input type="password" id="newPass">
-        <button class="toggle-pass" onclick="togglePassword('newPass', this)">Lihat/Hide</button>
-
-        <label for="confirmPass">Konfirmasi Password</label>
-        <input type="password" id="confirmPass">
-        <button class="toggle-pass" onclick="togglePassword('confirmPass', this)">Lihat/Hide</button>
-
-        <button class="btn-small btn-reset" onclick="savePassword()">Simpan</button>
-    </div>
-</div>
-
 <script>
 // --- CEGAH AKSES LANGSUNG ---
-if(!sessionStorage.getItem("pegawai_nama")){
+const namaPegawai = sessionStorage.getItem("pegawai_nama");
+if(!namaPegawai){
     alert("Halaman hanya bisa diakses dari tombol Profil.");
     window.location.href = "data_pok.html";
 }
 
-// --- GAS URL ---
+// --- KONFIG GAS ---
 const URL_GAS = "https://script.google.com/macros/s/AKfycbxDEtsDD9z_ANY7ILixej0NzNP3OuU2pzLXf_viAHWNjIQPTGjB0n6LztzrjrsxzQjcMw/exec";
 
-let stData = [];
+let stData = []; // simpan data asli untuk filter
 
-// toggle password
-function togglePassword(id, btn){
-    const input = document.getElementById(id);
-    if(input.type==="password"){ input.type="text"; btn.textContent="Hide"; }
-    else{ input.type="password"; btn.textContent="Lihat"; }
+// --- FORMAT TANGGAL ---
+function formatDate(str){
+    if(!str) return "";
+    const d = new Date(str);
+    if(isNaN(d)) return str;
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth()+1).padStart(2,'0');
+    const dd = String(d.getDate()).padStart(2,'0');
+    return `${yyyy}-${mm}-${dd}`;
 }
 
-function openModal(){ document.getElementById("modalReset").style.display="block"; }
-function closeModal(){ document.getElementById("modalReset").style.display="none"; }
+// --- RENDER TABEL ST ---
+function renderST(filter=""){
+    const tbody = document.querySelector("#tblST tbody");
+    tbody.innerHTML = "";
 
-function savePassword(){
-    const current = document.getElementById("currentPass").value;
-    const baru = document.getElementById("newPass").value;
-    const konfirm = document.getElementById("confirmPass").value;
-    const nama = sessionStorage.getItem("pegawai_nama");
+    stData
+        .filter(r => r.join(" ").toLowerCase().includes(filter.toLowerCase()))
+        .sort((a,b)=>{
+            const da = new Date(a[4]);
+            const db = new Date(b[4]);
+            return db - da; // descending
+        })
+        .forEach((r,i)=>{
+            const tr = document.createElement("tr");
 
-    if(!current || !baru || !konfirm){ alert("Semua field harus diisi."); return; }
-    if(baru !== konfirm){ alert("Password baru dan konfirmasi tidak sama."); return; }
+            // Nomor urut
+            const tdNo = document.createElement("td");
+            tdNo.textContent = i+1;
+            tr.appendChild(tdNo);
 
-    fetch(`${URL_GAS}?action=resetPassword&nama=${encodeURIComponent(nama)}&current=${encodeURIComponent(current)}&new=${encodeURIComponent(baru)}`)
-    .then(res=>res.json())
-    .then(data=>{
-        if(data.success){
-            alert("Password berhasil diubah.");
-            closeModal();
-            document.getElementById("currentPass").value="";
-            document.getElementById("newPass").value="";
-            document.getElementById("confirmPass").value="";
-        } else {
-            alert("Gagal mengubah password: "+(data.error||""));
-        }
-    })
-    .catch(err=>{
-        console.error(err);
-        alert("Terjadi kesalahan saat mengubah password.");
-    });
+            r.forEach((c,idx)=>{
+                const td = document.createElement("td");
+                if(idx === 4){ // kolom 5 → tanggal
+                    td.textContent = formatDate(c);
+                } else if(idx === 5){ // kolom 6 → jumlah
+                    td.className="right";
+                    td.textContent = Number(c).toLocaleString('id-ID');
+                } else if(idx === 6){ // kolom 7 → status
+                    td.textContent = c ?? "";
+                } else {
+                    td.textContent = c ?? "";
+                }
+                tr.appendChild(td);
+            });
+
+            tbody.appendChild(tr);
+        });
+}
+
+// --- FETCH DATA ---
+fetch(URL_GAS + "?nama=" + encodeURIComponent(namaPegawai))
+.then(res => res.json())
+.then(res => {
+    if(res.error){
+        alert(res.error);
+        return;
+    }
+
+    // --- Isi Data Pegawai ---
+    if(res.pegawai && res.pegawai.length>0){
+        const p = res.pegawai[0];
+        document.getElementById("nama").textContent = p.nama;
+        document.getElementById("nip").textContent = p.nip;
+        document.getElementById("jabatan").textContent = p.jabatan;
+        document.getElementById("pangkat").textContent = p.pangkat;
+    }
+
+    // --- Isi Header ST dari row 3 ---
+    const theadTr = document.getElementById("theadST");
+    theadTr.innerHTML = "<th>No</th>"; // nomor urut
+    if(res.headerST && res.headerST.length>0){
+        const idxs = [1,2,3,4,6,12,15]; // B,C,D,E,G,M,P
+        idxs.forEach(i => {
+            const th = document.createElement("th");
+            th.textContent = res.headerST[i] ?? "";
+            theadTr.appendChild(th);
+        });
+    }
+
+    // --- Simpan dan render data ST ---
+    stData = res.st || [];
+    renderST();
+})
+.catch(err => {
+    console.error(err);
+    alert("Gagal mengambil data pegawai/ST.");
+});
+
+// --- EVENT CARI ---
+document.getElementById("txtCariST").addEventListener("input", e=>{
+    renderST(e.target.value);
+});
+
+// --- Fungsi Reset Password ---
+function resetPassword(){
+    if(confirm("Reset password pegawai ini?")){
+        alert("Password berhasil direset (simulasi).");
+        // Implementasi reset sebenarnya via backend
+    }
 }
 </script>
 
