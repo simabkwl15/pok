@@ -24,24 +24,11 @@ h2.header-title {
     margin-bottom:10px;
     color:#8e44ad;
 }
-.header {
-    display:flex;
-    gap:20px;
-    align-items:center;
-    flex-wrap:wrap;
-}
-.profile-pic {
-    width:150px;
-    height:150px;
-    border-radius:50%;
-    object-fit:cover;
-    border:3px solid #8e44ad;
-}
 .info {
-    flex:1;
     display:flex;
     flex-direction:column;
     gap:8px;
+    margin-bottom:10px;
 }
 .info div span.label {
     font-weight:600;
@@ -67,6 +54,7 @@ h2.header-title {
     color:white;
     margin-left:10px;
 }
+
 .table-container {
     margin-top:10px;
     max-height:400px;
@@ -110,18 +98,15 @@ td.right { text-align:right; }
 <div class="container">
     <h2 class="header-title">Data Pegawai</h2>
 
-    <div class="header">
-        <img id="foto" class="profile-pic" src="https://via.placeholder.com/150" alt="Foto Pegawai">
-        <div class="info">
-            <div><span class="label">Nama:</span> <span id="nama" class="value">-</span></div>
-            <div><span class="label">NIP:</span> <span id="nip" class="value">-</span></div>
-            <div><span class="label">Jabatan:</span> <span id="jabatan" class="value">-</span></div>
-            <div><span class="label">Pangkat:</span> <span id="pangkat" class="value">-</span></div>
+    <div class="info">
+        <div><span class="label">Nama:</span> <span id="nama" class="value">-</span></div>
+        <div><span class="label">NIP:</span> <span id="nip" class="value">-</span></div>
+        <div><span class="label">Jabatan:</span> <span id="jabatan" class="value">-</span></div>
+        <div><span class="label">Pangkat:</span> <span id="pangkat" class="value">-</span></div>
 
-            <div style="margin-top:10px;">
-                <button class="btn-small btn-reset" onclick="resetPassword()">Reset Password</button>
-                <button class="btn-small btn-back" onclick="window.location.href='data_pok.html'">Kembali</button>
-            </div>
+        <div style="margin-top:10px;">
+            <button class="btn-small btn-reset" onclick="resetPassword()">Reset Password</button>
+            <button class="btn-small btn-back" onclick="window.location.href='data_pok.html'">Kembali</button>
         </div>
     </div>
 
@@ -139,15 +124,15 @@ td.right { text-align:right; }
 </div>
 
 <script>
-// --- KONFIG GAS ---
-const URL_GAS = "https://script.google.com/macros/s/AKfycbxDEtsDD9z_ANY7ILixej0NzNP3OuU2pzLXf_viAHWNjIQPTGjB0n6LztzrjrsxzQjcMw/exec";
-
-// Ambil nama dari sessionStorage
+// --- CEGAH AKSES LANGSUNG ---
 const namaPegawai = sessionStorage.getItem("pegawai_nama");
 if(!namaPegawai){
-    alert("Nama pegawai tidak ditemukan di session. Kembali ke halaman utama.");
-    window.location.href="data_pok.html";
+    alert("Halaman hanya bisa diakses dari tombol Profil.");
+    window.location.href = "data_pok.html";
 }
+
+// --- KONFIG GAS ---
+const URL_GAS = "https://script.google.com/macros/s/AKfycbxDEtsDD9z_ANY7ILixej0NzNP3OuU2pzLXf_viAHWNjIQPTGjB0n6LztzrjrsxzQjcMw/exec";
 
 let stData = []; // simpan data asli untuk filter
 
@@ -166,8 +151,14 @@ function formatDate(str){
 function renderST(filter=""){
     const tbody = document.querySelector("#tblST tbody");
     tbody.innerHTML = "";
+
     stData
         .filter(r => r.join(" ").toLowerCase().includes(filter.toLowerCase()))
+        .sort((a,b)=>{
+            const da = new Date(a[4]);
+            const db = new Date(b[4]);
+            return db - da; // descending
+        })
         .forEach((r,i)=>{
             const tr = document.createElement("tr");
 
@@ -211,16 +202,6 @@ fetch(URL_GAS + "?nama=" + encodeURIComponent(namaPegawai))
         document.getElementById("nip").textContent = p.nip;
         document.getElementById("jabatan").textContent = p.jabatan;
         document.getElementById("pangkat").textContent = p.pangkat;
-
-        // --- pastikan foto tampil dari Google Drive ---
-        let fotoLink = p.foto || "https://via.placeholder.com/150";
-        if(fotoLink.includes("drive.google.com")){
-            const idMatch = fotoLink.match(/\/d\/(.*?)\//);
-            if(idMatch && idMatch[1]){
-                fotoLink = `https://drive.google.com/uc?export=view&id=${idMatch[1]}`;
-            }
-        }
-        document.getElementById("foto").src = fotoLink;
     }
 
     // --- Isi Header ST dari row 3 ---
