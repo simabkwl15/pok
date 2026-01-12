@@ -23,7 +23,7 @@ h2 { margin-bottom: 5px; }
     position: sticky;
     top: 0;
     background: #f5f6fa;
-    z-index: 3; /* di atas tabel */
+    z-index: 3;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -119,7 +119,6 @@ th {
     <div style="display:flex; gap:8px;">
         <button onclick="daftarPerjadin()" style="background:#8e44ad; color:white;">Daftar Perjalanan Dinas</button>
         <button onclick="downloadExcel()" style="background:#0066cc; color:white;">Download Excel</button>
-        <button onclick="downloadPDF()" style="background:#0066cc; color:white;">Download PDF</button>
         <button onclick="profil()" style="background:#3CB371; color:white;">Profil</button>
         <button onclick="logout()" style="background:#e74c3c; color:white;">Logout</button>
     </div>
@@ -129,16 +128,14 @@ th {
     Last update: <span id="lastUpdate">-</span>
 </div>
 
-<div class="table-container" id="areaPDF">
+<div class="table-container">
     <table id="tblData">
         <thead></thead>
         <tbody></tbody>
     </table>
 </div>
 
-    
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 
 <script>
@@ -153,47 +150,27 @@ window.downloadExcel = function() {
     const wb = XLSX.utils.table_to_book(table, {sheet:"POK"});
     const ws = wb.Sheets["POK"];
     const range = XLSX.utils.decode_range(ws['!ref']);
-    range.e.c -= 1; // hapus kolom aksi
+    range.e.c -= 1; // hapus kolom Aksi
     ws['!ref'] = XLSX.utils.encode_range(range);
     XLSX.writeFile(wb, "POK.xlsx");
 }
 
-window.downloadPDF = function(){
-    html2pdf().set({
-        margin:5,
-        filename:'POK.pdf',
-        html2canvas:{scale:2},
-        jsPDF:{orientation:'landscape'}
-    }).from(document.getElementById("areaPDF")).save();
-}
-
 function profil() {
-    // Ambil nama pegawai dari sessionStorage
-    const nama = sessionStorage.getItem("nama"); // misal key "nama" disimpan saat login
+    const nama = sessionStorage.getItem("nama");
     if(!nama){
         alert("Data pegawai tidak tersedia!");
         return;
     }
-
-    // Simpan nama ke sessionStorage untuk page profil.html
     sessionStorage.setItem("pegawai_nama", nama);
-
-    // Arahkan ke profil.html
     window.location.href = "profil.html";
 }
-    
+
 window.logout = function(){
     if(confirm("Yakin ingin logout?")){
         sessionStorage.clear();
         window.location.href="/pok/index.html";
     }
 }
-
-window.rekamKegiatan = function(kode, uraian) {
-    sessionStorage.setItem("mak", kode);
-    sessionStorage.setItem("uraian", uraian);
-    window.location.href = "/pok/rekam_kegiatan.html";
-};
 
 // === MAIN CODE ===
 window.addEventListener("DOMContentLoaded", () => {
@@ -301,7 +278,6 @@ window.addEventListener("DOMContentLoaded", () => {
                 tr.appendChild(td);
             });
 
-            // === AKSI ===
             const tdAksi = document.createElement("td");
             if(kode.length > 27){
                 const div = document.createElement("div");
@@ -321,17 +297,16 @@ window.addEventListener("DOMContentLoaded", () => {
                 };
 
                 const btnD = document.createElement("button");
-                    btnD.textContent="Detil";
-                    btnD.className="btn-detil";
-                    btnD.onclick = () => {
-                        sessionStorage.setItem("selectedKode", kode);          // kirim kode
-                        sessionStorage.setItem("selectedUraian", r[idxUraian]); // opsional, bisa ditampilkan
-                        window.location.href = "/pok/daftar_kegiatan.html";     // buka halaman daftar_kegiatan
-                    };
-                    
-                    div.append(btnR, btnD);
-                    tdAksi.appendChild(div);
+                btnD.textContent="Detil";
+                btnD.className="btn-detil";
+                btnD.onclick = () => {
+                    sessionStorage.setItem("selectedKode", kode);
+                    sessionStorage.setItem("selectedUraian", r[idxUraian]);
+                    window.location.href = "/pok/daftar_kegiatan.html";
+                };
 
+                div.append(btnR, btnD);
+                tdAksi.appendChild(div);
             }
 
             tr.appendChild(tdAksi);
@@ -345,9 +320,3 @@ window.addEventListener("DOMContentLoaded", () => {
 </script>
 </body>
 </html>
-
-
-
-
-
-
