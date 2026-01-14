@@ -3,166 +3,132 @@
 <head>
 <meta charset="UTF-8">
 <title>Dashboard</title>
-
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-
 <style>
 body { 
-  font-family:'Inter', Arial, sans-serif; 
-  margin:20px; 
-  background:#f5f6fa; 
-  color:#333; 
+    font-family: 'Inter', Arial, sans-serif; 
+    margin:20px; 
+    background:#f5f6fa; 
+    color:#333; 
 }
-
 h2 { margin-bottom:10px; }
 
-/* ===== FILTER BAR ===== */
-.filter-bar { 
-  margin-bottom:10px; 
-  display:flex; 
-  align-items:center; 
-  gap:10px; 
-  flex-wrap:wrap; 
+.top-bar {
+    margin-bottom:10px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
 }
-.filter-bar label { font-size:14px; }
-.filter-bar select, 
-.filter-bar input { 
-  padding:6px; 
-  font-size:13px; 
+
+.table-container { 
+    max-height: calc(100vh - 140px); 
+    overflow:auto; 
+    background:white; 
+    border-radius:6px; 
+    box-shadow:0 2px 8px rgba(0,0,0,0.1);
 }
-.filter-bar input { 
-  flex:1; 
-  min-width:150px; 
+table { 
+    border-collapse:collapse; 
+    width:100%; 
+    min-width:700px; 
+    font-size:13px; 
+    table-layout:fixed; 
+}
+th, td { 
+    border:1px solid #ddd; 
+    padding:8px; 
+    word-wrap:break-word; 
+}
+th { 
+    background:#8e44ad; 
+    color:white; 
+    position:sticky; 
+    top:0; 
+    z-index:1; 
+    text-align:left; 
+    white-space:normal; 
+    font-size:12px; 
 }
 
 .btn-back { 
-  padding:6px 12px; 
-  background:green; 
-  color:white; 
-  border:none; 
-  border-radius:4px; 
-  cursor:pointer; 
-  font-size:14px; 
+    padding:6px 14px; 
+    background:green; 
+    color:white; 
+    border:none; 
+    border-radius:4px; 
+    cursor:pointer; 
+    font-size:14px; 
 }
 .btn-back:hover { opacity:0.85; }
-
-/* ===== TABLE ===== */
-.table-container { 
-  max-height: calc(100vh - 160px); 
-  overflow:auto; 
-  background:white; 
-  border-radius:6px; 
-  box-shadow:0 2px 8px rgba(0,0,0,0.1);
-}
-
-table { 
-  border-collapse:collapse; 
-  width:100%; 
-  min-width:700px; 
-  font-size:13px; 
-  table-layout:fixed; 
-}
-
-th, td { 
-  border:1px solid #ddd; 
-  padding:8px; 
-  word-wrap:break-word; 
-}
-
-th { 
-  background:#8e44ad; 
-  color:white; 
-  position:sticky; 
-  top:0; 
-  z-index:1; 
-  text-align:left; 
-  white-space:normal; 
-  font-size:12px; 
-}
 </style>
 </head>
 <body>
 
-<h2>Dashboard</h2>
-
-<div class="filter-bar">
-    <label>Filter:</label>
-    <select id="cmbFilter">
-        <option value="Semua">Semua</option>
-    </select>
-
-    <label>Cari:</label>
-    <input type="text" id="txtCari" placeholder="Cari data...">
-
-    <button class="btn-back" onclick="window.location.href='?page=data_pok'">Kembali</button>
+<div class="top-bar">
+    <h2>Dashboard</h2>
+    <button class="btn-back" onclick="window.location.href='data_pok.html'">Kembali</button>
 </div>
 
 <div class="table-container">
-    <table id="tblData">
+    <table id="tblDashboard">
         <thead></thead>
         <tbody></tbody>
     </table>
 </div>
 
 <script>
-const URL_GAS = "https://script.google.com/macros/s/AKfycbxTzkX4vJ8109ocyx8pgYB0fSl72PtNe-6eHYeSXbWkigiOjXiKpixOzrBtQ3SvoGEK8A/exec";
-const tblData = document.getElementById("tblData");
-const txtCari = document.getElementById("txtCari");
+const URL_GAS = "https://script.google.com/macros/s/AKfycbwHQsisJDPROZBUKm3DpURW0wf2mBWB_G6_8YIrUW4eedD37RvYpbEcVaVSN6Y85jXaTA/exec";
+const tbl = document.getElementById("tblDashboard");
 let data = [];
 
-/* ===== RENDER TABLE ===== */
-function renderTable(){
-    if(!data || data.length < 2) return;
+function formatRibuan(num){
+    if(num === "" || num == null) return "";
+    if(isNaN(num)) return num;
+    return Number(num).toLocaleString("id-ID");
+}
 
-    const thead = tblData.tHead || tblData.createTHead();
-    const tbody = tblData.tBodies[0] || tblData.createTBody();
+function renderTable(){
+    if(!data || data.length === 0) return;
+
+    const thead = tbl.tHead || tbl.createTHead();
+    const tbody = tbl.tBodies[0] || tbl.createTBody();
     thead.innerHTML = "";
     tbody.innerHTML = "";
 
-    // Header
-    const header = data[0];
+    // header
     const trh = document.createElement("tr");
-    header.forEach(h=>{
+    data[0].forEach(h=>{
         const th = document.createElement("th");
         th.textContent = h ?? "";
         trh.appendChild(th);
     });
     thead.appendChild(trh);
 
-    const keyword = txtCari.value.toLowerCase();
-    let rows = data.slice(1);
-
-    if(keyword){
-        rows = rows.filter(r => r.join(" ").toLowerCase().includes(keyword));
-    }
-
-    rows.forEach(r=>{
+    // data
+    data.slice(1).forEach(row=>{
         const tr = document.createElement("tr");
-        r.forEach(c=>{
+        row.forEach(c=>{
             const td = document.createElement("td");
-            td.textContent = c ?? "";
+            td.textContent = formatRibuan(c);
             tr.appendChild(td);
         });
         tbody.appendChild(tr);
     });
 }
 
-/* ===== LOAD DATA ===== */
 function loadData(){
-    fetch(URL_GAS + "?page=dashboard&t=" + Date.now())
-        .then(r => r.json())
-        .then(j => {
-            data = j;
+    fetch(URL_GAS + "?sheet=dashboard_2026&t=" + Date.now())
+        .then(res => res.json())
+        .then(json => {
+            data = json;
             renderTable();
         })
         .catch(err => console.error(err));
 }
 
-txtCari.addEventListener("input", renderTable);
-
 window.addEventListener("DOMContentLoaded", ()=>{
     loadData();
-    setInterval(loadData, 60000); // auto refresh 1 menit
+    setInterval(loadData, 60000); // reload 1 menit
 });
 </script>
 
