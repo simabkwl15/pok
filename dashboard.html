@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f9;
+      padding: 20px;
+    }
+
+    h1 {
+      margin: 0;
+    }
+
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .btn-back {
+      background: #6c757d;
+      color: white;
+      text-decoration: none;
+      padding: 8px 14px;
+      font-size: 14px;
+      border-radius: 4px;
+      transition: background 0.2s;
+    }
+
+    .btn-back:hover {
+      background: #5a6268;
+    }
+
+    .info {
+      font-size: 12px;
+      color: #666;
+      margin-bottom: 10px;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      background: white;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px 10px;
+      font-size: 14px;
+    }
+
+    th {
+      background: #2c7be5;
+      color: white;
+      position: sticky;
+      top: 0;
+      text-align: center;
+    }
+
+    tr:nth-child(even) {
+      background: #f9f9f9;
+    }
+
+    tr:hover {
+      background: #eef3ff;
+    }
+
+    .loading {
+      font-style: italic;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+
+<div class="toolbar">
+  <h1>Dashboard</h1>
+  <a href="data_pok.html" class="btn-back">← Kembali</a>
+</div>
+
+<div class="info">
+  Data diperbarui otomatis setiap 1 menit
+</div>
+
+<div id="loading" class="loading">Memuat data...</div>
+
+<table id="dataTable" style="display:none;">
+  <thead>
+    <tr id="tableHeader"></tr>
+  </thead>
+  <tbody id="tableBody"></tbody>
+</table>
+
+<script>
+  function loadData() {
+    document.getElementById('loading').style.display = 'block';
+    document.getElementById('dataTable').style.display = 'none';
+
+    google.script.run
+      .withSuccessHandler(renderTable)
+      .getDashboardData();
+  }
+
+  function renderTable(result) {
+    const headerRow = document.getElementById('tableHeader');
+    const body = document.getElementById('tableBody');
+
+    headerRow.innerHTML = '';
+    body.innerHTML = '';
+
+    // Header
+    result.header.forEach(col => {
+      const th = document.createElement('th');
+      th.textContent = col;
+      headerRow.appendChild(th);
+    });
+
+    // Data
+    result.data.forEach(row => {
+      const tr = document.createElement('tr');
+      row.forEach(cell => {
+        const td = document.createElement('td');
+        td.textContent = cell ?? '';
+        tr.appendChild(td);
+      });
+      body.appendChild(tr);
+    });
+
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('dataTable').style.display = 'table';
+  }
+
+  // Load awal
+  loadData();
+
+  // 🔁 Auto reload setiap 1 menit (60.000 ms)
+  setInterval(loadData, 60000);
+</script>
+
+</body>
+</html>
