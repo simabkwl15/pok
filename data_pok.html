@@ -146,6 +146,10 @@ function daftarPerjadin() {
     window.location.href = "/pok/daftar_perjalanan.html";
 }
 
+function dashboard() {
+    window.location.href = "/pok/dashboard.html";
+}
+    
 window.downloadExcel = function() {
     const table = document.getElementById("tblData");
     const wb = XLSX.utils.table_to_book(table, {sheet:"POK"});
@@ -321,4 +325,5 @@ window.addEventListener("DOMContentLoaded", () => {
 </script>
 </body>
 </html>
+
 
