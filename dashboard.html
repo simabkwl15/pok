@@ -21,6 +21,13 @@ body {
 
 h2 { margin:0; }
 
+/* subtitle dashboard */
+.subtitle {
+    font-size:14px;
+    color:#555;
+    margin-top:4px;
+}
+
 .btn-back { 
     padding:6px 14px; 
     background:green; 
@@ -60,30 +67,21 @@ th {
     position:sticky; 
     top:0; 
     z-index:1; 
-    text-align:center; /* ✅ header tabel di tengah */
+    text-align:center;
     font-size:12px; 
 }
-
 </style>
 </head>
 <body>
 
 <div class="header">
-    <h2>Dashboard</h2>
-    <button class="btn-back" onclick="window.location.href='data_pok.html'">Kembali</button>
-</div>
-
-<div class="header">
     <div>
         <h2>Dashboard</h2>
-        <div style="font-size:14px; color:#555; margin-top:4px;">
-            Monitoring Realisasi Anggaran
-        </div>
+        <div class="subtitle">Monitoring Realisasi Anggaran</div>
     </div>
     <button class="btn-back" onclick="window.location.href='data_pok.html'">Kembali</button>
 </div>
 
-    
 <div class="table-container">
     <table id="tblDashboard">
         <thead></thead>
@@ -116,7 +114,6 @@ function renderTable(){
     thead.innerHTML = "";
     tbody.innerHTML = "";
 
-    // HEADER
     const trh = document.createElement("tr");
     data[0].forEach(h=>{
         const th = document.createElement("th");
@@ -125,29 +122,24 @@ function renderTable(){
     });
     thead.appendChild(trh);
 
-    // DATA
     data.slice(1).forEach(row=>{
         const tr = document.createElement("tr");
 
         row.forEach((c, idx)=>{
             const td = document.createElement("td");
 
-            // Kolom 1 (index 0) → tengah
             if(idx === 0){
                 td.style.textAlign = "center";
                 td.textContent = c ?? "";
             }
-            // Kolom 10 & 11 (index 9 & 10) → persen
             else if(idx === 9 || idx === 10){
                 td.style.textAlign = "right";
                 td.textContent = formatPersen(c);
             }
-            // Kolom 3 s.d 10 (index 2–9) → kanan
             else if(idx >= 2 && idx <= 9){
                 td.style.textAlign = "right";
                 td.textContent = formatRibuan(c);
             }
-            // Lainnya
             else{
                 td.textContent = c ?? "";
             }
