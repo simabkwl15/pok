@@ -32,7 +32,24 @@
             cursor: pointer;
             font-size: 14px;
         }
+.subtitle-bar{
+    position: relative;
+    margin-top: 4px;
+}
 
+.subtitle-text{
+    font-size: 14px;
+    color: #555;
+    text-align: center;
+}
+
+.subtitle-bar .btn-back{
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+
+        
         .btn-back:hover { opacity: 0.85; }
 
         .table-container {
@@ -86,13 +103,13 @@
 
 <div class="header">
     <h2>Dashboard</h2>
-    
-</div>
+    </div>
 
-<div style="font-size:14px; color:#555; margin-top:4px; text-align:center;">
-    Monitoring Realisasi Anggaran
+<div class="subtitle-bar">
+    <div class="subtitle-text">Monitoring Realisasi Anggaran</div>
     <button class="btn-back" onclick="window.location.href='data_pok.html'">Kembali</button>
 </div>
+
     
 <div class="table-container">
     <table id="tblDashboard">
