@@ -21,9 +21,7 @@
             margin-bottom: 10px;
         }
 
-        h2 {
-            margin: 0;
-        }
+        h2 { margin: 0; }
 
         .btn-back {
             padding: 6px 14px;
@@ -35,9 +33,7 @@
             font-size: 14px;
         }
 
-        .btn-back:hover {
-            opacity: 0.85;
-        }
+        .btn-back:hover { opacity: 0.85; }
 
         .table-container {
             max-height: calc(100vh - 140px);
@@ -70,6 +66,19 @@
             text-align: center;
             font-size: 12px;
         }
+
+        /* Row 4 & 5: tanpa garis */
+        .no-border td {
+            border: none !important;
+        }
+
+        /* Row 7: style header */
+        .header-row td {
+            background: #8e44ad;
+            color: white;
+            font-weight: bold;
+            text-align: center !important;
+        }
     </style>
 </head>
 
@@ -77,9 +86,7 @@
 
 <div class="header">
     <h2>Dashboard</h2>
-    <button class="btn-back" onclick="window.location.href='data_pok.html'">
-        Kembali
-    </button>
+    <button class="btn-back" onclick="window.location.href='data_pok.html'">Kembali</button>
 </div>
 
 <div class="table-container">
@@ -124,29 +131,48 @@
         });
         thead.appendChild(trh);
 
+        const colCount = data[0].length;
+
         // DATA
-        data.slice(1).forEach(row => {
+        data.slice(1).forEach((row, rowIndex) => {
             const tr = document.createElement("tr");
+
+            /* ROW 4 & 5 → tanpa border */
+            if (rowIndex === 3 || rowIndex === 4) {
+                tr.classList.add("no-border");
+            }
+
+            /* ROW 6 → merge semua kolom */
+            if (rowIndex === 5) {
+                const td = document.createElement("td");
+                td.colSpan = colCount;
+                td.textContent = row[0] ?? "";
+                td.style.textAlign = "center";
+                tr.appendChild(td);
+                tbody.appendChild(tr);
+                return;
+            }
+
+            /* ROW 7 → tengah, bold, warna header */
+            if (rowIndex === 6) {
+                tr.classList.add("header-row");
+            }
 
             row.forEach((c, idx) => {
                 const td = document.createElement("td");
 
-                // Kolom 1 → tengah
                 if (idx === 0) {
                     td.style.textAlign = "center";
                     td.textContent = c ?? "";
                 }
-                // Kolom persen
                 else if (idx === 9 || idx === 10) {
                     td.style.textAlign = "right";
                     td.textContent = formatPersen(c);
                 }
-                // Kolom angka
                 else if (idx >= 2 && idx <= 9) {
                     td.style.textAlign = "right";
                     td.textContent = formatRibuan(c);
                 }
-                // Lainnya
                 else {
                     td.textContent = c ?? "";
                 }
