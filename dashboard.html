@@ -1,21 +1,245 @@
-row.forEach((c, idx) => {
-    const td = document.createElement("td");
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
 
-    if (idx === 0) {
-        td.style.textAlign = "center";
-        td.textContent = c ?? "";
-    }
-    else if (idx === 9 || idx === 10) {
-        td.style.textAlign = "right";
-        td.textContent = formatPersen(c);
-    }
-    else if (idx >= 2 && idx <= 9) {
-        td.style.textAlign = "right";
-        td.textContent = formatRibuan(c);
-    }
-    else {
-        td.textContent = c ?? "";
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            margin: 20px;
+            background: #f5f6fa;
+            color: #333;
+        }
+
+        h2 { margin: 0; }
+
+        .btn-back {
+            padding: 6px 14px;
+            background: green;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .btn-back:hover { opacity: 0.85; }
+
+        .subtitle-bar {
+            position: relative;
+            margin-top: 6px;
+            margin-bottom: 14px; /* jarak ke tabel */
+        }
+
+        .subtitle-text {
+            font-size: 14px;
+            color: #555;
+            text-align: center;
+        }
+
+        .subtitle-bar .btn-back {
+            position: absolute;
+            right: 0;
+            top: 0;
+        }
+
+        .table-container {
+            max-height: calc(100vh - 180px);
+            overflow: auto;
+            background: white;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            min-width: 700px;
+            font-size: 13px;
+            table-layout: fixed;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            word-wrap: break-word;
+        }
+
+        th {
+            background: #8e44ad;
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+            text-align: center;
+            font-size: 12px;
+        }
+
+        /* Row 4 & 5: tanpa garis */
+        .no-border td {
+            border: none !important;
+        }
+
+        /* Row 7: seperti header */
+        .header-row td {
+            background: #8e44ad;
+            color: white;
+            font-weight: bold;
+            text-align: center !important;
+        }
+
+        /* Row merge: transparan */
+        .merge-row td {
+            background: transparent;
+            border: none;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+
+<h2>Dashboard</h2>
+
+<div class="subtitle-bar">
+    <div class="subtitle-text">Monitoring Realisasi Anggaran</div>
+    <button class="btn-back" onclick="window.location.href='data_pok.html'">Kembali</button>
+</div>
+
+<div class="table-container">
+    <table id="tblDashboard">
+        <thead></thead>
+        <tbody></tbody>
+    </table>
+</div>
+
+<script>
+    const URL_GAS = "https://script.google.com/macros/s/AKfycbwHQsisJDPROZBUKm3DpURW0wf2mBWB_G6_8YIrUW4eedD37RvYpbEcVaVSN6Y85jXaTA/exec";
+    const tbl = document.getElementById("tblDashboard");
+    let data = [];
+
+    function formatRibuan(num) {
+        if (num === "" || num == null || isNaN(num)) return num ?? "";
+        return Number(num).toLocaleString("id-ID");
     }
 
-    tr.appendChild(td);
-});
+    function formatPersen(num) {
+        if (num === "" || num == null || isNaN(num)) return num ?? "";
+        return (Number(num) * 100).toFixed(2) + "%";
+    }
+
+    function renderTable() {
+        if (!data || data.length === 0) return;
+
+        const thead = tbl.tHead || tbl.createTHead();
+        const tbody = tbl.tBodies[0] || tbl.createTBody();
+
+        thead.innerHTML = "";
+        tbody.innerHTML = "";
+
+        /* HEADER */
+        const trh = document.createElement("tr");
+        data[0].forEach(h => {
+            const th = document.createElement("th");
+            th.textContent = h ?? "";
+            trh.appendChild(th);
+        });
+        thead.appendChild(trh);
+
+        const colCount = data[0].length;
+
+        /* DATA */
+        data.slice(1).forEach((row, rowIndex) => {
+            const tr = document.createElement("tr");
+
+            /* Row 4 & 5 */
+            if (rowIndex === 3 || rowIndex === 4) {
+                tr.classList.add("no-border");
+            }
+
+            /* Row 6 merge */
+            if (rowIndex === 5) {
+                tr.classList.add("merge-row");
+                const td = document.createElement("td");
+                td.colSpan = colCount;
+                td.textContent = row[0] ?? "";
+                td.style.textAlign = "center";
+                tr.appendChild(td);
+                tbody.appendChild(tr);
+                return;
+            }
+
+            /* Row 7 header style */
+            if (rowIndex === 6) {
+                tr.classList.add("header-row");
+            }
+
+            row.forEach((c, idx) => {
+                const td = document.createElement("td");
+
+                /* ROW 8 KE BAWAH */
+                if (rowIndex >= 7) {
+
+                    if (idx === 2 || idx === 3) {
+                        td.style.textAlign = "center";
+                        td.textContent = c ?? "";
+                    }
+                    else if (idx >= 4 && idx <= 8) {
+                        td.style.textAlign = "right";
+                        td.textContent = formatRibuan(c);
+                    }
+                    else if (idx === 9 || idx === 10) {
+                        td.style.textAlign = "right";
+                        td.textContent = formatPersen(c);
+                    }
+                    else {
+                        td.textContent = c ?? "";
+                    }
+                }
+                /* ATURAN LAMA */
+                else {
+                    if (idx === 0) {
+                        td.style.textAlign = "center";
+                        td.textContent = c ?? "";
+                    }
+                    else if (idx === 9 || idx === 10) {
+                        td.style.textAlign = "right";
+                        td.textContent = formatPersen(c);
+                    }
+                    else if (idx >= 2 && idx <= 9) {
+                        td.style.textAlign = "right";
+                        td.textContent = formatRibuan(c);
+                    }
+                    else {
+                        td.textContent = c ?? "";
+                    }
+                }
+
+                tr.appendChild(td);
+            });
+
+            tbody.appendChild(tr);
+        });
+    }
+
+    function loadData() {
+        fetch(URL_GAS + "?sheet=dashboard_2026&t=" + Date.now())
+            .then(res => res.json())
+            .then(json => {
+                data = json;
+                renderTable();
+            })
+            .catch(console.error);
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+        loadData();
+        setInterval(loadData, 60000);
+    });
+</script>
+
+</body>
+</html>
