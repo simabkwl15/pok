@@ -185,22 +185,35 @@
                 /* ROW 8 KE BAWAH */
                 if (rowIndex >= 7) {
 
-                    if (idx === 2 || idx === 3) {
+                    /* Kolom 1 → tengah */
+                    if (idx === 0) {
                         td.style.textAlign = "center";
                         td.textContent = c ?? "";
                     }
+                
+                    /* Kolom 3 & 4 → tengah */
+                    else if (idx === 2 || idx === 3) {
+                        td.style.textAlign = "center";
+                        td.textContent = c ?? "";
+                    }
+                
+                    /* Kolom 5 s.d 9 → kanan + ribuan */
                     else if (idx >= 4 && idx <= 8) {
                         td.style.textAlign = "right";
                         td.textContent = formatRibuan(c);
                     }
+                
+                    /* Kolom persen */
                     else if (idx === 9 || idx === 10) {
                         td.style.textAlign = "right";
                         td.textContent = formatPersen(c);
                     }
+                
                     else {
                         td.textContent = c ?? "";
                     }
                 }
+
                 /* ATURAN LAMA */
                 else {
                     if (idx === 0) {
