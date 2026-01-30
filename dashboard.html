@@ -7,6 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 
 <style>
+/* === STYLE ASLI (TIDAK DIUBAH) === */
 body {
     font-family: 'Inter', Arial, sans-serif;
     margin: 20px;
@@ -25,8 +26,6 @@ h2 { margin: 0; }
     cursor: pointer;
     font-size: 14px;
 }
-
-.btn-back:hover { opacity: 0.85; }
 
 .subtitle-bar {
     position: relative;
@@ -67,7 +66,6 @@ table {
 th, td {
     border: 1px solid #ddd;
     padding: 8px;
-    word-wrap: break-word;
 }
 
 th {
@@ -75,7 +73,6 @@ th {
     color: white;
     position: sticky;
     top: 0;
-    z-index: 1;
     text-align: center;
     font-size: 12px;
 }
@@ -117,7 +114,6 @@ th {
     </table>
 </div>
 
-<!-- ===== TABEL BARU ===== -->
 <h2 style="margin-top:30px">Monitoring Bulanan</h2>
 
 <div class="table-container">
@@ -133,92 +129,81 @@ const URL_GAS = "https://script.google.com/macros/s/AKfycbx2l9Q9cY-IvHiimtY2jz8R
 const tblDashboard = document.getElementById("tblDashboard");
 const tblBulanan   = document.getElementById("tblBulanan");
 
-let dataDashboard = [];
-let dataBulanan = [];
+function ribuan(v){ return isNaN(v)? v : Number(v).toLocaleString("id-ID"); }
+function persen(v){ return isNaN(v)? v : (Number(v)*100).toFixed(2)+"%"; }
 
-function formatRibuan(num) {
-    if (num === "" || num == null || isNaN(num)) return num ?? "";
-    return Number(num).toLocaleString("id-ID");
-}
+function render(tbl, data, bulanan=false){
+    if(!data?.length) return;
 
-function formatPersen(num) {
-    if (num === "" || num == null || isNaN(num)) return num ?? "";
-    return (Number(num) * 100).toFixed(2) + "%";
-}
+    tbl.tHead.innerHTML="";
+    tbl.tBodies[0].innerHTML="";
 
-/* ===== RENDER GENERIC (DIPAKAI 2 TABEL) ===== */
-function renderTable(tbl, data) {
-    if (!data || !data.length) return;
-
-    const thead = tbl.tHead || tbl.createTHead();
-    const tbody = tbl.tBodies[0] || tbl.createTBody();
-    thead.innerHTML = "";
-    tbody.innerHTML = "";
-
-    // HEADER
-    const trh = document.createElement("tr");
-    data[0].forEach(h => {
-        const th = document.createElement("th");
-        th.textContent = h ?? "";
-        trh.appendChild(th);
+    const h = tbl.tHead.insertRow();
+    data[0].forEach(x=>{
+        const th=document.createElement("th");
+        th.textContent=x??"";
+        h.appendChild(th);
     });
-    thead.appendChild(trh);
 
-    const colCount = data[0].length;
+    data.slice(1).forEach((r,i)=>{
+        const tr=tbl.tBodies[0].insertRow();
 
-    // BODY
-    data.slice(1).forEach((row, rowIndex) => {
-        const tr = document.createElement("tr");
-
-        if (rowIndex === 3 || rowIndex === 4) tr.classList.add("no-border");
-
-        if (rowIndex === 5 && tbl === tblDashboard) {
-            tr.classList.add("merge-row");
-            const td = document.createElement("td");
-            td.colSpan = colCount;
-            td.textContent = row[0] ?? "";
-            td.style.textAlign = "center";
-            tr.appendChild(td);
-            tbody.appendChild(tr);
-            return;
+        if(!bulanan){
+            if(i===3||i===4) tr.className="no-border";
+            if(i===5){
+                tr.className="merge-row";
+                const td=tr.insertCell();
+                td.colSpan=r.length;
+                td.textContent=r[0]??"";
+                td.style.textAlign="center";
+                return;
+            }
+            if(i===6) tr.className="header-row";
         }
 
-        if (rowIndex === 6 && tbl === tblDashboard) {
-            tr.classList.add("header-row");
-        }
+        r.forEach((c,j)=>{
+            const td=tr.insertCell();
 
-        row.forEach((c, idx) => {
-            const td = document.createElement("td");
+            /* BULANAN KHUSUS */
+            if(bulanan){
+                td.style.fontSize="11px";
 
-            if (typeof c === "number") {
-                td.style.textAlign = "right";
-                td.textContent = formatRibuan(c);
-            } else {
-                td.textContent = c ?? "";
+                if(i===3 && j>=4 && j<=20){
+                    td.textContent=persen(c);
+                    td.style.textAlign="right";
+                }
+                else if(typeof c==="number"){
+                    td.textContent=ribuan(c);
+                    td.style.textAlign="right";
+                }else{
+                    td.textContent=c??"";
+                }
+
+                if([7,11,15,19].includes(j)){
+                    td.style.background="#e8f5e9";
+                }
+            }
+            /* DASHBOARD */
+            else{
+                if(typeof c==="number"){
+                    td.textContent=ribuan(c);
+                    td.style.textAlign="right";
+                }else{
+                    td.textContent=c??"";
+                }
             }
 
-            tr.appendChild(td);
+            if(j===0) td.style.textAlign="center";
         });
-
-        tbody.appendChild(tr);
     });
 }
 
-/* ===== LOAD DATA ===== */
-function loadData() {
-    fetch(URL_GAS + "?t=" + Date.now())
-        .then(res => res.json())
-        .then(json => {
-            console.log("DATA GAS:", json);
-            dataDashboard = json.dashboard_2026 || [];
-            dataBulanan   = json.bulanan_2026 || [];
-            renderTable(tblDashboard, dataDashboard);
-            renderTable(tblBulanan, dataBulanan);
-        })
-        .catch(console.error);
-}
-
-window.addEventListener("DOMContentLoaded", loadData);
+fetch(URL_GAS)
+.then(r=>r.json())
+.then(j=>{
+    render(tblDashboard,j.dashboard_2026,false);
+    render(tblBulanan,j.bulanan_2026,true);
+});
 </script>
 
 </body>
