@@ -124,10 +124,22 @@
     </table>
 </div>
 
+<h2 style="margin-top:30px">Rekap Bulanan</h2>
+
+<div class="table-container">
+    <table id="tblBulanan">
+        <thead></thead>
+        <tbody></tbody>
+    </table>
+</div>
+
 <script>
-    const URL_GAS = "https://script.google.com/macros/s/AKfycbwHQsisJDPROZBUKm3DpURW0wf2mBWB_G6_8YIrUW4eedD37RvYpbEcVaVSN6Y85jXaTA/exec";
+    const URL_GAS = "https://script.google.com/macros/s/AKfycbxhhl6ywz07i2hW9mVkUdNv0VreOAgughBFIy3oHU88ZeX_xpO8JXnzCq6_7AiuNeXF2A/exec";
     const tbl = document.getElementById("tblDashboard");
     let data = [];
+
+    const tblBulanan = document.getElementById("tblBulanan");
+    let dataBulanan = [];
 
     function formatRibuan(num) {
         if (num === "" || num == null || isNaN(num)) return num ?? "";
@@ -245,7 +257,37 @@
             tbody.appendChild(tr);
         });
     }
+function renderBulanan() {
+    if (!dataBulanan || dataBulanan.length === 0) return;
 
+    const thead = tblBulanan.tHead || tblBulanan.createTHead();
+    const tbody = tblBulanan.tBodies[0] || tblBulanan.createTBody();
+
+    thead.innerHTML = "";
+    tbody.innerHTML = "";
+
+    // header
+    const trh = document.createElement("tr");
+    dataBulanan[0].forEach(h => {
+        const th = document.createElement("th");
+        th.textContent = h ?? "";
+        trh.appendChild(th);
+    });
+    thead.appendChild(trh);
+
+    // body
+    dataBulanan.slice(1).forEach(row => {
+        const tr = document.createElement("tr");
+        row.forEach(c => {
+            const td = document.createElement("td");
+            td.textContent = c ?? "";
+            tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
+    });
+}
+
+    
     function loadData() {
         fetch(URL_GAS + "?sheet=dashboard_2026&t=" + Date.now())
             .then(res => res.json())
