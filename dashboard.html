@@ -7,7 +7,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 
 <style>
-/* === STYLE ASLI (TIDAK DIUBAH) === */
 body {
     font-family: 'Inter', Arial, sans-serif;
     margin: 20px;
@@ -114,7 +113,6 @@ th {
     </table>
 </div>
 
-<!-- SPASI KE BAWAH -->
 <div style="margin-bottom:30px;"></div>
 <div style="margin-bottom:30px;"></div>
 
@@ -196,10 +194,16 @@ function render(tbl, data, bulanan=false){
                 }
             }
             else{
-                if(typeof c==="number"){
+                /* === PERBAIKAN: kolom 10 & 11 dashboard jadi persen === */
+                if(typeof c==="number" && (j===9 || j===10)){
+                    td.textContent = persen(c);
+                    td.style.textAlign="right";
+                }
+                else if(typeof c==="number"){
                     td.textContent = ribuan(c);
                     td.style.textAlign="right";
-                }else{
+                }
+                else{
                     td.textContent = c ?? "";
                 }
             }
@@ -209,7 +213,6 @@ function render(tbl, data, bulanan=false){
     });
 }
 
-/* LOAD + AUTO REFRESH */
 function loadData(){
     fetch(URL_GAS + "?t=" + Date.now())
         .then(r => r.json())
