@@ -185,23 +185,19 @@ async function login(){
         const result = await res.json();
 
         if(result.status === "success"){
-            // simpan session
-            sessionStorage.setItem("nip", nip);
-            sessionStorage.setItem("nama", result.nama);
-            sessionStorage.setItem("unit", result.unit);
+    sessionStorage.setItem("nama", result.nama);
+    sessionStorage.setItem("unit", result.unit);
 
-            // 🔒 PAKSA GANTI PASSWORD DEFAULT
-            if(password === "12345"){
-                alert(
-                    "⚠️ Password Anda masih password default.\n" +
-                    "Anda WAJIB mengganti password terlebih dahulu."
-                );
-                window.location.href = "reset.html";
-                return;
-            }
+    // NOTIF PASSWORD DEFAULT
+    if(password === "12345"){
+        alert(
+            "⚠️ Password Anda masih password default.\n" +
+            "Silakan segera mengganti password melalui menu Profil."
+        );
+    }
 
-            window.location.href = "/pok/data_pok.html";
-        } else {
+    window.location.href = "/pok/data_pok.html";
+    } else {
             showLoading(false);
             errorMsg.textContent = result.message;
         }
@@ -218,3 +214,6 @@ document.addEventListener("keydown", e => {
 
 </body>
 </html>
+
+
+
