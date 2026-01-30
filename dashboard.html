@@ -113,13 +113,14 @@ th {
         <tbody></tbody>
     </table>
 </div>
-    
+
+<!-- SPASI KE BAWAH -->
 <div style="margin-bottom:30px;"></div>
 <div style="margin-bottom:30px;"></div>
-   
+
 <div class="subtitle-bar">
     <div class="subtitle-text">Monitoring Bulanan</div>
-    </div>
+</div>
 
 <div class="table-container">
     <table id="tblBulanan">
@@ -134,32 +135,38 @@ const URL_GAS = "https://script.google.com/macros/s/AKfycbx2l9Q9cY-IvHiimtY2jz8R
 const tblDashboard = document.getElementById("tblDashboard");
 const tblBulanan   = document.getElementById("tblBulanan");
 
-function ribuan(v){ return isNaN(v)? v : Number(v).toLocaleString("id-ID"); }
-function persen(v){ return isNaN(v)? v : (Number(v)*100).toFixed(2)+"%"; }
+function ribuan(v){
+    return isNaN(v) ? v : Number(v).toLocaleString("id-ID");
+}
+function persen(v){
+    return isNaN(v) ? v : (Number(v) * 100).toFixed(2) + "%";
+}
 
 function render(tbl, data, bulanan=false){
     if(!data?.length) return;
 
-    tbl.tHead.innerHTML="";
-    tbl.tBodies[0].innerHTML="";
+    tbl.tHead.innerHTML = "";
+    tbl.tBodies[0].innerHTML = "";
 
+    /* HEADER */
     const h = tbl.tHead.insertRow();
     data[0].forEach(x=>{
-        const th=document.createElement("th");
-        th.textContent=x??"";
+        const th = document.createElement("th");
+        th.textContent = x ?? "";
         h.appendChild(th);
     });
 
+    /* BODY */
     data.slice(1).forEach((r,i)=>{
-        const tr=tbl.tBodies[0].insertRow();
+        const tr = tbl.tBodies[0].insertRow();
 
         if(!bulanan){
-            if(i===3||i===4) tr.className="no-border";
+            if(i===3 || i===4) tr.className="no-border";
             if(i===5){
                 tr.className="merge-row";
-                const td=tr.insertCell();
-                td.colSpan=r.length;
-                td.textContent=r[0]??"";
+                const td = tr.insertCell();
+                td.colSpan = r.length;
+                td.textContent = r[0] ?? "";
                 td.style.textAlign="center";
                 return;
             }
@@ -167,34 +174,33 @@ function render(tbl, data, bulanan=false){
         }
 
         r.forEach((c,j)=>{
-            const td=tr.insertCell();
+            const td = tr.insertCell();
 
-            /* BULANAN KHUSUS */
             if(bulanan){
                 td.style.fontSize="11px";
 
                 if(i===3 && j>=4 && j<=20){
-                    td.textContent=persen(c);
+                    td.textContent = persen(c);
                     td.style.textAlign="right";
                 }
                 else if(typeof c==="number"){
-                    td.textContent=ribuan(c);
+                    td.textContent = ribuan(c);
                     td.style.textAlign="right";
-                }else{
-                    td.textContent=c??"";
+                }
+                else{
+                    td.textContent = c ?? "";
                 }
 
                 if([7,11,15,19].includes(j)){
                     td.style.background="#e8f5e9";
                 }
             }
-            /* DASHBOARD */
             else{
                 if(typeof c==="number"){
-                    td.textContent=ribuan(c);
+                    td.textContent = ribuan(c);
                     td.style.textAlign="right";
                 }else{
-                    td.textContent=c??"";
+                    td.textContent = c ?? "";
                 }
             }
 
@@ -203,28 +209,21 @@ function render(tbl, data, bulanan=false){
     });
 }
 
-fetch(URL_GAS)
-.then(r=>r.json())
-.then(j=>{
-    render(tblDashboard,j.dashboard_2026,false);
-    render(tblBulanan,j.bulanan_2026,true);
+/* LOAD + AUTO REFRESH */
+function loadData(){
+    fetch(URL_GAS + "?t=" + Date.now())
+        .then(r => r.json())
+        .then(j => {
+            render(tblDashboard, j.dashboard_2026, false);
+            render(tblBulanan,   j.bulanan_2026,   true);
+        })
+        .catch(console.error);
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+    loadData();
+    setInterval(loadData, 60000);
 });
-
-    function loadData() {
-        fetch(URL_GAS + "?sheet=dashboard_2026&t=" + Date.now())
-            .then(res => res.json())
-            .then(json => {
-                data = json;
-                renderTable();
-            })
-            .catch(console.error);
-    }
-
-    window.addEventListener("DOMContentLoaded", () => {
-        loadData();
-        setInterval(loadData, 60000);
-    });
-
 </script>
 
 </body>
