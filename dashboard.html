@@ -209,6 +209,22 @@ fetch(URL_GAS)
     render(tblDashboard,j.dashboard_2026,false);
     render(tblBulanan,j.bulanan_2026,true);
 });
+
+    function loadData() {
+        fetch(URL_GAS + "?sheet=dashboard_2026&t=" + Date.now())
+            .then(res => res.json())
+            .then(json => {
+                data = json;
+                renderTable();
+            })
+            .catch(console.error);
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+        loadData();
+        setInterval(loadData, 60000);
+    });
+
 </script>
 
 </body>
