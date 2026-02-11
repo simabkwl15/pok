@@ -2,125 +2,143 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<title>Login | SiMAB KPKNL Denpasar</title>
+<title>Login | SiMAB</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
-* { box-sizing: border-box; }
-
-body {
-    margin: 0;
-    height: 100vh;
-    background: linear-gradient(135deg,#1e3c72,#2a5298);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-family: "Segoe UI", Arial, sans-serif;
+*{
+    box-sizing:border-box;
+    font-family:'Inter',sans-serif;
 }
 
-.login-card {
-    background: #fff;
-    width: 380px;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.25);
+body{
+    margin:0;
+    height:100vh;
+    background:#f8fafc;
+    display:flex;
+    justify-content:center;
+    align-items:center;
 }
 
-.login-header {
-    background: linear-gradient(135deg,#005bea,#00c6fb);
-    padding: 22px;
-    text-align: center;
-    color: white;
+.login-card{
+    background:#ffffff;
+    width:380px;
+    border-radius:16px;
+    border:1px solid #e5e7eb;
+    box-shadow:0 10px 30px rgba(0,0,0,0.08);
+    overflow:hidden;
 }
 
-.login-header h1 {
-    margin: 0;
-    font-size: 20px;
+.login-header{
+    background:#e0f2fe;
+    padding:25px;
+    text-align:center;
+    color:#0369a1;
 }
 
-.login-body {
-    padding: 25px;
+.login-header h1{
+    margin:0;
+    font-size:22px;
 }
 
-label {
-    font-size: 13px;
-    font-weight: bold;
-    display: block;
-    margin-top: 15px;
+.login-body{
+    padding:30px;
 }
 
-input {
-    width: 100%;
-    padding: 10px;
-    margin-top: 6px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-    font-size: 14px;
+label{
+    font-size:13px;
+    font-weight:600;
+    display:block;
+    margin-top:15px;
+    color:#334155;
 }
 
-.pass-wrap { position: relative; }
-
-.toggle-pass {
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    cursor: pointer;
-    font-size: 12px;
-    color: #005bea;
+input{
+    width:100%;
+    padding:10px;
+    margin-top:6px;
+    border-radius:8px;
+    border:1px solid #e5e7eb;
+    font-size:14px;
+    outline:none;
 }
 
-button {
-    margin-top: 22px;
-    width: 100%;
-    padding: 12px;
-    border: none;
-    border-radius: 8px;
-    background: #005bea;
-    color: white;
-    font-weight: bold;
-    font-size: 15px;
-    cursor: pointer;
+input:focus{
+    border-color:#38bdf8;
 }
 
-button:disabled {
-    background: #9bbcf5;
+.pass-wrap{ position:relative; }
+
+.toggle-pass{
+    position:absolute;
+    right:10px;
+    top:50%;
+    transform:translateY(-50%);
+    cursor:pointer;
+    font-size:12px;
+    color:#0369a1;
 }
 
-.footer {
-    margin-top: 15px;
-    text-align: center;
-    font-size: 11px;
-    color: #777;
+button{
+    margin-top:22px;
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:10px;
+    background:#38bdf8;
+    color:white;
+    font-weight:600;
+    font-size:15px;
+    cursor:pointer;
+    transition:0.2s;
 }
 
-.error {
-    margin-top: 12px;
-    color: #d40000;
-    text-align: center;
-    font-size: 12px;
+button:hover{
+    background:#0ea5e9;
+}
+
+button:disabled{
+    background:#bae6fd;
+}
+
+.footer{
+    margin-top:15px;
+    text-align:center;
+    font-size:11px;
+    color:#94a3b8;
+}
+
+.error{
+    margin-top:12px;
+    color:#dc2626;
+    text-align:center;
+    font-size:12px;
 }
 
 /* LOADING */
-.loading {
-    position: fixed;
-    inset: 0;
-    background: rgba(255,255,255,0.85);
-    display: none;
-    justify-content: center;
-    align-items: center;
-    z-index: 999;
+.loading{
+    position:fixed;
+    inset:0;
+    background:rgba(255,255,255,0.8);
+    display:none;
+    justify-content:center;
+    align-items:center;
+    z-index:999;
 }
 
-.spinner {
-    width: 45px;
-    height: 45px;
-    border: 5px solid #ddd;
-    border-top: 5px solid #005bea;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
+.spinner{
+    width:45px;
+    height:45px;
+    border:5px solid #e5e7eb;
+    border-top:5px solid #38bdf8;
+    border-radius:50%;
+    animation:spin 1s linear infinite;
 }
 
-@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes spin{
+    to{ transform:rotate(360deg); }
+}
 </style>
 </head>
 
@@ -185,19 +203,13 @@ async function login(){
         const result = await res.json();
 
         if(result.status === "success"){
-    sessionStorage.setItem("nama", result.nama);
-    sessionStorage.setItem("unit", result.unit);
 
-    // NOTIF PASSWORD DEFAULT
-    if(password === "12345"){
-        alert(
-            "⚠️ Password Anda masih password default.\n" +
-            "Silakan segera mengganti password melalui menu Profil."
-        );
-    }
+            sessionStorage.setItem("nama", result.nama);
+            sessionStorage.setItem("unit", result.unit);
 
-    window.location.href = "/pok/data_pok.html";
-    } else {
+            window.location.href = "dashboard.html";
+
+        } else {
             showLoading(false);
             errorMsg.textContent = result.message;
         }
@@ -206,14 +218,7 @@ async function login(){
         errorMsg.textContent = "Gagal terhubung ke server";
     }
 }
-
-document.addEventListener("keydown", e => {
-    if(e.key === "Enter") login();
-});
 </script>
 
 </body>
 </html>
-
-
-
