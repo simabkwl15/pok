@@ -22,11 +22,6 @@ body{
     grid-template-columns:240px 1fr;
     background:#f8fafc;
     color:#334155;
-    transition:0.3s;
-}
-
-body.collapsed{
-    grid-template-columns:80px 1fr;
 }
 
 /* SIDEBAR */
@@ -36,6 +31,8 @@ body.collapsed{
     border-right:1px solid #e5e7eb;
     display:flex;
     flex-direction:column;
+    position:fixed;
+    width:240px;
 }
 
 .sidebar-brand{
@@ -55,7 +52,6 @@ body.collapsed{
 }
 
 .sidebar ul li{
-    position:relative;
     padding:10px 14px;
     margin-bottom:6px;
     border-radius:10px;
@@ -78,39 +74,15 @@ body.collapsed{
     background:#f1f5f9;
 }
 
-body.collapsed .sidebar ul li span,
-body.collapsed .sidebar-brand span{
-    display:none;
-}
-
-/* TOOLTIP */
-.sidebar ul li::after{
-    content:attr(data-tooltip);
-    position:absolute;
-    left:90px;
-    background:#0f172a;
-    color:#fff;
-    padding:6px 10px;
-    border-radius:6px;
-    font-size:12px;
-    opacity:0;
-    pointer-events:none;
-    transition:0.2s;
-    white-space:nowrap;
-}
-
-body.collapsed .sidebar ul li:hover::after{
-    opacity:1;
-}
-
 /* MAIN */
 .main{
+    margin-left:240px;
     min-height:100vh;
     display:flex;
     flex-direction:column;
 }
 
-/* TOPBAR */
+/* FREEZE TOPBAR */
 .topbar{
     height:60px;
     background:#ffffff;
@@ -119,24 +91,21 @@ body.collapsed .sidebar ul li:hover::after{
     justify-content:space-between;
     align-items:center;
     padding:0 30px;
+    position:fixed;
+    top:0;
+    left:240px;
+    right:0;
+    z-index:1000;
 }
 
 .topbar-left{
-    display:flex;
-    align-items:center;
-    gap:15px;
     font-weight:600;
-}
-
-.toggle-btn{
-    cursor:pointer;
-    font-size:18px;
-    color:#0369a1;
 }
 
 /* CONTENT */
 .content{
     padding:30px;
+    margin-top:80px;
 }
 
 /* CARDS */
@@ -173,14 +142,14 @@ body.collapsed .sidebar ul li:hover::after{
     font-weight:700;
 }
 
-/* CHART + TABLE GRID */
+/* GRID */
 .dashboard-grid{
     display:grid;
     grid-template-columns:2fr 1fr;
-    grid-template-rows:auto auto;
     gap:20px;
 }
 
+/* CHART BOX */
 .chart-box{
     background:white;
     padding:20px;
@@ -189,6 +158,7 @@ body.collapsed .sidebar ul li:hover::after{
     height:350px;
 }
 
+/* TABLE BOX */
 .table-box{
     grid-column:1 / 2;
     background:white;
@@ -222,7 +192,7 @@ th{
 </style>
 </head>
 
-<body id="body">
+<body>
 
 <div class="sidebar">
     <div class="sidebar-brand">
@@ -230,12 +200,12 @@ th{
         <span>SiMAB</span>
     </div>
     <ul>
-        <li data-tooltip="Dashboard"><i class="fa-solid fa-gauge"></i><span>Dashboard</span></li>
-        <li data-tooltip="POK"><i class="fa-solid fa-folder-open"></i><span>POK</span></li>
-        <li data-tooltip="Daftar Kegiatan"><i class="fa-solid fa-list-check"></i><span>Daftar Kegiatan</span></li>
-        <li data-tooltip="Rencana Penarikan Dana"><i class="fa-solid fa-wallet"></i><span>Rencana Penarikan Dana</span></li>
-        <li data-tooltip="Statistik"><i class="fa-solid fa-chart-column"></i><span>Statistik</span></li>
-        <li data-tooltip="Tentang"><i class="fa-solid fa-circle-info"></i><span>Tentang</span></li>
+        <li><i class="fa-solid fa-gauge"></i><span>Dashboard</span></li>
+        <li><i class="fa-solid fa-folder-open"></i><span>POK</span></li>
+        <li><i class="fa-solid fa-list-check"></i><span>Daftar Kegiatan</span></li>
+        <li><i class="fa-solid fa-wallet"></i><span>Rencana Penarikan Dana</span></li>
+        <li><i class="fa-solid fa-chart-column"></i><span>Statistik</span></li>
+        <li><i class="fa-solid fa-circle-info"></i><span>Tentang</span></li>
     </ul>
 </div>
 
@@ -243,7 +213,6 @@ th{
 
 <div class="topbar">
     <div class="topbar-left">
-        <i class="fa-solid fa-bars toggle-btn" onclick="toggleSidebar()"></i>
         Sistem Monitoring Anggaran Belanja
     </div>
     <div>Ahmad (Admin)</div>
@@ -304,16 +273,6 @@ th{
 </div>
 
 <script>
-const body = document.getElementById('body');
-
-function toggleSidebar(){
-    body.classList.toggle('collapsed');
-    setTimeout(()=>{
-        lineChart.resize();
-        pieChart.resize();
-    },300);
-}
-
 const lineChart = new Chart(document.getElementById('lineChart'),{
     type:'line',
     data:{
