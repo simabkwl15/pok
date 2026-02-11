@@ -17,7 +17,6 @@
     font-family:'Inter',sans-serif;
 }
 
-/* ===== GRID LAYOUT ===== */
 body{
     display:grid;
     grid-template-columns:240px 1fr;
@@ -50,10 +49,6 @@ body.collapsed{
     gap:10px;
 }
 
-body.collapsed .sidebar-brand span{
-    display:none;
-}
-
 .sidebar ul{
     list-style:none;
     padding:20px 10px;
@@ -73,11 +68,18 @@ body.collapsed .sidebar-brand span{
     transition:0.2s;
 }
 
+.sidebar ul li i{
+    width:20px;
+    text-align:center;
+    font-size:16px;
+}
+
 .sidebar ul li:hover{
     background:#f1f5f9;
 }
 
-body.collapsed .sidebar ul li span{
+body.collapsed .sidebar ul li span,
+body.collapsed .sidebar-brand span{
     display:none;
 }
 
@@ -124,7 +126,6 @@ body.collapsed .sidebar ul li:hover::after{
     align-items:center;
     gap:15px;
     font-weight:600;
-    font-size:15px;
 }
 
 .toggle-btn{
@@ -157,7 +158,6 @@ body.collapsed .sidebar ul li:hover::after{
     transform:translateY(-4px);
 }
 
-/* PASTEL COLORS */
 .cards .card:nth-child(1){background:#e0f2fe;color:#0369a1;}
 .cards .card:nth-child(2){background:#dcfce7;color:#166534;}
 .cards .card:nth-child(3){background:#ffedd5;color:#9a3412;}
@@ -165,7 +165,6 @@ body.collapsed .sidebar ul li:hover::after{
 
 .card h3{
     font-size:13px;
-    font-weight:500;
     margin-bottom:8px;
 }
 
@@ -174,10 +173,11 @@ body.collapsed .sidebar ul li:hover::after{
     font-weight:700;
 }
 
-/* CHARTS */
-.charts{
+/* CHART + TABLE GRID */
+.dashboard-grid{
     display:grid;
     grid-template-columns:2fr 1fr;
+    grid-template-rows:auto auto;
     gap:20px;
 }
 
@@ -186,11 +186,36 @@ body.collapsed .sidebar ul li:hover::after{
     padding:20px;
     border-radius:16px;
     border:1px solid #e5e7eb;
-    height:350px; /* penting supaya resize normal */
+    height:350px;
+}
+
+.table-box{
+    grid-column:1 / 2;
+    background:white;
+    padding:20px;
+    border-radius:16px;
+    border:1px solid #e5e7eb;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:14px;
+}
+
+th, td{
+    padding:10px;
+    border-bottom:1px solid #e5e7eb;
+    text-align:left;
+}
+
+th{
+    background:#f1f5f9;
+    font-weight:600;
 }
 
 @media(max-width:1000px){
-    .charts{
+    .dashboard-grid{
         grid-template-columns:1fr;
     }
 }
@@ -206,7 +231,7 @@ body.collapsed .sidebar ul li:hover::after{
     </div>
     <ul>
         <li data-tooltip="Dashboard"><i class="fa-solid fa-gauge"></i><span>Dashboard</span></li>
-        <li data-tooltip="POK"><i class="fa-solid fa-file-invoice"></i><span>POK</span></li>
+        <li data-tooltip="POK"><i class="fa-solid fa-folder-open"></i><span>POK</span></li>
         <li data-tooltip="Daftar Kegiatan"><i class="fa-solid fa-list-check"></i><span>Daftar Kegiatan</span></li>
         <li data-tooltip="Rencana Penarikan Dana"><i class="fa-solid fa-wallet"></i><span>Rencana Penarikan Dana</span></li>
         <li data-tooltip="Statistik"><i class="fa-solid fa-chart-column"></i><span>Statistik</span></li>
@@ -233,15 +258,46 @@ body.collapsed .sidebar ul li:hover::after{
     <div class="card"><h3>Dalam Proses</h3><span>8</span></div>
 </div>
 
-<div class="charts">
+<div class="dashboard-grid">
+
     <div class="chart-box">
         <h3>Grafik Kegiatan</h3>
         <canvas id="lineChart"></canvas>
     </div>
+
     <div class="chart-box">
         <h3>Jenis Kegiatan</h3>
         <canvas id="pieChart"></canvas>
     </div>
+
+    <div class="table-box">
+        <h3 style="margin-bottom:15px;">Kegiatan Hari Ini</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Uraian Kegiatan</th>
+                    <th>Pelaksana Tugas</th>
+                    <th>Tanggal Mulai</th>
+                    <th>Tujuan</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Rapat Evaluasi Anggaran</td>
+                    <td>Budi Santoso</td>
+                    <td>11 Feb 2026</td>
+                    <td>Monitoring Realisasi</td>
+                </tr>
+                <tr>
+                    <td>Verifikasi Dokumen POK</td>
+                    <td>Siti Aminah</td>
+                    <td>11 Feb 2026</td>
+                    <td>Validasi Administrasi</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
 </div>
 
 </div>
@@ -252,14 +308,12 @@ const body = document.getElementById('body');
 
 function toggleSidebar(){
     body.classList.toggle('collapsed');
-
     setTimeout(()=>{
         lineChart.resize();
         pieChart.resize();
     },300);
 }
 
-/* LINE CHART */
 const lineChart = new Chart(document.getElementById('lineChart'),{
     type:'line',
     data:{
@@ -272,14 +326,9 @@ const lineChart = new Chart(document.getElementById('lineChart'),{
             tension:0.4
         }]
     },
-    options:{
-        responsive:true,
-        maintainAspectRatio:false,
-        plugins:{legend:{display:false}}
-    }
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}}
 });
 
-/* PIE CHART */
 const pieChart = new Chart(document.getElementById('pieChart'),{
     type:'doughnut',
     data:{
@@ -289,12 +338,7 @@ const pieChart = new Chart(document.getElementById('pieChart'),{
             backgroundColor:['#bae6fd','#bbf7d0','#fed7aa','#fecaca']
         }]
     },
-    options:{
-        responsive:true,
-        maintainAspectRatio:false,
-        plugins:{legend:{position:'bottom'}},
-        cutout:'65%'
-    }
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom'}},cutout:'65%'}
 });
 </script>
 
