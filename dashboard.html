@@ -17,7 +17,7 @@
     font-family:'Inter',sans-serif;
 }
 
-/* ===== LAYOUT FIX (GRID SYSTEM) ===== */
+/* ===== GRID LAYOUT ===== */
 body{
     display:grid;
     grid-template-columns:240px 1fr;
@@ -37,7 +37,6 @@ body.collapsed{
     border-right:1px solid #e5e7eb;
     display:flex;
     flex-direction:column;
-    transition:0.3s;
 }
 
 .sidebar-brand{
@@ -187,6 +186,7 @@ body.collapsed .sidebar ul li:hover::after{
     padding:20px;
     border-radius:16px;
     border:1px solid #e5e7eb;
+    height:350px; /* penting supaya resize normal */
 }
 
 @media(max-width:1000px){
@@ -206,7 +206,7 @@ body.collapsed .sidebar ul li:hover::after{
     </div>
     <ul>
         <li data-tooltip="Dashboard"><i class="fa-solid fa-gauge"></i><span>Dashboard</span></li>
-        <li data-tooltip="POK"><i class="fa-solid fa-file-invoice"></i><span> POK</span></li>
+        <li data-tooltip="POK"><i class="fa-solid fa-file-invoice"></i><span>POK</span></li>
         <li data-tooltip="Daftar Kegiatan"><i class="fa-solid fa-list-check"></i><span>Daftar Kegiatan</span></li>
         <li data-tooltip="Rencana Penarikan Dana"><i class="fa-solid fa-wallet"></i><span>Rencana Penarikan Dana</span></li>
         <li data-tooltip="Statistik"><i class="fa-solid fa-chart-column"></i><span>Statistik</span></li>
@@ -221,9 +221,7 @@ body.collapsed .sidebar ul li:hover::after{
         <i class="fa-solid fa-bars toggle-btn" onclick="toggleSidebar()"></i>
         Sistem Monitoring Anggaran Belanja
     </div>
-    <div>
-        Ahmad (Admin)
-    </div>
+    <div>Ahmad (Admin)</div>
 </div>
 
 <div class="content">
@@ -250,11 +248,19 @@ body.collapsed .sidebar ul li:hover::after{
 </div>
 
 <script>
+const body = document.getElementById('body');
+
 function toggleSidebar(){
-    document.getElementById('body').classList.toggle('collapsed');
+    body.classList.toggle('collapsed');
+
+    setTimeout(()=>{
+        lineChart.resize();
+        pieChart.resize();
+    },300);
 }
 
-new Chart(document.getElementById('lineChart'),{
+/* LINE CHART */
+const lineChart = new Chart(document.getElementById('lineChart'),{
     type:'line',
     data:{
         labels:['Jan','Feb','Mar','Apr','Mei','Jun'],
@@ -266,10 +272,15 @@ new Chart(document.getElementById('lineChart'),{
             tension:0.4
         }]
     },
-    options:{plugins:{legend:{display:false}}}
+    options:{
+        responsive:true,
+        maintainAspectRatio:false,
+        plugins:{legend:{display:false}}
+    }
 });
 
-new Chart(document.getElementById('pieChart'),{
+/* PIE CHART */
+const pieChart = new Chart(document.getElementById('pieChart'),{
     type:'doughnut',
     data:{
         labels:['Barang','Jasa','Perjalanan Dinas','Lainnya'],
@@ -278,7 +289,12 @@ new Chart(document.getElementById('pieChart'),{
             backgroundColor:['#bae6fd','#bbf7d0','#fed7aa','#fecaca']
         }]
     },
-    options:{plugins:{legend:{position:'bottom'}},cutout:'65%'}
+    options:{
+        responsive:true,
+        maintainAspectRatio:false,
+        plugins:{legend:{position:'bottom'}},
+        cutout:'65%'
+    }
 });
 </script>
 
