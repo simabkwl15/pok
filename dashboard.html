@@ -31,8 +31,8 @@ body{
     border-right:1px solid #e5e7eb;
     display:flex;
     flex-direction:column;
-    position:fixed;
-    width:240px;
+    position:sticky;
+    top:0;
 }
 
 .sidebar-brand{
@@ -76,13 +76,12 @@ body{
 
 /* MAIN */
 .main{
-    margin-left:240px;
     min-height:100vh;
     display:flex;
     flex-direction:column;
 }
 
-/* FREEZE TOPBAR */
+/* TOPBAR (FROZEN) */
 .topbar{
     height:60px;
     background:#ffffff;
@@ -91,21 +90,21 @@ body{
     justify-content:space-between;
     align-items:center;
     padding:0 30px;
-    position:fixed;
+    position:sticky;
     top:0;
-    left:240px;
-    right:0;
     z-index:1000;
 }
 
 .topbar-left{
+    display:flex;
+    align-items:center;
+    gap:15px;
     font-weight:600;
 }
 
 /* CONTENT */
 .content{
     padding:30px;
-    margin-top:80px;
 }
 
 /* CARDS */
@@ -142,14 +141,14 @@ body{
     font-weight:700;
 }
 
-/* GRID */
+/* CHART + TABLE GRID */
 .dashboard-grid{
     display:grid;
     grid-template-columns:2fr 1fr;
+    grid-template-rows:auto auto;
     gap:20px;
 }
 
-/* CHART BOX */
 .chart-box{
     background:white;
     padding:20px;
@@ -158,7 +157,6 @@ body{
     height:350px;
 }
 
-/* TABLE BOX */
 .table-box{
     grid-column:1 / 2;
     background:white;
@@ -199,6 +197,7 @@ th{
         <i class="fa-solid fa-layer-group"></i>
         <span>SiMAB</span>
     </div>
+
     <ul>
         <li><i class="fa-solid fa-gauge"></i><span>Dashboard</span></li>
         <li><i class="fa-solid fa-folder-open"></i><span>POK</span></li>
@@ -211,65 +210,65 @@ th{
 
 <div class="main">
 
-<div class="topbar">
-    <div class="topbar-left">
-        Sistem Monitoring Anggaran Belanja
-    </div>
-    <div>Ahmad (Admin)</div>
-</div>
-
-<div class="content">
-
-<div class="cards">
-    <div class="card"><h3>Total Kegiatan</h3><span>120</span></div>
-    <div class="card"><h3>Selesai</h3><span>85</span></div>
-    <div class="card"><h3>Terbayar</h3><span>42</span></div>
-    <div class="card"><h3>Dalam Proses</h3><span>8</span></div>
-</div>
-
-<div class="dashboard-grid">
-
-    <div class="chart-box">
-        <h3>Grafik Kegiatan</h3>
-        <canvas id="lineChart"></canvas>
+    <div class="topbar">
+        <div class="topbar-left">
+            Sistem Monitoring Anggaran Belanja
+        </div>
+        <div>Ahmad (Admin)</div>
     </div>
 
-    <div class="chart-box">
-        <h3>Jenis Kegiatan</h3>
-        <canvas id="pieChart"></canvas>
+    <div class="content">
+
+        <div class="cards">
+            <div class="card"><h3>Total Kegiatan</h3><span>120</span></div>
+            <div class="card"><h3>Selesai</h3><span>85</span></div>
+            <div class="card"><h3>Terbayar</h3><span>42</span></div>
+            <div class="card"><h3>Dalam Proses</h3><span>8</span></div>
+        </div>
+
+        <div class="dashboard-grid">
+
+            <div class="chart-box">
+                <h3>Grafik Kegiatan</h3>
+                <canvas id="lineChart"></canvas>
+            </div>
+
+            <div class="chart-box">
+                <h3>Jenis Kegiatan</h3>
+                <canvas id="pieChart"></canvas>
+            </div>
+
+            <div class="table-box">
+                <h3 style="margin-bottom:15px;">Kegiatan Hari Ini</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Uraian Kegiatan</th>
+                            <th>Pelaksana Tugas</th>
+                            <th>Tanggal Mulai</th>
+                            <th>Tujuan</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Rapat Evaluasi Anggaran</td>
+                            <td>Budi Santoso</td>
+                            <td>11 Feb 2026</td>
+                            <td>Monitoring Realisasi</td>
+                        </tr>
+                        <tr>
+                            <td>Verifikasi Dokumen POK</td>
+                            <td>Siti Aminah</td>
+                            <td>11 Feb 2026</td>
+                            <td>Validasi Administrasi</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
     </div>
-
-    <div class="table-box">
-        <h3 style="margin-bottom:15px;">Kegiatan Hari Ini</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>Uraian Kegiatan</th>
-                    <th>Pelaksana Tugas</th>
-                    <th>Tanggal Mulai</th>
-                    <th>Tujuan</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Rapat Evaluasi Anggaran</td>
-                    <td>Budi Santoso</td>
-                    <td>11 Feb 2026</td>
-                    <td>Monitoring Realisasi</td>
-                </tr>
-                <tr>
-                    <td>Verifikasi Dokumen POK</td>
-                    <td>Siti Aminah</td>
-                    <td>11 Feb 2026</td>
-                    <td>Validasi Administrasi</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-
-</div>
-
-</div>
 </div>
 
 <script>
@@ -285,7 +284,11 @@ const lineChart = new Chart(document.getElementById('lineChart'),{
             tension:0.4
         }]
     },
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}}
+    options:{
+        responsive:true,
+        maintainAspectRatio:false,
+        plugins:{legend:{display:false}}
+    }
 });
 
 const pieChart = new Chart(document.getElementById('pieChart'),{
@@ -297,7 +300,12 @@ const pieChart = new Chart(document.getElementById('pieChart'),{
             backgroundColor:['#bae6fd','#bbf7d0','#fed7aa','#fecaca']
         }]
     },
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom'}},cutout:'65%'}
+    options:{
+        responsive:true,
+        maintainAspectRatio:false,
+        plugins:{legend:{position:'bottom'}},
+        cutout:'65%'
+    }
 });
 </script>
 
