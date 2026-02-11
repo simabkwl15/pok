@@ -81,7 +81,7 @@ body{
     flex-direction:column;
 }
 
-/* TOPBAR (FROZEN) */
+/* TOPBAR */
 .topbar{
     height:60px;
     background:#ffffff;
@@ -100,6 +100,32 @@ body{
     align-items:center;
     gap:15px;
     font-weight:600;
+}
+
+/* NEW TOPBAR RIGHT */
+.topbar-right{
+    display:flex;
+    align-items:center;
+    gap:18px;
+    font-size:14px;
+}
+
+.topbar-right i{
+    font-size:16px;
+    cursor:pointer;
+    color:#475569;
+    transition:0.2s;
+}
+
+.topbar-right i:hover{
+    color:#0369a1;
+}
+
+.user-info{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-weight:500;
 }
 
 /* CONTENT */
@@ -141,7 +167,7 @@ body{
     font-weight:700;
 }
 
-/* CHART + TABLE GRID */
+/* GRID */
 .dashboard-grid{
     display:grid;
     grid-template-columns:2fr 1fr;
@@ -214,7 +240,16 @@ th{
         <div class="topbar-left">
             Sistem Monitoring Anggaran Belanja
         </div>
-        <div>Ahmad (Admin)</div>
+
+        <div class="topbar-right">
+            <i class="fa-regular fa-calendar"></i>
+            <i class="fa-solid fa-gear"></i>
+            <div class="user-info">
+                <i class="fa-regular fa-user"></i>
+                Ahmad
+            </div>
+            <i class="fa-solid fa-right-from-bracket" title="Logout"></i>
+        </div>
     </div>
 
     <div class="content">
