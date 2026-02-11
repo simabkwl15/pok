@@ -7,6 +7,7 @@
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <style>
 * {
@@ -28,10 +29,11 @@ body {
     color: white;
     height: 100vh;
     padding: 20px;
+    position: fixed;
 }
 
 .sidebar h2 {
-    font-size: 18px;
+    font-size: 20px;
     margin-bottom: 30px;
 }
 
@@ -44,6 +46,9 @@ body {
     margin-bottom: 10px;
     border-radius: 8px;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
 .sidebar ul li:hover {
@@ -52,23 +57,51 @@ body {
 
 /* MAIN */
 .main {
-    flex: 1;
-    padding: 20px 30px;
+    margin-left: 240px;
+    width: 100%;
 }
 
-/* TOPBAR */
+/* TOPBAR FIXED */
 .topbar {
+    height: 60px;
+    background: white;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 25px;
+    padding: 0 30px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    position: fixed;
+    width: calc(100% - 240px);
+    z-index: 1000;
 }
 
-.topbar h1 {
-    font-size: 22px;
-    font-weight: 700;
+.topbar-left {
+    font-weight: 600;
+    font-size: 16px;
 }
 
+.topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    font-size: 14px;
+}
+
+.topbar-right i {
+    cursor: pointer;
+    color: #555;
+}
+
+.topbar-right i:hover {
+    color: #1e4fa3;
+}
+
+/* CONTENT */
+.content {
+    padding: 90px 30px 30px 30px;
+}
+
+/* CARDS */
 .cards {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -98,6 +131,7 @@ body {
 .orange { background: linear-gradient(135deg,#ff9f43,#e67e22); }
 .red { background: linear-gradient(135deg,#ff6b6b,#c0392b); }
 
+/* CHARTS */
 .charts {
     display: grid;
     grid-template-columns: 2fr 1fr;
@@ -158,97 +192,74 @@ table th, table td {
 </head>
 <body>
 
+<!-- SIDEBAR -->
 <div class="sidebar">
-    <h2>SiMAB</h2>
-    <h3>KPKNL Denpasar</h3>
+    <h2><i class="fa-solid fa-layer-group"></i> SiMAB</h2>
     <ul>
-        <li>Dashboard</li>
-        <li>POK</li>
-        <li>Daftar Kegiatan</li>
-        <li>Rencana Penarikan Dana</li>
-        <li>Statistik</li>
-        <li>Tentang</li>
-        </ul>
+        <li><i class="fa-solid fa-gauge"></i> Dashboard</li>
+        <li><i class="fa-solid fa-file-invoice"></i> POK</li>
+        <li><i class="fa-solid fa-list-check"></i> Daftar Kegiatan</li>
+        <li><i class="fa-solid fa-wallet"></i> Rencana Penarikan Dana</li>
+        <li><i class="fa-solid fa-chart-column"></i> Statistik</li>
+        <li><i class="fa-solid fa-circle-info"></i> Tentang</li>
+    </ul>
 </div>
 
+<!-- MAIN -->
 <div class="main">
 
+    <!-- TOPBAR -->
     <div class="topbar">
-        <h1>Selamat Datang, Ahmad</h1>
-        <div>Admin</div>
-    </div>
-
-    <div class="cards">
-        <div class="card blue">
-            <h3>Total Kegiatan</h3>
-            <span>120</span>
+        <div class="topbar-left">
+            Dashboard SiMAB
         </div>
-        <div class="card green">
-            <h3>Selesai</h3>
-            <span>85</span>
-        </div>
-        <div class="card orange">
-            <h3>Terbayar</h3>
-            <span>42</span>
-        </div>
-        <div class="card red">
-            <h3>Dalam Proses</h3>
-            <span>8</span>
+        <div class="topbar-right">
+            <span>Ahmad (Admin)</span>
+            <i class="fa-regular fa-calendar"></i>
+            <i class="fa-solid fa-gear"></i>
+            <i class="fa-solid fa-right-from-bracket"></i>
         </div>
     </div>
 
-    <div class="charts">
-        <div class="chart-box">
-            <h3>Grafik Keiatan</h3>
-            <canvas id="lineChart"></canvas>
+    <!-- CONTENT -->
+    <div class="content">
+
+        <div class="cards">
+            <div class="card blue">
+                <h3>Total Kegiatan</h3>
+                <span>120</span>
+            </div>
+            <div class="card green">
+                <h3>Selesai</h3>
+                <span>85</span>
+            </div>
+            <div class="card orange">
+                <h3>Terbayar</h3>
+                <span>42</span>
+            </div>
+            <div class="card red">
+                <h3>Dalam Proses</h3>
+                <span>8</span>
+            </div>
         </div>
 
-        <div class="chart-box">
-            <h3>Jenis Kegiatan</h3>
-            <canvas id="pieChart"></canvas>
+        <div class="charts">
+            <div class="chart-box">
+                <h3>Grafik Kegiatan</h3>
+                <canvas id="lineChart"></canvas>
+            </div>
+
+            <div class="chart-box">
+                <h3>Jenis Kegiatan</h3>
+                <canvas id="pieChart"></canvas>
+            </div>
         </div>
-    </div>
 
-    <div class="table-box">
-        <h3>Pengaduan Terbaru</h3>
-        <br>
-        <table>
-            <tr>
-                <th>No</th>
-                <th>Pelapor</th>
-                <th>Kategori</th>
-                <th>Status</th>
-                <th>Tanggal</th>
-            </tr>
-            <tr>
-                <td>1</td>
-                <td>Budi Santoso</td>
-                <td>Infrastruktur</td>
-                <td><span class="status wait">Menunggu</span></td>
-                <td>12 Apr 2024</td>
-            </tr>
-            <tr>
-                <td>2</td>
-                <td>Siti Rahma</td>
-                <td>Pelayanan Publik</td>
-                <td><span class="status process">Diproses</span></td>
-                <td>10 Apr 2024</td>
-            </tr>
-            <tr>
-                <td>3</td>
-                <td>Andi Wijaya</td>
-                <td>Kebersihan</td>
-                <td><span class="status done">Selesai</span></td>
-                <td>08 Apr 2024</td>
-            </tr>
-        </table>
     </div>
-
 </div>
 
 <script>
-const lineCtx = document.getElementById('lineChart');
-new Chart(lineCtx, {
+new Chart(document.getElementById('lineChart'), {
     type: 'line',
     data: {
         labels: ['Jan','Feb','Mar','Apr','Mei','Jun'],
@@ -263,13 +274,12 @@ new Chart(lineCtx, {
     }
 });
 
-const pieCtx = document.getElementById('pieChart');
-new Chart(pieCtx, {
+new Chart(document.getElementById('pieChart'), {
     type: 'doughnut',
     data: {
-        labels: ['KTP','Perizinan','Akta','Lainnya'],
+        labels: ['Barang','Jasa','Perjalanan Dinas','Lainnya'],
         datasets: [{
-            data: [35,20,20,20],
+            data: [35,25,20,20],
             backgroundColor: [
                 '#2f6edc',
                 '#2ecc71',
