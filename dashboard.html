@@ -121,6 +121,7 @@ body{
 /* CONTENT */
 .content{
     padding:30px;
+    padding-bottom:80px; /* agar tidak tertutup footer */
 }
 
 .cards{
@@ -135,6 +136,7 @@ body{
     border-radius:16px;
     border:1px solid #e5e7eb;
     transition:0.2s;
+    background:white;
 }
 
 .card:hover{
@@ -162,17 +164,12 @@ body{
     gap:20px;
 }
 
-.chart-box,
-.table-box{
+.chart-box{
     background:white;
     padding:20px;
     border-radius:16px;
     border:1px solid #e5e7eb;
     height:350px;
-}
-
-.table-box{
-    height:auto;
 }
 
 table{
@@ -192,9 +189,28 @@ th{
     font-weight:600;
 }
 
+/* FOOTER FREEZE */
+.footer{
+    position:fixed;
+    bottom:0;
+    left:240px;
+    right:0;
+    height:45px;
+    background:#ffffff;
+    border-top:1px solid #e5e7eb;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:13px;
+    color:#64748b;
+}
+
 @media(max-width:1000px){
     body{
         grid-template-columns:1fr;
+    }
+    .footer{
+        left:0;
     }
     .dashboard-grid{
         grid-template-columns:1fr;
@@ -249,23 +265,51 @@ th{
         </div>
 
         <div class="dashboard-grid">
+
+            <!-- DIGANTI MENJADI TABEL -->
             <div class="chart-box">
-                <h3>Grafik Kegiatan</h3>
-                <canvas id="lineChart"></canvas>
+                <h3 style="margin-bottom:15px;">Kegiatan Hari Ini</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Uraian / No ST</th>
+                            <th>Pelaksana Tugas</th>
+                            <th>Tujuan</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>ST-001 / Rapat Evaluasi</td>
+                            <td>Budi Santoso</td>
+                            <td>Monitoring Realisasi</td>
+                        </tr>
+                        <tr>
+                            <td>ST-002 / Verifikasi POK</td>
+                            <td>Siti Aminah</td>
+                            <td>Validasi Administrasi</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
 
+            <!-- PIE CHART TETAP -->
             <div class="chart-box">
                 <h3>Jenis Kegiatan</h3>
                 <canvas id="pieChart"></canvas>
             </div>
+
         </div>
     </div>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+    © KPKNL Denpasar 2026
 </div>
 
 <script>
 document.addEventListener("DOMContentLoaded", function(){
 
-    // AMBIL NAMA DARI SESSION
     const nama = sessionStorage.getItem("nama");
 
     if(!nama){
@@ -274,27 +318,6 @@ document.addEventListener("DOMContentLoaded", function(){
         document.getElementById("namaUser").textContent = nama;
     }
 
-    // CHART LINE
-    new Chart(document.getElementById('lineChart'),{
-        type:'line',
-        data:{
-            labels:['Jan','Feb','Mar','Apr','Mei','Jun'],
-            datasets:[{
-                data:[120,150,210,250,180,310],
-                borderColor:'#38bdf8',
-                backgroundColor:'rgba(56,189,248,0.15)',
-                fill:true,
-                tension:0.4
-            }]
-        },
-        options:{
-            responsive:true,
-            maintainAspectRatio:false,
-            plugins:{legend:{display:false}}
-        }
-    });
-
-    // CHART PIE
     new Chart(document.getElementById('pieChart'),{
         type:'doughnut',
         data:{
@@ -314,7 +337,6 @@ document.addEventListener("DOMContentLoaded", function(){
 
 });
 
-// LOGOUT FUNCTION
 function logout(){
     sessionStorage.clear();
     window.location.replace("index.html");
