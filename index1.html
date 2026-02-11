@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Login | SiMAB KPKNL Denpasar</title>
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    height: 100vh;
+    background: linear-gradient(135deg,#1e3c72,#2a5298);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: "Segoe UI", Arial, sans-serif;
+}
+
+.login-card {
+    background: #fff;
+    width: 380px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.25);
+}
+
+.login-header {
+    background: linear-gradient(135deg,#005bea,#00c6fb);
+    padding: 22px;
+    text-align: center;
+    color: white;
+}
+
+.login-header h1 {
+    margin: 0;
+    font-size: 20px;
+}
+
+.login-body {
+    padding: 25px;
+}
+
+label {
+    font-size: 13px;
+    font-weight: bold;
+    display: block;
+    margin-top: 15px;
+}
+
+input {
+    width: 100%;
+    padding: 10px;
+    margin-top: 6px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+}
+
+.pass-wrap { position: relative; }
+
+.toggle-pass {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    font-size: 12px;
+    color: #005bea;
+}
+
+button {
+    margin-top: 22px;
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    background: #005bea;
+    color: white;
+    font-weight: bold;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+button:disabled {
+    background: #9bbcf5;
+}
+
+.footer {
+    margin-top: 15px;
+    text-align: center;
+    font-size: 11px;
+    color: #777;
+}
+
+.error {
+    margin-top: 12px;
+    color: #d40000;
+    text-align: center;
+    font-size: 12px;
+}
+
+/* LOADING */
+.loading {
+    position: fixed;
+    inset: 0;
+    background: rgba(255,255,255,0.85);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+}
+
+.spinner {
+    width: 45px;
+    height: 45px;
+    border: 5px solid #ddd;
+    border-top: 5px solid #005bea;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+
+<body>
+
+<div class="loading" id="loading">
+    <div class="spinner"></div>
+</div>
+
+<div class="login-card">
+    <div class="login-header">
+        <h1>SiMAB</h1>
+        <small>Sistem Monitoring Anggaran Belanja</small>
+    </div>
+
+    <div class="login-body">
+        <label>NIP</label>
+        <input type="text" id="nip" placeholder="Masukkan NIP">
+
+        <label>Password</label>
+        <div class="pass-wrap">
+            <input type="password" id="password" placeholder="Masukkan Password">
+            <span class="toggle-pass" onclick="togglePass()">lihat</span>
+        </div>
+
+        <button id="btnLogin" onclick="login()">LOGIN</button>
+        <div class="error" id="errorMsg"></div>
+
+        <div class="footer">© 2026 KPKNL Denpasar</div>
+    </div>
+</div>
+
+<script>
+const apiURL = "https://script.google.com/macros/s/AKfycbxIPQKTaOuQG26lvMc4hQggLsd_nBBnls0Km0-HVXbVPNoz-sKESMTXFXszFnHHWTUh/exec";
+
+function showLoading(show){
+    document.getElementById("loading").style.display = show ? "flex" : "none";
+    document.getElementById("btnLogin").disabled = show;
+}
+
+function togglePass(){
+    const p = document.getElementById("password");
+    p.type = p.type === "password" ? "text" : "password";
+}
+
+async function login(){
+    const nip = document.getElementById("nip").value.trim();
+    const password = document.getElementById("password").value.trim();
+    const errorMsg = document.getElementById("errorMsg");
+
+    errorMsg.textContent = "";
+
+    if(!nip || !password){
+        errorMsg.textContent = "NIP dan Password wajib diisi";
+        return;
+    }
+
+    showLoading(true);
+
+    try{
+        const res = await fetch(`${apiURL}?nip=${nip}&password=${password}`);
+        const result = await res.json();
+
+        if(result.status === "success"){
+    sessionStorage.setItem("nama", result.nama);
+    sessionStorage.setItem("unit", result.unit);
+
+    // NOTIF PASSWORD DEFAULT
+    if(password === "12345"){
+        alert(
+            "⚠️ Password Anda masih password default.\n" +
+            "Silakan segera mengganti password melalui menu Profil."
+        );
+    }
+
+    window.location.href = "/pok/data_pok.html";
+    } else {
+            showLoading(false);
+            errorMsg.textContent = result.message;
+        }
+    } catch(err){
+        showLoading(false);
+        errorMsg.textContent = "Gagal terhubung ke server";
+    }
+}
+
+document.addEventListener("keydown", e => {
+    if(e.key === "Enter") login();
+});
+</script>
+
+</body>
+</html>
+
+
