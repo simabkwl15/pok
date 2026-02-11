@@ -102,7 +102,7 @@ body{
     font-weight:600;
 }
 
-/* NEW TOPBAR RIGHT */
+/* RIGHT AREA */
 .topbar-right{
     display:flex;
     align-items:center;
@@ -244,16 +244,17 @@ th{
         <div class="topbar-right">
             <i class="fa-regular fa-calendar"></i>
             <i class="fa-solid fa-gear"></i>
+
             <div class="user-info">
                 <i class="fa-regular fa-user"></i>
-                Ahmad
+                <span id="namaUser"></span>
             </div>
-            <i class="fa-solid fa-right-from-bracket" title="Logout"></i>
+
+            <i class="fa-solid fa-right-from-bracket" title="Logout" onclick="logout()"></i>
         </div>
     </div>
 
     <div class="content">
-
         <div class="cards">
             <div class="card"><h3>Total Kegiatan</h3><span>120</span></div>
             <div class="card"><h3>Selesai</h3><span>85</span></div>
@@ -262,7 +263,6 @@ th{
         </div>
 
         <div class="dashboard-grid">
-
             <div class="chart-box">
                 <h3>Grafik Kegiatan</h3>
                 <canvas id="lineChart"></canvas>
@@ -300,13 +300,27 @@ th{
                     </tbody>
                 </table>
             </div>
-
         </div>
-
     </div>
 </div>
 
 <script>
+// CEK LOGIN
+const nama = sessionStorage.getItem("nama");
+
+if(!nama){
+    window.location.href = "index.html";
+}else{
+    document.getElementById("namaUser").textContent = nama;
+}
+
+// LOGOUT
+function logout(){
+    sessionStorage.clear();
+    window.location.href = "index.html";
+}
+
+// CHART
 const lineChart = new Chart(document.getElementById('lineChart'),{
     type:'line',
     data:{
