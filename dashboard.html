@@ -3,285 +3,157 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard SiMAB</title>
+<title>Dashboard Monitoring</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <style>
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Inter', sans-serif;
-}
-
 body {
-    display: flex;
+    font-family: 'Inter', sans-serif;
+    margin: 0;
     background: #f8fafc;
-    color: #1e293b;
 }
 
-/* SIDEBAR */
-.sidebar {
-    width: 240px;
-    height: 100vh;
-    background: #ffffff;
-    border-right: 1px solid #e5e7eb;
-    position: fixed;
-    display: flex;
-    flex-direction: column;
-}
-
-/* BRAND HEADER */
-.sidebar-brand {
-    padding: 20px;
-    background: #1e293b;
-    color: white;
+/* HEADER */
+.header {
+    background: white;
+    padding: 20px 30px;
+    font-size: 20px;
     font-weight: 600;
-    font-size: 18px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.sidebar ul {
-    list-style: none;
-    padding: 20px 10px;
-}
-
-.sidebar ul li {
-    padding: 10px 14px;
-    margin-bottom: 6px;
-    border-radius: 8px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-size: 14px;
-    color: #334155;
-    transition: 0.2s;
-}
-
-.sidebar ul li:hover {
-    background: #f1f5f9;
-}
-
-.sidebar ul li i {
-    width: 18px;
-}
-
-/* MAIN */
-.main {
-    margin-left: 240px;
-    width: 100%;
-}
-
-/* TOPBAR */
-.topbar {
-    height: 60px;
-    background: #ffffff;
     border-bottom: 1px solid #e5e7eb;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 30px;
-    position: fixed;
-    width: calc(100% - 240px);
-    z-index: 1000;
 }
 
-.topbar-left {
-    font-weight: 600;
-    font-size: 15px;
-}
-
-.topbar-right {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    font-size: 14px;
-    color: #475569;
-}
-
-.topbar-right i {
-    cursor: pointer;
-    transition: 0.2s;
-}
-
-.topbar-right i:hover {
-    color: #1e293b;
-}
-
-/* CONTENT */
-.content {
-    padding: 90px 30px 30px 30px;
+/* CONTAINER */
+.container {
+    padding: 30px;
 }
 
 /* CARDS */
 .cards {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 20px;
-    margin-bottom: 25px;
+    margin-bottom: 30px;
 }
 
 .card {
-    background: #ffffff;
     padding: 20px;
-    border-radius: 12px;
+    border-radius: 14px;
     border: 1px solid #e5e7eb;
     transition: 0.2s;
 }
 
 .card:hover {
-    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    transform: translateY(-3px);
 }
 
 .card h3 {
-    font-size: 13px;
-    font-weight: 500;
-    color: #64748b;
-    margin-bottom: 8px;
-}
-
-.card span {
-    font-size: 24px;
-    font-weight: 700;
-}
-
-/* CHARTS */
-.charts {
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-    gap: 20px;
-}
-
-.chart-box {
-    background: white;
-    padding: 20px;
-    border-radius: 12px;
-    border: 1px solid #e5e7eb;
-}
-
-.chart-box h3 {
-    margin-bottom: 15px;
+    margin: 0;
     font-size: 14px;
     font-weight: 600;
 }
 
-/* RESPONSIVE */
-@media(max-width: 1000px){
-    .cards {
-        grid-template-columns: repeat(2,1fr);
-    }
-    .charts {
-        grid-template-columns: 1fr;
-    }
+.card span {
+    font-size: 26px;
+    font-weight: 700;
+}
+
+/* PASTEL COLORS */
+.card.blue {
+    background: #e0f2fe;
+    color: #0369a1;
+}
+
+.card.green {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.card.orange {
+    background: #ffedd5;
+    color: #9a3412;
+}
+
+.card.red {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+/* CHART CARD */
+.chart-box {
+    background: white;
+    padding: 25px;
+    border-radius: 16px;
+    border: 1px solid #e5e7eb;
+}
+
+canvas {
+    max-height: 300px;
 }
 </style>
 </head>
+
 <body>
 
-<!-- SIDEBAR -->
-<div class="sidebar">
-    <div class="sidebar-brand">
-        <i class="fa-solid fa-layer-group"></i> SiMAB
-    </div>
-
-    <ul>
-        <li><i class="fa-solid fa-gauge"></i> Dashboard</li>
-        <li><i class="fa-solid fa-file-invoice"></i> POK</li>
-        <li><i class="fa-solid fa-list-check"></i> Daftar Kegiatan</li>
-        <li><i class="fa-solid fa-wallet"></i> Rencana Penarikan Dana</li>
-        <li><i class="fa-solid fa-chart-column"></i> Statistik</li>
-        <li><i class="fa-solid fa-circle-info"></i> Tentang</li>
-    </ul>
+<div class="header">
+    📊 Dashboard Monitoring Kegiatan
 </div>
 
-<!-- MAIN -->
-<div class="main">
+<div class="container">
 
-    <!-- TOPBAR -->
-    <div class="topbar">
-        <div class="topbar-left">
-            Sistem Monitoring Anggaran Belanja
+    <!-- CARDS -->
+    <div class="cards">
+        <div class="card blue">
+            <h3>Total Kegiatan</h3>
+            <span>120</span>
         </div>
-        <div class="topbar-right">
-            <span>Ahmad (Admin)</span>
-            <i class="fa-regular fa-calendar"></i>
-            <i class="fa-solid fa-gear"></i>
-            <i class="fa-solid fa-right-from-bracket"></i>
+        <div class="card green">
+            <h3>Selesai</h3>
+            <span>85</span>
+        </div>
+        <div class="card orange">
+            <h3>Terbayar</h3>
+            <span>42</span>
+        </div>
+        <div class="card red">
+            <h3>Dalam Proses</h3>
+            <span>8</span>
         </div>
     </div>
 
-    <!-- CONTENT -->
-    <div class="content">
-
-        <div class="cards">
-            <div class="card">
-                <h3>Total Kegiatan</h3>
-                <span>120</span>
-            </div>
-            <div class="card">
-                <h3>Selesai</h3>
-                <span>85</span>
-            </div>
-            <div class="card">
-                <h3>Terbayar</h3>
-                <span>42</span>
-            </div>
-            <div class="card">
-                <h3>Dalam Proses</h3>
-                <span>8</span>
-            </div>
-        </div>
-
-        <div class="charts">
-            <div class="chart-box">
-                <h3>Grafik Kegiatan</h3>
-                <canvas id="lineChart"></canvas>
-            </div>
-
-            <div class="chart-box">
-                <h3>Jenis Kegiatan</h3>
-                <canvas id="pieChart"></canvas>
-            </div>
-        </div>
-
+    <!-- CHART -->
+    <div class="chart-box">
+        <canvas id="myChart"></canvas>
     </div>
+
 </div>
 
 <script>
-new Chart(document.getElementById('lineChart'), {
-    type: 'line',
-    data: {
-        labels: ['Jan','Feb','Mar','Apr','Mei','Jun'],
-        datasets: [{
-            data: [120,150,210,250,180,310],
-            borderColor: '#334155',
-            backgroundColor: 'rgba(51,65,85,0.08)',
-            fill: true,
-            tension: 0.4
-        }]
-    },
-    options:{
-        plugins:{legend:{display:false}}
-    }
-});
+const ctx = document.getElementById('myChart');
 
-new Chart(document.getElementById('pieChart'), {
+new Chart(ctx, {
     type: 'doughnut',
     data: {
-        labels: ['Barang','Jasa','Perjalanan Dinas','Lainnya'],
+        labels: ['Selesai', 'Terbayar', 'Dalam Proses', 'Belum Mulai'],
         datasets: [{
-            data: [35,25,20,20],
-            backgroundColor: ['#334155','#64748b','#94a3b8','#cbd5e1']
+            data: [85, 42, 8, 15],
+            backgroundColor: [
+                '#bbf7d0',  // pastel hijau
+                '#fed7aa',  // pastel orange
+                '#fecaca',  // pastel merah
+                '#bae6fd'   // pastel biru
+            ],
+            borderWidth: 0
         }]
     },
-    options:{
-        plugins:{legend:{position:'bottom'}}
+    options: {
+        plugins: {
+            legend: {
+                position: 'bottom'
+            }
+        },
+        cutout: '65%'
     }
 });
 </script>
