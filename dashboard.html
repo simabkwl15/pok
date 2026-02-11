@@ -64,12 +64,6 @@ body{
     transition:0.2s;
 }
 
-.sidebar ul li i{
-    width:20px;
-    text-align:center;
-    font-size:16px;
-}
-
 .sidebar ul li:hover{
     background:#f1f5f9;
 }
@@ -96,13 +90,9 @@ body{
 }
 
 .topbar-left{
-    display:flex;
-    align-items:center;
-    gap:15px;
     font-weight:600;
 }
 
-/* RIGHT AREA */
 .topbar-right{
     display:flex;
     align-items:center;
@@ -133,7 +123,6 @@ body{
     padding:30px;
 }
 
-/* CARDS */
 .cards{
     display:grid;
     grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
@@ -167,15 +156,14 @@ body{
     font-weight:700;
 }
 
-/* GRID */
 .dashboard-grid{
     display:grid;
     grid-template-columns:2fr 1fr;
-    grid-template-rows:auto auto;
     gap:20px;
 }
 
-.chart-box{
+.chart-box,
+.table-box{
     background:white;
     padding:20px;
     border-radius:16px;
@@ -184,11 +172,7 @@ body{
 }
 
 .table-box{
-    grid-column:1 / 2;
-    background:white;
-    padding:20px;
-    border-radius:16px;
-    border:1px solid #e5e7eb;
+    height:auto;
 }
 
 table{
@@ -209,6 +193,9 @@ th{
 }
 
 @media(max-width:1000px){
+    body{
+        grid-template-columns:1fr;
+    }
     .dashboard-grid{
         grid-template-columns:1fr;
     }
@@ -223,14 +210,13 @@ th{
         <i class="fa-solid fa-layer-group"></i>
         <span>SiMAB</span>
     </div>
-
     <ul>
-        <li><i class="fa-solid fa-gauge"></i><span>Dashboard</span></li>
-        <li><i class="fa-solid fa-folder-open"></i><span>POK</span></li>
-        <li><i class="fa-solid fa-list-check"></i><span>Daftar Kegiatan</span></li>
-        <li><i class="fa-solid fa-wallet"></i><span>Rencana Penarikan Dana</span></li>
-        <li><i class="fa-solid fa-chart-column"></i><span>Statistik</span></li>
-        <li><i class="fa-solid fa-circle-info"></i><span>Tentang</span></li>
+        <li><i class="fa-solid fa-gauge"></i>Dashboard</li>
+        <li><i class="fa-solid fa-folder-open"></i>POK</li>
+        <li><i class="fa-solid fa-list-check"></i>Daftar Kegiatan</li>
+        <li><i class="fa-solid fa-wallet"></i>Rencana Penarikan Dana</li>
+        <li><i class="fa-solid fa-chart-column"></i>Statistik</li>
+        <li><i class="fa-solid fa-circle-info"></i>Tentang</li>
     </ul>
 </div>
 
@@ -272,90 +258,67 @@ th{
                 <h3>Jenis Kegiatan</h3>
                 <canvas id="pieChart"></canvas>
             </div>
-
-            <div class="table-box">
-                <h3 style="margin-bottom:15px;">Kegiatan Hari Ini</h3>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Uraian Kegiatan</th>
-                            <th>Pelaksana Tugas</th>
-                            <th>Tanggal Mulai</th>
-                            <th>Tujuan</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Rapat Evaluasi Anggaran</td>
-                            <td>Budi Santoso</td>
-                            <td>11 Feb 2026</td>
-                            <td>Monitoring Realisasi</td>
-                        </tr>
-                        <tr>
-                            <td>Verifikasi Dokumen POK</td>
-                            <td>Siti Aminah</td>
-                            <td>11 Feb 2026</td>
-                            <td>Validasi Administrasi</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
         </div>
     </div>
 </div>
 
 <script>
-// CEK LOGIN
-const nama = sessionStorage.getItem("nama");
+document.addEventListener("DOMContentLoaded", function(){
 
-if(!nama){
-    window.location.href = "index.html";
-}else{
-    document.getElementById("namaUser").textContent = nama;
-}
+    // AMBIL NAMA DARI SESSION
+    const nama = sessionStorage.getItem("nama");
 
-// LOGOUT
+    if(!nama){
+        window.location.replace("index.html");
+    } else {
+        document.getElementById("namaUser").textContent = nama;
+    }
+
+    // CHART LINE
+    new Chart(document.getElementById('lineChart'),{
+        type:'line',
+        data:{
+            labels:['Jan','Feb','Mar','Apr','Mei','Jun'],
+            datasets:[{
+                data:[120,150,210,250,180,310],
+                borderColor:'#38bdf8',
+                backgroundColor:'rgba(56,189,248,0.15)',
+                fill:true,
+                tension:0.4
+            }]
+        },
+        options:{
+            responsive:true,
+            maintainAspectRatio:false,
+            plugins:{legend:{display:false}}
+        }
+    });
+
+    // CHART PIE
+    new Chart(document.getElementById('pieChart'),{
+        type:'doughnut',
+        data:{
+            labels:['Barang','Jasa','Perjalanan Dinas','Lainnya'],
+            datasets:[{
+                data:[35,25,20,20],
+                backgroundColor:['#bae6fd','#bbf7d0','#fed7aa','#fecaca']
+            }]
+        },
+        options:{
+            responsive:true,
+            maintainAspectRatio:false,
+            plugins:{legend:{position:'bottom'}},
+            cutout:'65%'
+        }
+    });
+
+});
+
+// LOGOUT FUNCTION
 function logout(){
     sessionStorage.clear();
-    window.location.href = "index.html";
+    window.location.replace("index.html");
 }
-
-// CHART
-const lineChart = new Chart(document.getElementById('lineChart'),{
-    type:'line',
-    data:{
-        labels:['Jan','Feb','Mar','Apr','Mei','Jun'],
-        datasets:[{
-            data:[120,150,210,250,180,310],
-            borderColor:'#38bdf8',
-            backgroundColor:'rgba(56,189,248,0.15)',
-            fill:true,
-            tension:0.4
-        }]
-    },
-    options:{
-        responsive:true,
-        maintainAspectRatio:false,
-        plugins:{legend:{display:false}}
-    }
-});
-
-const pieChart = new Chart(document.getElementById('pieChart'),{
-    type:'doughnut',
-    data:{
-        labels:['Barang','Jasa','Perjalanan Dinas','Lainnya'],
-        datasets:[{
-            data:[35,25,20,20],
-            backgroundColor:['#bae6fd','#bbf7d0','#fed7aa','#fecaca']
-        }]
-    },
-    options:{
-        responsive:true,
-        maintainAspectRatio:false,
-        plugins:{legend:{position:'bottom'}},
-        cutout:'65%'
-    }
-});
 </script>
 
 </body>
