@@ -2,230 +2,282 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<title>Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard SIPT</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+}
+
 body {
-    font-family: 'Inter', Arial, sans-serif;
-    margin: 20px;
-    background: #f5f6fa;
-    color: #333;
+    display: flex;
+    background: #f4f6f9;
 }
 
-h2 { margin: 0; }
-
-.btn-back {
-    padding: 6px 14px;
-    background: green;
+/* SIDEBAR */
+.sidebar {
+    width: 240px;
+    background: linear-gradient(180deg, #1e4fa3, #1c3f86);
     color: white;
-    border: none;
-    border-radius: 4px;
+    height: 100vh;
+    padding: 20px;
+}
+
+.sidebar h2 {
+    font-size: 18px;
+    margin-bottom: 30px;
+}
+
+.sidebar ul {
+    list-style: none;
+}
+
+.sidebar ul li {
+    padding: 12px 10px;
+    margin-bottom: 10px;
+    border-radius: 8px;
     cursor: pointer;
+}
+
+.sidebar ul li:hover {
+    background: rgba(255,255,255,0.15);
+}
+
+/* MAIN */
+.main {
+    flex: 1;
+    padding: 20px 30px;
+}
+
+/* TOPBAR */
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.topbar h1 {
+    font-size: 22px;
+    font-weight: 700;
+}
+
+.cards {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin-bottom: 25px;
+}
+
+.card {
+    padding: 20px;
+    border-radius: 12px;
+    color: white;
+    font-weight: 600;
+}
+
+.card h3 {
     font-size: 14px;
+    margin-bottom: 10px;
 }
 
-.subtitle-bar {
-    position: relative;
-    margin-top: 6px;
-    margin-bottom: 14px;
+.card span {
+    font-size: 28px;
+    font-weight: 700;
 }
 
-.subtitle-text {
-    font-size: 14px;
-    color: #555;
-    text-align: center;
-    font-weight: bold;
+.blue { background: linear-gradient(135deg,#2f6edc,#1c4ca3); }
+.green { background: linear-gradient(135deg,#3cb371,#2e8b57); }
+.orange { background: linear-gradient(135deg,#ff9f43,#e67e22); }
+.red { background: linear-gradient(135deg,#ff6b6b,#c0392b); }
+
+.charts {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 20px;
+    margin-bottom: 25px;
 }
 
-.subtitle-bar .btn-back {
-    position: absolute;
-    right: 0;
-    top: 0;
-}
-
-.table-container {
-    max-height: calc(100vh - 180px);
-    overflow: auto;
+.chart-box {
     background: white;
-    border-radius: 6px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    margin-top: 10px;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.05);
+}
+
+.chart-box h3 {
+    margin-bottom: 15px;
+}
+
+/* TABLE */
+.table-box {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.05);
 }
 
 table {
-    border-collapse: collapse;
     width: 100%;
-    min-width: 700px;
-    font-size: 13px;
-    table-layout: fixed;
+    border-collapse: collapse;
 }
 
-th, td {
-    border: 1px solid #ddd;
-    padding: 8px;
+table th, table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
 }
 
-th {
-    background: #8e44ad;
-    color: white;
-    position: sticky;
-    top: 0;
-    text-align: center;
+.status {
+    padding: 6px 12px;
+    border-radius: 20px;
     font-size: 12px;
-}
-
-.no-border td {
-    border: none !important;
-    background: #f5f6fa;
-    color: #f5f6fa;
-}
-
-.header-row td {
-    background: #8e44ad;
     color: white;
-    font-weight: bold;
-    text-align: center !important;
 }
 
-.merge-row td {
-    background: #f5f6fa;
-    border: none;
-    font-weight: 600;
+.wait { background: #f1c40f; }
+.process { background: #3498db; }
+.done { background: #2ecc71; }
+
+@media(max-width: 1000px){
+    .cards {
+        grid-template-columns: repeat(2,1fr);
+    }
+    .charts {
+        grid-template-columns: 1fr;
+    }
 }
 </style>
 </head>
-
 <body>
 
-<h2>Dashboard</h2>
-
-<div class="subtitle-bar">
-    <div class="subtitle-text">Monitoring Realisasi Anggaran</div>
-    <button class="btn-back" onclick="window.location.href='data_pok.html'">Kembali</button>
+<div class="sidebar">
+    <h2>SIPT Pemerintah Kota</h2>
+    <ul>
+        <li>Dashboard</li>
+        <li>Layanan Publik</li>
+        <li>Data Pegawai</li>
+        <li>Keuangan</li>
+        <li>Statistik</li>
+        <li>Pengaduan</li>
+        <li>Pengaturan</li>
+    </ul>
 </div>
 
-<div class="table-container">
-    <table id="tblDashboard">
-        <thead></thead>
-        <tbody></tbody>
-    </table>
-</div>
+<div class="main">
 
-<div style="margin-bottom:30px;"></div>
-<div style="margin-bottom:30px;"></div>
+    <div class="topbar">
+        <h1>Selamat Datang, Ahmad</h1>
+        <div>Admin</div>
+    </div>
 
-<div class="subtitle-bar">
-    <div class="subtitle-text">Monitoring Bulanan</div>
-</div>
+    <div class="cards">
+        <div class="card blue">
+            <h3>Permohonan Masuk</h3>
+            <span>120</span>
+        </div>
+        <div class="card green">
+            <h3>Permohonan Selesai</h3>
+            <span>85</span>
+        </div>
+        <div class="card orange">
+            <h3>Dalam Proses</h3>
+            <span>42</span>
+        </div>
+        <div class="card red">
+            <h3>Perlu Verifikasi</h3>
+            <span>8</span>
+        </div>
+    </div>
 
-<div class="table-container">
-    <table id="tblBulanan">
-        <thead></thead>
-        <tbody></tbody>
-    </table>
+    <div class="charts">
+        <div class="chart-box">
+            <h3>Tren Layanan Per Bulan</h3>
+            <canvas id="lineChart"></canvas>
+        </div>
+
+        <div class="chart-box">
+            <h3>Jenis Layanan</h3>
+            <canvas id="pieChart"></canvas>
+        </div>
+    </div>
+
+    <div class="table-box">
+        <h3>Pengaduan Terbaru</h3>
+        <br>
+        <table>
+            <tr>
+                <th>No</th>
+                <th>Pelapor</th>
+                <th>Kategori</th>
+                <th>Status</th>
+                <th>Tanggal</th>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>Budi Santoso</td>
+                <td>Infrastruktur</td>
+                <td><span class="status wait">Menunggu</span></td>
+                <td>12 Apr 2024</td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>Siti Rahma</td>
+                <td>Pelayanan Publik</td>
+                <td><span class="status process">Diproses</span></td>
+                <td>10 Apr 2024</td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td>Andi Wijaya</td>
+                <td>Kebersihan</td>
+                <td><span class="status done">Selesai</span></td>
+                <td>08 Apr 2024</td>
+            </tr>
+        </table>
+    </div>
+
 </div>
 
 <script>
-const URL_GAS = "https://script.google.com/macros/s/AKfycbx2l9Q9cY-IvHiimtY2jz8RMNYKcm-WpE-89NPNHCvfkNBKYQ_i0hpaXtdrHxJspdM1sQ/exec";
+const lineCtx = document.getElementById('lineChart');
+new Chart(lineCtx, {
+    type: 'line',
+    data: {
+        labels: ['Jan','Feb','Mar','Apr','Mei','Jun'],
+        datasets: [{
+            label: 'Jumlah',
+            data: [120,150,210,250,180,310],
+            borderColor: '#2f6edc',
+            backgroundColor: 'rgba(47,110,220,0.1)',
+            fill: true,
+            tension: 0.4
+        }]
+    }
+});
 
-const tblDashboard = document.getElementById("tblDashboard");
-const tblBulanan   = document.getElementById("tblBulanan");
-
-function ribuan(v){
-    return isNaN(v) ? v : Number(v).toLocaleString("id-ID");
-}
-function persen(v){
-    return isNaN(v) ? v : (Number(v) * 100).toFixed(2) + "%";
-}
-
-function render(tbl, data, bulanan=false){
-    if(!data?.length) return;
-
-    tbl.tHead.innerHTML = "";
-    tbl.tBodies[0].innerHTML = "";
-
-    /* HEADER */
-    const h = tbl.tHead.insertRow();
-    data[0].forEach(x=>{
-        const th = document.createElement("th");
-        th.textContent = x ?? "";
-        h.appendChild(th);
-    });
-
-    /* BODY */
-    data.slice(1).forEach((r,i)=>{
-        const tr = tbl.tBodies[0].insertRow();
-
-        if(!bulanan){
-            if(i===3 || i===4) tr.className="no-border";
-            if(i===5){
-                tr.className="merge-row";
-                const td = tr.insertCell();
-                td.colSpan = r.length;
-                td.textContent = r[0] ?? "";
-                td.style.textAlign="center";
-                return;
-            }
-            if(i===6) tr.className="header-row";
-        }
-
-        r.forEach((c,j)=>{
-            const td = tr.insertCell();
-
-            if(bulanan){
-                td.style.fontSize="11px";
-
-                if(i===3 && j>=4 && j<=20){
-                    td.textContent = persen(c);
-                    td.style.textAlign="right";
-                }
-                else if(typeof c==="number"){
-                    td.textContent = ribuan(c);
-                    td.style.textAlign="right";
-                }
-                else{
-                    td.textContent = c ?? "";
-                }
-
-                if([7,11,15,19].includes(j)){
-                    td.style.background="#e8f5e9";
-                }
-            }
-            else{
-                /* === PERBAIKAN: kolom 10 & 11 dashboard jadi persen === */
-                if(typeof c==="number" && (j===9 || j===10)){
-                    td.textContent = persen(c);
-                    td.style.textAlign="right";
-                }
-                else if(typeof c==="number"){
-                    td.textContent = ribuan(c);
-                    td.style.textAlign="right";
-                }
-                else{
-                    td.textContent = c ?? "";
-                }
-            }
-
-            if(j===0) td.style.textAlign="center";
-        });
-    });
-}
-
-function loadData(){
-    fetch(URL_GAS + "?t=" + Date.now())
-        .then(r => r.json())
-        .then(j => {
-            render(tblDashboard, j.dashboard_2026, false);
-            render(tblBulanan,   j.bulanan_2026,   true);
-        })
-        .catch(console.error);
-}
-
-window.addEventListener("DOMContentLoaded", () => {
-    loadData();
-    setInterval(loadData, 60000);
+const pieCtx = document.getElementById('pieChart');
+new Chart(pieCtx, {
+    type: 'doughnut',
+    data: {
+        labels: ['KTP','Perizinan','Akta','Lainnya'],
+        datasets: [{
+            data: [35,20,20,20],
+            backgroundColor: [
+                '#2f6edc',
+                '#2ecc71',
+                '#e67e22',
+                '#f1c40f'
+            ]
+        }]
+    }
 });
 </script>
 
