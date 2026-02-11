@@ -32,9 +32,13 @@ body {
     position: fixed;
     display: flex;
     flex-direction: column;
+    transition: 0.3s;
 }
 
-/* BRAND */
+.sidebar.collapsed {
+    width: 80px;
+}
+
 .sidebar-brand {
     padding: 20px;
     background: #e0f2fe;
@@ -44,9 +48,13 @@ body {
     display: flex;
     align-items: center;
     gap: 10px;
+    white-space: nowrap;
 }
 
-/* MENU */
+.sidebar.collapsed .sidebar-brand span {
+    display: none;
+}
+
 .sidebar ul {
     list-style: none;
     padding: 20px 10px;
@@ -63,16 +71,26 @@ body {
     font-size: 14px;
     color: #475569;
     transition: 0.2s;
+    white-space: nowrap;
 }
 
 .sidebar ul li:hover {
     background: #f1f5f9;
 }
 
+.sidebar.collapsed ul li span {
+    display: none;
+}
+
 /* MAIN */
 .main {
     margin-left: 240px;
     width: 100%;
+    transition: 0.3s;
+}
+
+.main.collapsed {
+    margin-left: 80px;
 }
 
 /* TOPBAR */
@@ -86,23 +104,25 @@ body {
     padding: 0 30px;
     position: fixed;
     width: calc(100% - 240px);
+    transition: 0.3s;
     z-index: 1000;
 }
 
+.topbar.collapsed {
+    width: calc(100% - 80px);
+}
+
 .topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 15px;
     font-weight: 600;
     font-size: 15px;
 }
 
-.topbar-right {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    font-size: 14px;
-    color: #64748b;
-}
-
-.topbar-right i:hover {
+.toggle-btn {
+    cursor: pointer;
+    font-size: 18px;
     color: #0369a1;
 }
 
@@ -130,22 +150,19 @@ body {
     transform: translateY(-4px);
 }
 
-/* PASTEL CARD COLORS */
+/* PASTEL COLORS */
 .cards .card:nth-child(1){
     background: #e0f2fe;
     color: #0369a1;
 }
-
 .cards .card:nth-child(2){
     background: #dcfce7;
     color: #166534;
 }
-
 .cards .card:nth-child(3){
     background: #ffedd5;
     color: #9a3412;
 }
-
 .cards .card:nth-child(4){
     background: #fee2e2;
     color: #991b1b;
@@ -196,24 +213,26 @@ body {
 
 <body>
 
-<div class="sidebar">
+<div class="sidebar" id="sidebar">
     <div class="sidebar-brand">
-        <i class="fa-solid fa-layer-group"></i> SiMAB
+        <i class="fa-solid fa-layer-group"></i>
+        <span>SiMAB</span>
     </div>
     <ul>
-        <li><i class="fa-solid fa-gauge"></i> Dashboard</li>
-        <li><i class="fa-solid fa-file-invoice"></i> POK</li>
-        <li><i class="fa-solid fa-list-check"></i> Daftar Kegiatan</li>
-        <li><i class="fa-solid fa-wallet"></i> Rencana Penarikan Dana</li>
-        <li><i class="fa-solid fa-chart-column"></i> Statistik</li>
-        <li><i class="fa-solid fa-circle-info"></i> Tentang</li>
+        <li><i class="fa-solid fa-gauge"></i><span>Dashboard</span></li>
+        <li><i class="fa-solid fa-file-invoice"></i><span>POK</span></li>
+        <li><i class="fa-solid fa-list-check"></i><span>Daftar Kegiatan</span></li>
+        <li><i class="fa-solid fa-wallet"></i><span>Rencana Penarikan Dana</span></li>
+        <li><i class="fa-solid fa-chart-column"></i><span>Statistik</span></li>
+        <li><i class="fa-solid fa-circle-info"></i><span>Tentang</span></li>
     </ul>
 </div>
 
-<div class="main">
+<div class="main" id="main">
 
-<div class="topbar">
+<div class="topbar" id="topbar">
     <div class="topbar-left">
+        <i class="fa-solid fa-bars toggle-btn" onclick="toggleSidebar()"></i>
         Sistem Monitoring Anggaran Belanja
     </div>
     <div class="topbar-right">
@@ -260,6 +279,12 @@ body {
 </div>
 
 <script>
+function toggleSidebar(){
+    document.getElementById('sidebar').classList.toggle('collapsed');
+    document.getElementById('main').classList.toggle('collapsed');
+    document.getElementById('topbar').classList.toggle('collapsed');
+}
+
 new Chart(document.getElementById('lineChart'), {
     type: 'line',
     data: {
@@ -272,9 +297,7 @@ new Chart(document.getElementById('lineChart'), {
             tension: 0.4
         }]
     },
-    options:{
-        plugins:{legend:{display:false}}
-    }
+    options:{ plugins:{legend:{display:false}} }
 });
 
 new Chart(document.getElementById('pieChart'), {
@@ -283,18 +306,10 @@ new Chart(document.getElementById('pieChart'), {
         labels: ['Barang','Jasa','Perjalanan Dinas','Lainnya'],
         datasets: [{
             data: [35,25,20,20],
-            backgroundColor: [
-                '#bae6fd',
-                '#bbf7d0',
-                '#fed7aa',
-                '#fecaca'
-            ]
+            backgroundColor: ['#bae6fd','#bbf7d0','#fed7aa','#fecaca']
         }]
     },
-    options:{
-        plugins:{legend:{position:'bottom'}},
-        cutout:'65%'
-    }
+    options:{ plugins:{legend:{position:'bottom'}}, cutout:'65%' }
 });
 </script>
 
