@@ -3,86 +3,74 @@
 <head>
 <meta charset="UTF-8">
 <title>Login | SiMAB</title>
-
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-
 <style>
-*{
-    box-sizing:border-box;
-    font-family:'Inter',sans-serif;
-}
+*{ box-sizing:border-box; font-family:'Inter',sans-serif; margin:0; padding:0; }
 
 body{
-    margin:0;
     height:100vh;
-    background:#f8fafc;
     display:flex;
     justify-content:center;
     align-items:center;
+    background:#f0f4f8;
 }
 
 .login-card{
-    background:#ffffff;
-    width:380px;
+    background:#fff;
+    width:400px;
     border-radius:16px;
-    border:1px solid #e5e7eb;
-    box-shadow:0 10px 30px rgba(0,0,0,0.08);
+    box-shadow:0 10px 25px rgba(0,0,0,0.08);
     overflow:hidden;
 }
 
 .login-header{
-    background:#e0f2fe;
-    padding:25px;
+    background:#38bdf8;
+    color:white;
     text-align:center;
-    color:#0369a1;
+    padding:30px 20px;
 }
 
-.login-header h1{
-    margin:0;
-    font-size:22px;
-}
+.login-header h1{ margin-bottom:5px; font-size:24px; }
+.login-header small{ font-size:13px; opacity:0.9; }
 
 .login-body{
-    padding:30px;
+    padding:30px 25px;
+    display:flex;
+    flex-direction:column;
+    gap:15px;
 }
 
 label{
     font-size:13px;
     font-weight:600;
-    display:block;
-    margin-top:15px;
     color:#334155;
 }
 
-input{
+input, select{
     width:100%;
-    padding:10px;
-    margin-top:6px;
+    padding:10px 12px;
+    margin-top:5px;
     border-radius:8px;
-    border:1px solid #e5e7eb;
+    border:1px solid #cbd5e1;
     font-size:14px;
     outline:none;
+    transition:0.2s;
 }
 
-input:focus{
-    border-color:#38bdf8;
-}
+input:focus, select:focus{ border-color:#38bdf8; }
 
 .pass-wrap{ position:relative; }
-
 .toggle-pass{
     position:absolute;
-    right:10px;
+    right:12px;
     top:50%;
     transform:translateY(-50%);
     cursor:pointer;
     font-size:12px;
-    color:#0369a1;
+    color:#38bdf8;
 }
 
 button{
-    margin-top:22px;
-    width:100%;
     padding:12px;
     border:none;
     border-radius:10px;
@@ -92,41 +80,35 @@ button{
     font-size:15px;
     cursor:pointer;
     transition:0.2s;
+    margin-top:10px;
 }
 
-button:hover{
-    background:#0ea5e9;
-}
+button:hover{ background:#0ea5e9; }
+button:disabled{ background:#a5f3fc; cursor:not-allowed; }
 
-button:disabled{
-    background:#bae6fd;
+.error{
+    color:#dc2626;
+    font-size:12px;
+    text-align:center;
 }
 
 .footer{
-    margin-top:15px;
     text-align:center;
     font-size:11px;
     color:#94a3b8;
-}
-
-.error{
-    margin-top:12px;
-    color:#dc2626;
-    text-align:center;
-    font-size:12px;
+    margin-top:15px;
 }
 
 /* LOADING */
 .loading{
     position:fixed;
     inset:0;
-    background:rgba(255,255,255,0.8);
+    background:rgba(255,255,255,0.7);
     display:none;
     justify-content:center;
     align-items:center;
     z-index:999;
 }
-
 .spinner{
     width:45px;
     height:45px;
@@ -135,18 +117,13 @@ button:disabled{
     border-radius:50%;
     animation:spin 1s linear infinite;
 }
-
-@keyframes spin{
-    to{ transform:rotate(360deg); }
-}
+@keyframes spin{ to{ transform:rotate(360deg); } }
 </style>
 </head>
 
 <body>
 
-<div class="loading" id="loading">
-    <div class="spinner"></div>
-</div>
+<div class="loading" id="loading"><div class="spinner"></div></div>
 
 <div class="login-card">
     <div class="login-header">
@@ -154,26 +131,31 @@ button:disabled{
         <small>Sistem Monitoring Anggaran Belanja</small>
     </div>
 
-    <label>Kantor</label>
-    <select id="kantor" style="width:100%;padding:10px;border-radius:8px;border:1px solid #e5e7eb;margin-top:6px;font-size:14px;">
-        <option value="">-- Pilih Kantor --</option>
-        <option value="denpasar">KPKNL Denpasar</option>
-        <option value="jember">KPKNL Jember</option>
-    </select>
-    
     <div class="login-body">
-        <label>NIP</label>
-        <input type="text" id="nip" placeholder="Masukkan NIP">
+        <div>
+            <label>Kantor</label>
+            <select id="kantor">
+                <option value="">-- Pilih Kantor --</option>
+                <option value="denpasar">KPKNL Denpasar</option>
+                <option value="jember">KPKNL Jember</option>
+            </select>
+        </div>
 
-        <label>Password</label>
-        <div class="pass-wrap">
-            <input type="password" id="password" placeholder="Masukkan Password">
-            <span class="toggle-pass" onclick="togglePass()">lihat</span>
+        <div>
+            <label>NIP</label>
+            <input type="text" id="nip" placeholder="Masukkan NIP">
+        </div>
+
+        <div>
+            <label>Password</label>
+            <div class="pass-wrap">
+                <input type="password" id="password" placeholder="Masukkan Password">
+                <span class="toggle-pass" onclick="togglePass()">lihat</span>
+            </div>
         </div>
 
         <button id="btnLogin" onclick="login()">LOGIN</button>
         <div class="error" id="errorMsg"></div>
-
         <div class="footer">© 2026 KPKNL Denpasar</div>
     </div>
 </div>
@@ -184,6 +166,11 @@ const apiURL = "https://script.google.com/macros/s/AKfycbxIPQKTaOuQG26lvMc4hQggL
 function showLoading(show){
     document.getElementById("loading").style.display = show ? "flex" : "none";
     document.getElementById("btnLogin").disabled = show;
+}
+
+function togglePass(){
+    const p = document.getElementById("password");
+    p.type = p.type === "password" ? "text" : "password";
 }
 
 async function login(){
@@ -202,56 +189,14 @@ async function login(){
     showLoading(true);
 
     try{
-        // Kirim kantor juga ke API jika perlu
         const res = await fetch(`${apiURL}?nip=${nip}&password=${password}&kantor=${kantor}`);
         const result = await res.json();
 
         if(result.status === "success"){
             sessionStorage.setItem("nama", result.nama);
             sessionStorage.setItem("unit", result.unit);
-            sessionStorage.setItem("kantor", kantor); // simpan kantor
+            sessionStorage.setItem("kantor", kantor);
             window.location.href = "dashboard.html";
-        } else {
-            showLoading(false);
-            errorMsg.textContent = result.message;
-        }
-    } catch(err){
-        showLoading(false);
-        errorMsg.textContent = "Gagal terhubung ke server";
-    }
-}
-
-    
-function togglePass(){
-    const p = document.getElementById("password");
-    p.type = p.type === "password" ? "text" : "password";
-}
-
-async function login(){
-    const nip = document.getElementById("nip").value.trim();
-    const password = document.getElementById("password").value.trim();
-    const errorMsg = document.getElementById("errorMsg");
-
-    errorMsg.textContent = "";
-
-    if(!nip || !password){
-        errorMsg.textContent = "NIP dan Password wajib diisi";
-        return;
-    }
-
-    showLoading(true);
-
-    try{
-        const res = await fetch(`${apiURL}?nip=${nip}&password=${password}`);
-        const result = await res.json();
-
-        if(result.status === "success"){
-
-            sessionStorage.setItem("nama", result.nama);
-            sessionStorage.setItem("unit", result.unit);
-
-            window.location.href = "dashboard.html";
-
         } else {
             showLoading(false);
             errorMsg.textContent = result.message;
@@ -265,4 +210,3 @@ async function login(){
 
 </body>
 </html>
-
