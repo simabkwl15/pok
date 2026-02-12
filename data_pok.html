@@ -313,7 +313,7 @@ function renderTable(data){
     data.forEach(row=>{
         const tr=document.createElement("tr");
 
-        const [kode,uraian,pagu,blokir,realisasi,sisa,,sdRaw]=row;
+        const [kode, uraian, pagu, blokir, realisasi, sisa, sdRaw] = row;
         const sd=(sdRaw||"").toString().trim().toUpperCase();
 
         if(kode && kode.length>27){
@@ -388,6 +388,7 @@ loadData();
 
 </body>
 </html>
+
 
 
 
