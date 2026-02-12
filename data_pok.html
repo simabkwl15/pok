@@ -457,22 +457,14 @@ function formatNumber(num){
 }
 
 function loadData(){
-    showLoading();  // tampilkan overlay
-
     fetch(urlGAS)
     .then(res=>res.json())
     .then(data=>{
-        allData = data;
+        allData=data;
         renderTable(allData);
-    })
-    .catch(err=>{
-        console.error(err);
-        alert("Gagal mengambil data!");
-    })
-    .finally(()=>{
-        hideLoading();  // sembunyikan overlay setelah selesai
     });
 }
+
 
 
 function renderTable(data){
@@ -954,6 +946,7 @@ setInterval(autoRefresh, 30000);
   
 </body>
 </html>
+
 
 
 
