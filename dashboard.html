@@ -227,8 +227,8 @@ th{
         <span>SiMAB</span>
     </div>
     <ul>
-        <li><i class="fa-solid fa-gauge"></i>Dashboard</li>
-        <li><i class="fa-solid fa-folder-open"></i>POK</li>
+        <li onclick="goDashboard()">><i class="fa-solid fa-gauge"></i>Dashboard</li>
+        <li onclick="goPOK()"><i class="fa-solid fa-folder-open"></i>POK</li>
         <li><i class="fa-solid fa-list-check"></i>Daftar Kegiatan</li>
         <li><i class="fa-solid fa-wallet"></i>Rencana Penarikan Dana</li>
         <li><i class="fa-solid fa-chart-column"></i>Statistik</li>
@@ -336,6 +336,9 @@ document.addEventListener("DOMContentLoaded", function(){
     });
 
 });
+
+function goDashboard(){ window.location.href="dashboard.html"; }
+function goPOK(){ window.location.href="pok.html"; }
 
 function logout(){
     sessionStorage.clear();
