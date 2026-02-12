@@ -41,11 +41,104 @@ body{display:grid; grid-template-columns:240px 1fr; background:#f8fafc; color:#3
 .table-box td.actions{position:sticky; right:0; background:white; display:flex; gap:5px; justify-content:center; z-index:5;}
 .table-box td.actions button{border:none; background:none; cursor:pointer; font-size:16px; position:relative;}
 .table-box td.actions button:hover::after{content: attr(data-tooltip); position:absolute; bottom:125%; left:50%; transform:translateX(-50%); background:#000; color:#fff; padding:3px 6px; border-radius:4px; white-space:nowrap; font-size:12px;}
+
+    .table-wrapper {
+  width: 100%;
+  overflow-x: auto; /* scroll horizontal */
+  position: relative;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: white;
+}
+
+.table-box {
+  min-width: 1200px; /* lebar minimal agar kolom panjang tidak terpotong */
+  overflow-y: auto;
+  max-height: calc(100vh - 250px);
+}
+
+.table-box table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.table-box th, .table-box td {
+  padding: 10px;
+  border-bottom: 1px solid #e5e7eb;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.table-box th {
+  background: #f1f5f9;
+  font-weight: 600;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+/* freeze kolom aksi di kanan */
+.table-box td.actions {
+  position: sticky;
+  right: 0;
+  background: white;
+  display: flex;
+  gap: 5px;
+  justify-content: center;
+  z-index: 5;
+}
+
+.table-box td.actions button {
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 16px;
+  position: relative;
+}
+
+.table-box td.actions button:hover::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #000;
+  color: #fff;
+  padding: 3px 6px;
+  border-radius: 4px;
+  white-space: nowrap;
+  font-size: 12px;
+}
+
 </style>
 </head>
 
 <body>
 
+<div class="table-wrapper">
+  <div class="table-box">
+    <table>
+      <thead>
+        <tr>
+          <th>ID Kegiatan</th>
+          <th>MAK</th>
+          <th>Uraian / No ST</th>
+          <th>Pelaksana Tugas</th>
+          <th>Tujuan</th>
+          <th>Tgl Mulai</th>
+          <th>Jumlah</th>
+          <th>User</th>
+          <th>Status</th>
+          <th class="actions">Aksi</th>
+        </tr>
+      </thead>
+      <tbody id="dataTableBody">
+        <!-- Data dari GAS -->
+      </tbody>
+    </table>
+  </div>
+</div>
+    
 <div class="sidebar">
     <div class="sidebar-brand"><i class="fa-solid fa-layer-group"></i> <span>SiMAB</span></div>
     <ul>
