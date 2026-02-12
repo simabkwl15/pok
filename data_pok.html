@@ -23,8 +23,6 @@ body{
     height:100vh;
     background:#ffffff;
     border-right:1px solid #e5e7eb;
-    display:flex;
-    flex-direction:column;
     position:sticky;
     top:0;
 }
@@ -58,7 +56,7 @@ body{
     transition:0.2s;
 }
 
-.sidebar ul li:hover{ background:#f1f5f9; }
+.sidebar ul li:hover{background:#f1f5f9;}
 .sidebar ul li.active{
     background:#e0f2fe;
     color:#0369a1;
@@ -69,7 +67,7 @@ body{
 .main{
     display:flex;
     flex-direction:column;
-    min-height:100vh;
+    height:100vh;
 }
 
 /* TOPBAR */
@@ -86,8 +84,6 @@ body{
     z-index:1000;
 }
 
-.topbar-left{font-weight:600;}
-
 .topbar-right{
     display:flex;
     align-items:center;
@@ -102,13 +98,8 @@ body{
 }
 
 .topbar-right i:hover,
-.user-info:hover{ color:#0369a1; }
-
-.user-info{
-    display:flex;
-    align-items:center;
-    gap:8px;
-    font-weight:500;
+.user-info:hover{
+    color:#0369a1;
 }
 
 /* CONTENT */
@@ -117,6 +108,7 @@ body{
     flex:1;
     display:flex;
     flex-direction:column;
+    overflow:hidden;
 }
 
 /* FILTER */
@@ -131,47 +123,29 @@ body{
     gap:15px;
 }
 
-select,input{
-    padding:8px 12px;
-    border-radius:8px;
-    border:1px solid #cbd5e1;
-    font-size:14px;
-}
-
-input:focus, select:focus{
-    outline:none;
-    border-color:#38bdf8;
-}
-
-/* TABLE FIX FREEZE */
+/* TABLE */
 .table-container{
     flex:1;
-    overflow:auto;
+    overflow-y:auto;
     background:white;
     border-radius:16px;
     border:1px solid #e5e7eb;
 }
 
-/* penting supaya sticky stabil */
+/* PENTING supaya sticky stabil */
 table{
     width:100%;
-    border-collapse:separate;
-    border-spacing:0;
+    border-collapse:collapse;
     font-size:14px;
 }
 
-/* freeze header */
-thead{
-    position:sticky;
-    top:0;
-    z-index:10;
-}
-
+/* FREEZE HEADER FIX 100% */
 thead th{
     position:sticky;
     top:0;
     background:#f1f5f9;
-    z-index:20;
+    z-index:100;
+    border-bottom:1px solid #e5e7eb;
 }
 
 th,td{
@@ -182,7 +156,7 @@ th,td{
 .text-right{text-align:right;}
 .text-center{text-align:center;}
 
-/* ROW HIGHLIGHT */
+/* ROW COLOR */
 .row-pnbp{
     background:#e0f2fe !important;
 }
@@ -198,10 +172,8 @@ th,td{
     border-radius:6px;
     font-size:12px;
     cursor:pointer;
-    transition:0.2s;
 }
 
-.btn:hover{opacity:0.85;}
 .btn-rekam{background:#38bdf8;color:white;}
 .btn-detil{background:#6366f1;color:white;}
 
@@ -215,50 +187,29 @@ th,td{
     justify-content:center;
     font-size:13px;
     color:#64748b;
-    position:fixed;
-    bottom:0;
-    left:240px;
-    right:0;
 }
 </style>
 </head>
 
 <body>
 
-<!-- SIDEBAR -->
 <div class="sidebar">
     <div class="sidebar-brand">
         <i class="fa-solid fa-layer-group"></i>
         <span>SiMAB</span>
     </div>
     <ul>
-        <li onclick="goDashboard()">
-            <i class="fa-solid fa-gauge"></i>Dashboard
-        </li>
-        <li class="active" onclick="goPOK()">
-            <i class="fa-solid fa-folder-open"></i>POK
-        </li>
-        <li><i class="fa-solid fa-list-check"></i>Daftar Kegiatan</li>
-        <li><i class="fa-solid fa-wallet"></i>Rencana Penarikan Dana</li>
-        <li><i class="fa-solid fa-chart-column"></i>Statistik</li>
-        <li><i class="fa-solid fa-circle-info"></i>Tentang</li>
+        <li class="active"><i class="fa-solid fa-folder-open"></i>POK</li>
     </ul>
 </div>
 
 <div class="main">
 
 <div class="topbar">
-    <div class="topbar-left">
-        Sistem Monitoring Anggaran Belanja
-    </div>
+    <div><strong>Sistem Monitoring Anggaran Belanja</strong></div>
     <div class="topbar-right">
         <i class="fa-regular fa-calendar"></i>
         <i class="fa-solid fa-gear"></i>
-        <div class="user-info">
-            <i class="fa-regular fa-user"></i>
-            <span id="namaUser"></span>
-        </div>
-        <i class="fa-solid fa-right-from-bracket" onclick="logout()"></i>
     </div>
 </div>
 
@@ -300,39 +251,10 @@ th,td{
 </div>
 
 <script>
-const urlGAS="https://script.google.com/macros/s/AKfycbxkeZjWQumvORWktLRLLvkEGq9NUBrHlxKhQxStPadlfnoO6rQusVMw5QxRZ9qmpV4Flw/exec";
 let allData=[];
-
-document.addEventListener("DOMContentLoaded",function(){
-    const nama=sessionStorage.getItem("nama");
-    if(!nama){
-        window.location.replace("index.html");
-    }else{
-        document.getElementById("namaUser").textContent=nama;
-    }
-});
-
-function logout(){
-    sessionStorage.clear();
-    window.location.replace("index.html");
-}
 
 function formatNumber(num){
     return Number(num||0).toLocaleString("id-ID");
-}
-
-function loadData(){
-fetch(urlGAS)
-.then(res=>res.json())
-.then(data=>{
-const unique=new Map();
-data.forEach(r=>{
-const kode=r[0];
-if(!unique.has(kode)){unique.set(kode,r);}
-});
-allData=Array.from(unique.values());
-renderTable(allData);
-});
 }
 
 function renderTable(data){
@@ -341,15 +263,13 @@ tbody.innerHTML="";
 
 data.forEach(row=>{
 const tr=document.createElement("tr");
-const [kode,uraian,pagu,blokir,realisasi,sisa,,sd]=row;
+const [kode,uraian,pagu,blokir,realisasi,sisa,,sdRaw]=row;
+
+const sd=(sdRaw||"").toString().trim().toUpperCase();
 
 if(kode && kode.length>27){
-    if((sd||"").toUpperCase()==="PNBP"){
-        tr.classList.add("row-pnbp");
-    }
-    if((sd||"").toUpperCase()==="RM"){
-        tr.classList.add("row-rm");
-    }
+    if(sd==="PNBP"){ tr.classList.add("row-pnbp"); }
+    else if(sd==="RM"){ tr.classList.add("row-rm"); }
 }
 
 tr.innerHTML=`
@@ -359,7 +279,7 @@ tr.innerHTML=`
 <td class="text-right">${formatNumber(blokir)}</td>
 <td class="text-right">${formatNumber(realisasi)}</td>
 <td class="text-right">${formatNumber(sisa)}</td>
-<td class="text-center">${sd||""}</td>
+<td class="text-center">${sd}</td>
 <td class="text-center">
 ${kode&&kode.length>27?`
 <button class="btn btn-rekam">Rekam</button>
@@ -368,25 +288,6 @@ ${kode&&kode.length>27?`
 tbody.appendChild(tr);
 });
 }
-
-function applyFilter(){
-const filter=document.getElementById("filterSD").value.toLowerCase();
-const search=document.getElementById("searchBox").value.toLowerCase();
-
-const filtered=allData.filter(row=>{
-const kode=(row[0]||"").toLowerCase();
-const uraian=(row[1]||"").toLowerCase();
-const sd=(row[7]||"").toLowerCase();
-return (filter==="semua"||sd.includes(filter)) &&
-       (kode.includes(search)||uraian.includes(search));
-});
-renderTable(filtered);
-}
-
-function goDashboard(){window.location.href="dashboard.html";}
-function goPOK(){window.location.href="data_pok.html";}
-
-loadData();
 </script>
 
 </body>
