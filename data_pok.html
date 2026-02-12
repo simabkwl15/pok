@@ -9,9 +9,97 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/js/all.min.js"></script>
 
 <style>
-/* COPY CSS DARI DASHBOARD (TIDAK DIUBAH) */
-/* Tambahan kecil untuk filter & tabel */
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Inter',sans-serif;
+}
 
+body{
+    display:grid;
+    grid-template-columns:240px 1fr;
+    background:#f8fafc;
+    color:#334155;
+}
+
+/* SIDEBAR */
+.sidebar{
+    height:100vh;
+    background:#ffffff;
+    border-right:1px solid #e5e7eb;
+    display:flex;
+    flex-direction:column;
+    position:sticky;
+    top:0;
+}
+
+.sidebar-brand{
+    padding:20px;
+    background:#e0f2fe;
+    color:#0369a1;
+    font-weight:600;
+    font-size:18px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.sidebar ul{
+    list-style:none;
+    padding:20px 10px;
+}
+
+.sidebar ul li{
+    padding:10px 14px;
+    margin-bottom:6px;
+    border-radius:10px;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    font-size:14px;
+    color:#475569;
+    transition:0.2s;
+}
+
+.sidebar ul li:hover{
+    background:#f1f5f9;
+}
+
+.sidebar ul li.active{
+    background:#e0f2fe;
+    color:#0369a1;
+    font-weight:600;
+}
+
+/* MAIN */
+.main{
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+}
+
+/* TOPBAR */
+.topbar{
+    height:60px;
+    background:#ffffff;
+    border-bottom:1px solid #e5e7eb;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:0 30px;
+    position:sticky;
+    top:0;
+    z-index:1000;
+}
+
+.content{
+    padding:30px;
+    padding-bottom:80px;
+}
+
+/* FILTER */
 .filter-box{
     background:white;
     padding:20px;
@@ -23,13 +111,7 @@
     gap:15px;
 }
 
-select{
-    padding:8px 12px;
-    border-radius:8px;
-    border:1px solid #cbd5e1;
-    font-size:14px;
-}
-
+/* TABLE */
 table{
     width:100%;
     border-collapse:collapse;
@@ -72,12 +154,33 @@ th{
 
 .highlight-rm{ background:#dcfce7; }
 .highlight-pnbp{ background:#fef9c3; }
+
+/* FOOTER */
+.footer{
+    position:fixed;
+    bottom:0;
+    left:240px;
+    right:0;
+    height:45px;
+    background:#ffffff;
+    border-top:1px solid #e5e7eb;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:13px;
+    color:#64748b;
+}
+
+@media(max-width:1000px){
+    body{ grid-template-columns:1fr; }
+    .footer{ left:0; }
+}
 </style>
 </head>
 
 <body>
 
-<!-- SIDEBAR (SAMA PERSIS) -->
+<!-- SIDEBAR -->
 <div class="sidebar">
     <div class="sidebar-brand">
         <i class="fa-solid fa-layer-group"></i>
@@ -85,22 +188,20 @@ th{
     </div>
     <ul>
         <li onclick="goDashboard()"><i class="fa-solid fa-gauge"></i>Dashboard</li>
-        <li onclick="goPOK()"><i class="fa-solid fa-folder-open"></i>POK</li>
+        <li class="active" onclick="goPOK()"><i class="fa-solid fa-folder-open"></i>POK</li>
     </ul>
 </div>
 
 <div class="main">
 
 <div class="topbar">
-    <div class="topbar-left">POK</div>
+    <div class="topbar-left">Sistem Monitoring Anggaran Belanja</div>
 </div>
 
 <div class="content">
 
-    <!-- JUDUL -->
     <h2 style="margin-bottom:20px;">POK</h2>
 
-    <!-- FILTER -->
     <div class="filter-box">
         <strong>Filter</strong>
         <select id="filterSD" onchange="loadData()">
@@ -115,7 +216,6 @@ th{
         </select>
     </div>
 
-    <!-- TABEL -->
     <div style="overflow:auto;">
         <table id="tabelPOK">
             <thead>
@@ -137,12 +237,16 @@ th{
 </div>
 </div>
 
+<div class="footer">
+    © KPKNL Denpasar 2026
+</div>
+
 <script>
 
 const urlGAS = "https://script.google.com/macros/s/AKfycby1bbX6BicGn9s-p8Xj07oGBVgHVnKqugrSEW8ckorrF1Epplo2K61QnG56soKVySbY7g/exec";
 
 function formatNumber(num){
-    return Number(num).toLocaleString("id-ID");
+    return Number(num || 0).toLocaleString("id-ID");
 }
 
 function loadData(){
@@ -160,13 +264,13 @@ function loadData(){
 
             const tr = document.createElement("tr");
 
-            const kode = row[0];
-            const uraian = row[1];
-            const pagu = row[2];
-            const blokir = row[3];
-            const realisasi = row[4];
-            const sisa = row[5];
-            const sd = row[6];
+            const kode = row[0] || "";
+            const uraian = row[1] || "";
+            const pagu = row[2] || 0;
+            const blokir = row[3] || 0;
+            const realisasi = row[4] || 0;
+            const sisa = row[5] || 0;
+            const sd = row[6] || "";
 
             if(kode.length > 27){
                 if(sd === "PNBP") tr.classList.add("highlight-pnbp");
@@ -204,5 +308,3 @@ loadData();
 
 </body>
 </html>
-
-
