@@ -512,6 +512,12 @@ function generateID(){
 function openRekam(row){
     const [kode,uraian,pagu,blokir,realisasi,sisa,,sd]=row;
   
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    document.getElementById("f_tgl").value = `${yyyy}-${mm}-${dd}`;
+
     document.getElementById("f_id").value = generateID();
   
     document.getElementById("popupRekam").style.display="flex";
@@ -523,6 +529,13 @@ function openRekam(row){
     document.getElementById("f_realisasi").value = formatNumber(realisasi);
     document.getElementById("f_sisa").value = formatNumber(sisa);
     document.getElementById("f_sd").value = sd || "";
+
+  // kosongkan status dana saat awal load
+    const statusBox = document.getElementById("f_sd_status");
+    statusBox.value = "";
+    statusBox.style.color = "black";
+
+  
 }
 
 function closePopup(){
@@ -530,14 +543,21 @@ function closePopup(){
 }
 
 function hitungStatusDana(){
+
     const pagu = parseFloat(document.getElementById("f_pagu").value.replace(/,/g,'')) || 0;
     const blokir = parseFloat(document.getElementById("f_blokir").value.replace(/,/g,'')) || 0;
     const realisasi = parseFloat(document.getElementById("f_realisasi").value.replace(/,/g,'')) || 0;
-    const estimasi = parseFloat(document.getElementById("f_estimasi").value) || 0;
+    const estimasi = parseFloat(document.getElementById("f_estimasi").value.replace(/,/g,'')) || 0;
 
     const sisa = pagu - blokir - realisasi - estimasi;
 
     const statusBox = document.getElementById("f_sd_status");
+
+    if(estimasi === 0){
+        statusBox.value = "";
+        statusBox.style.color = "black";
+        return;
+    }
 
     if(sisa >= 0){
         statusBox.value = "Dana Cukup";
@@ -547,6 +567,7 @@ function hitungStatusDana(){
         statusBox.style.color = "red";
     }
 }
+
 
   
 function simpanRekam(){
@@ -583,6 +604,17 @@ function loadTujuan(){
 document.addEventListener("DOMContentLoaded",()=>{
     loadTujuan();
 });
+
+  function formatEstimasi(input){
+
+    // ambil angka saja
+    let value = input.value.replace(/\D/g,'');
+
+    // format ribuan
+    input.value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+    hitungStatusDana(); // langsung update status
+}
 
   
 function autoRefresh(){
@@ -714,7 +746,7 @@ setInterval(autoRefresh, 30000);
         <input type="date" id="f_tgl">
 
         <label>Estimasi Biaya</label>
-        <input type="number" id="f_estimasi" oninput="hitungStatusDana()">
+        <input type="text" id="f_estimasi" oninput="formatEstimasi(this)">
 
         <label>Status Dana</label>
         <input type="text" id="f_sd" readonly>
@@ -756,6 +788,7 @@ setInterval(autoRefresh, 30000);
     
 </body>
 </html>
+
 
 
 
