@@ -417,6 +417,8 @@ th,td{
 const urlGAS="https://script.google.com/macros/s/AKfycbz9yr8J1iOXDlzJ-nyMK2me_NLEtZUHDH1wtrFHVBaXzi97S-UPCJbSmdBS-EZU_bLiqA/exec";
 let allData=[];
 
+const kantor = sessionStorage.getItem("kantor") || "Denpasar"; // default Denpasar
+  
 function showLoading(){
     document.getElementById("overlayLoading").style.display = "flex";
 }
@@ -457,13 +459,22 @@ function formatNumber(num){
 }
 
 function loadData(){
-    fetch(urlGAS)
-    .then(res=>res.json())
+    showLoading();
+    fetch(`${urlGAS}?kantor=${encodeURIComponent(kantor)}`)
+    .then(res => res.json())
     .then(data=>{
         allData=data;
         renderTable(allData);
+    })
+    .catch(err=>{
+        console.error(err);
+        alert("Gagal memuat data POK.");
+    })
+    .finally(()=>{
+        hideLoading();
     });
 }
+
 
 
 
@@ -663,6 +674,7 @@ async function simpanRekam(){
         data.append("estimasi", document.getElementById("f_estimasi").value.replace(/\D/g,''));
         data.append("tujuan", document.getElementById("f_tujuan").value.trim());
         data.append("session_nama", sessionStorage.getItem("nama") || "");
+        data.append("kantor", kantor); // <-- ini tambahan
 
         await fetch(urlGAS, {
             method: "POST",
@@ -684,8 +696,13 @@ async function simpanRekam(){
 }
 
 
+    btn.disabled = false;
+    btn.innerText = "Simpan";
+}
+
+
 function loadTujuan(){
-    fetch(urlGAS + "?action=ref_sbm")
+    fetch(`${urlGAS}?action=ref_sbm&kantor=${encodeURIComponent(kantor)}`)
     .then(res=>res.json())
     .then(data=>{
         const datalist=document.getElementById("listTujuan");
@@ -697,6 +714,7 @@ function loadTujuan(){
         });
     });
 }
+
 
 document.addEventListener("DOMContentLoaded",()=>{
     loadTujuan();
@@ -716,12 +734,10 @@ document.addEventListener("DOMContentLoaded",()=>{
  let detailDataGlobal = [];
 
 async function lihatDetail(mak){
-
-    showLoading(); // tampilkan overlay
+    showLoading(); 
 
     try{
-
-        const response = await fetch(`${urlGAS}?action=detail&mak=${encodeURIComponent(mak)}`);
+        const response = await fetch(`${urlGAS}?action=detail&mak=${encodeURIComponent(mak)}&kantor=${encodeURIComponent(kantor)}`);
         const data = await response.json();
 
         detailDataGlobal = data;
@@ -737,9 +753,10 @@ async function lihatDetail(mak){
         console.error(err);
         alert("Gagal mengambil detail.");
     } finally {
-        hideLoading(); // sembunyikan overlay
+        hideLoading();
     }
 }
+
 
 
 function renderDetailTable(data){
@@ -946,6 +963,7 @@ setInterval(autoRefresh, 30000);
   
 </body>
 </html>
+
 
 
 
