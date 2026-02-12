@@ -364,6 +364,7 @@ document.addEventListener("DOMContentLoaded", function(){
         document.getElementById("namaUser").textContent = nama;
     }
 
+    // Pie chart tetap sama
     new Chart(document.getElementById('pieChart'),{
         type:'doughnut',
         data:{
@@ -391,35 +392,43 @@ function logout(){
     window.location.replace("index.html");
 }
 
-    const urlGAS="https://script.google.com/macros/s/AKfycbzAgsgCzCzZtMG95zOhco0QJ3i8V8PzDuCraBw-siBFQ4Msy940rusqrHTqwzqUMWI6yA/exec"; // ganti sesuai GAS-mu
-
-//function showLoading(){ document.getElementById("overlayLoading").style.display="flex"; }
-//function hideLoading(){ document.getElementById("overlayLoading").style.display="none"; }
+// URL GAS (pastikan deploy web app publik)
+const urlGAS="https://script.google.com/macros/s/AKfycbzAgsgCzCzZtMG95zOhco0QJ3i8V8PzDuCraBw-siBFQ4Msy940rusqrHTqwzqUMWI6yA/exec";
 
 async function loadDashboard(){
-    //showLoading();
     try{
+        console.log("Fetch GAS...", urlGAS);
         const res = await fetch(urlGAS);
-        const data = await res.json();
 
-        document.querySelector("#cardTotal p").textContent = data.total;
-        document.querySelector("#cardSelesai p").textContent = data.selesai;
-        document.querySelector("#cardTerbayar p").textContent = data.terbayar;
-        document.querySelector("#cardLPT p").textContent = data.lpt;
-        document.querySelector("#cardProses p").textContent = data.proses;
+        if(!res.ok){
+            throw new Error("Fetch gagal: " + res.status + " " + res.statusText);
+        }
+
+        const data = await res.json();
+        console.log("Data dari GAS:", data);
+
+        // Update card
+        document.querySelector("#cardTotal p").textContent = data.total ?? 0;
+        document.querySelector("#cardSelesai p").textContent = data.selesai ?? 0;
+        document.querySelector("#cardTerbayar p").textContent = data.terbayar ?? 0;
+        document.querySelector("#cardLPT p").textContent = data.lpt ?? 0;
+        document.querySelector("#cardProses p").textContent = data.proses ?? 0;
 
     }catch(err){
-        console.error(err);
-        alert("Gagal memuat data dashboard!");
-    }finally{
-        //hideLoading();
+        console.error("Error loadDashboard:", err);
+        alert("Gagal memuat data dashboard! Cek console untuk detail.");
+        
+        // fallback supaya card tetap 0
+        document.querySelector("#cardTotal p").textContent = 0;
+        document.querySelector("#cardSelesai p").textContent = 0;
+        document.querySelector("#cardTerbayar p").textContent = 0;
+        document.querySelector("#cardLPT p").textContent = 0;
+        document.querySelector("#cardProses p").textContent = 0;
     }
 }
 
-
-
+// panggil loadDashboard
 loadDashboard();
-
 </script>
 
 
