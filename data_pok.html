@@ -14,19 +14,18 @@
 body{
     display:grid;
     grid-template-columns:240px 1fr;
+    height:100vh;
+    overflow:hidden;
     background:#f8fafc;
     color:#334155;
 }
 
 /* SIDEBAR */
 .sidebar{
-    height:100vh;
     background:#ffffff;
     border-right:1px solid #e5e7eb;
     display:flex;
     flex-direction:column;
-    position:sticky;
-    top:0;
 }
 
 .sidebar-brand{
@@ -72,7 +71,7 @@ body{
 .main{
     display:flex;
     flex-direction:column;
-    min-height:100vh;
+    height:100vh;
 }
 
 /* TOPBAR */
@@ -84,30 +83,28 @@ body{
     justify-content:space-between;
     align-items:center;
     padding:0 30px;
-    position:sticky;
-    top:0;
-    z-index:1000;
+    flex-shrink:0;
 }
 
-.topbar-left{font-weight:600;}
+.topbar-left{
+    font-weight:600;
+    font-size:15px;
+}
 
 .topbar-right{
     display:flex;
     align-items:center;
-    gap:18px;
-    font-size:14px;
+    gap:20px;
 }
 
-.topbar-right i,
-.user-info{
+.topbar-right i{
     font-size:16px;
-    cursor:pointer;
     color:#475569;
+    cursor:pointer;
     transition:0.2s;
 }
 
-.topbar-right i:hover,
-.user-info:hover{
+.topbar-right i:hover{
     color:#0369a1;
 }
 
@@ -116,14 +113,20 @@ body{
     align-items:center;
     gap:8px;
     font-weight:500;
+    cursor:pointer;
+}
+
+.user-info:hover{
+    color:#0369a1;
 }
 
 /* CONTENT */
 .content{
-    padding:20px 30px;
-    flex:1; /* fleksibel menyesuaikan tinggi */
+    flex:1;
     display:flex;
     flex-direction:column;
+    padding:20px 30px;
+    overflow:hidden;
 }
 
 /* FILTER */
@@ -136,6 +139,7 @@ body{
     display:flex;
     align-items:center;
     gap:15px;
+    flex-shrink:0;
 }
 
 select,input{
@@ -152,13 +156,11 @@ input:focus, select:focus{
 
 /* TABLE */
 .table-container{
-    flex:1; /* otomatis menyesuaikan tinggi tersisa */
+    flex:1;
     overflow:auto;
     background:white;
     border-radius:16px;
     border:1px solid #e5e7eb;
-    display:flex;
-    flex-direction:column;
 }
 
 table{
@@ -171,7 +173,7 @@ thead th{
     position:sticky;
     top:0;
     background:#f1f5f9;
-    z-index:10;
+    z-index:5;
 }
 
 th,td{
@@ -182,12 +184,18 @@ th,td{
 .text-right{text-align:right;}
 .text-center{text-align:center;}
 
+/* BUTTON */
 .btn{
     padding:5px 10px;
     border:none;
     border-radius:6px;
     font-size:12px;
     cursor:pointer;
+    transition:0.2s;
+}
+
+.btn:hover{
+    opacity:0.85;
 }
 
 .btn-rekam{background:#38bdf8;color:white;}
@@ -203,18 +211,13 @@ th,td{
     justify-content:center;
     font-size:13px;
     color:#64748b;
-    position:fixed;
-    bottom:0;
-    left:240px;
-    right:0;
-    z-index:100;
+    flex-shrink:0;
 }
 </style>
 </head>
 
 <body>
 
-<!-- SIDEBAR -->
 <div class="sidebar">
     <div class="sidebar-brand">
         <i class="fa-solid fa-layer-group"></i>
@@ -234,10 +237,8 @@ th,td{
     </ul>
 </div>
 
-<!-- MAIN -->
 <div class="main">
 
-<!-- TOPBAR -->
 <div class="topbar">
     <div class="topbar-left">
         Sistem Monitoring Anggaran Belanja
@@ -294,88 +295,11 @@ th,td{
 </div>
 
 </div>
-</div>
 
 <div class="footer">
 © KPKNL Denpasar 2026
 </div>
 
-<script>
-const urlGAS="https://script.google.com/macros/s/AKfycbxkeZjWQumvORWktLRLLvkEGq9NUBrHlxKhQxStPadlfnoO6rQusVMw5QxRZ9qmpV4Flw/exec";
-let allData=[];
-
-document.addEventListener("DOMContentLoaded",function(){
-    const nama=sessionStorage.getItem("nama");
-    if(!nama){
-        window.location.replace("index.html");
-    }else{
-        document.getElementById("namaUser").textContent=nama;
-    }
-});
-
-function logout(){
-    sessionStorage.clear();
-    window.location.replace("index.html");
-}
-
-function formatNumber(num){return Number(num||0).toLocaleString("id-ID");}
-
-function loadData(){
-fetch(urlGAS)
-.then(res=>res.json())
-.then(data=>{
-const unique=new Map();
-data.forEach(r=>{
-const kode=r[0];
-if(!unique.has(kode)){unique.set(kode,r);}
-});
-allData=Array.from(unique.values());
-renderTable(allData);
-});
-}
-
-function renderTable(data){
-const tbody=document.querySelector("#tabelPOK tbody");
-tbody.innerHTML="";
-data.forEach(row=>{
-const tr=document.createElement("tr");
-const [kode,uraian,pagu,blokir,realisasi,sisa,,kolomI]=row;
-
-tr.innerHTML=`
-<td>${kode||""}</td>
-<td>${uraian||""}</td>
-<td class="text-right">${formatNumber(pagu)}</td>
-<td class="text-right">${formatNumber(blokir)}</td>
-<td class="text-right">${formatNumber(realisasi)}</td>
-<td class="text-right">${formatNumber(sisa)}</td>
-<td class="text-center">${kolomI||""}</td>
-<td class="text-center">
-${kode&&kode.length>27?`
-<button class="btn btn-rekam">Rekam</button>
-<button class="btn btn-detil">Detil</button>`:""}
-</td>`;
-tbody.appendChild(tr);
-});
-}
-
-function applyFilter(){
-const filter=document.getElementById("filterSD").value.toLowerCase();
-const search=document.getElementById("searchBox").value.toLowerCase();
-const filtered=allData.filter(row=>{
-const kode=(row[0]||"").toLowerCase();
-const uraian=(row[1]||"").toLowerCase();
-const kolomI=(row[7]||"").toLowerCase();
-return (filter==="semua"||kolomI.includes(filter)) &&
-       (kode.includes(search)||uraian.includes(search));
-});
-renderTable(filtered);
-}
-
-function goDashboard(){window.location.href="dashboard.html";}
-function goPOK(){window.location.href="data_pok.html";}
-
-loadData();
-</script>
-
+</div>
 </body>
 </html>
