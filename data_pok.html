@@ -229,14 +229,22 @@ th,td{
 <div class="main">
 
 <div class="topbar">
-    <div><strong>Sistem Monitoring Anggaran Belanja</strong></div>
-    <div class="topbar-right">
-        <i class="fa-regular fa-calendar"></i>
-        <i class="fa-solid fa-gear"></i>
-        <i class="fa-solid fa-right-from-bracket" onclick="logout()"></i>
-    </div>
-</div>
+        <div class="topbar-left">
+            Sistem Monitoring Anggaran Belanja
+        </div>
 
+        <div class="topbar-right">
+            <i class="fa-regular fa-calendar"></i>
+            <i class="fa-solid fa-gear"></i>
+
+            <div class="user-info">
+                <i class="fa-regular fa-user"></i>
+                <span id="namaUser"></span>
+            </div>
+
+            <i class="fa-solid fa-right-from-bracket" title="Logout" onclick="logout()"></i>
+        </div>
+    </div>
 <div class="content">
 
 <div class="filter-bar">
@@ -369,4 +377,5 @@ loadData();
 
 </body>
 </html>
+
 
