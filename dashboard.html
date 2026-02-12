@@ -391,7 +391,7 @@ function logout(){
     window.location.replace("index.html");
 }
 
-    const urlGAS="https://script.google.com/macros/s/AKfycbxbgOldavcAlPDNYsENRjqDmw2BW1QNrdjX3PpjyEJ2bma7D2LaacdLDbCUBTv4fkAplg/exec"; // ganti sesuai GAS-mu
+    const urlGAS="https://script.google.com/macros/s/AKfycbzAgsgCzCzZtMG95zOhco0QJ3i8V8PzDuCraBw-siBFQ4Msy940rusqrHTqwzqUMWI6yA/exec"; // ganti sesuai GAS-mu
 
 function showLoading(){ document.getElementById("overlayLoading").style.display="flex"; }
 function hideLoading(){ document.getElementById("overlayLoading").style.display="none"; }
@@ -400,14 +400,13 @@ async function loadDashboard(){
     showLoading();
     try{
         const res = await fetch(urlGAS);
-        const result = await res.json(); // {total, selesai, terbayar, lpt, proses}
+        const data = await res.json();
 
-        document.querySelector("#cardTotal p").textContent = result.total;
-        document.querySelector("#cardSelesai p").textContent = result.selesai;
-        document.querySelector("#cardTerbayar p").textContent = result.terbayar;
-        document.querySelector("#cardLPT p").textContent = result.lpt;
-        document.querySelector("#cardProses p").textContent = result.proses;
-
+        document.querySelector("#cardTotal p").textContent = data.total;
+        document.querySelector("#cardSelesai p").textContent = data.selesai;
+        document.querySelector("#cardTerbayar p").textContent = data.terbayar;
+        document.querySelector("#cardLPT p").textContent = data.lpt;
+        document.querySelector("#cardProses p").textContent = data.proses;
 
     }catch(err){
         console.error(err);
@@ -416,6 +415,7 @@ async function loadDashboard(){
         hideLoading();
     }
 }
+
 
 
 loadDashboard();
