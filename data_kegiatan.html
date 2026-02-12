@@ -24,7 +24,7 @@ body{display:grid; grid-template-columns:240px 1fr; background:#f8fafc; color:#3
 .topbar-right i{font-size:16px; cursor:pointer; color:#475569; transition:0.2s;}
 .topbar-right i:hover{color:#0369a1;}
 .user-info{display:flex; align-items:center; gap:8px; font-weight:500;}
-.content{padding:30px; padding-bottom:80px;}
+.content{padding:30px; padding-bottom:50px;}
 .footer{position:fixed; bottom:0; left:240px; right:0; height:45px; background:#ffffff; border-top:1px solid #e5e7eb; display:flex; align-items:center; justify-content:center; font-size:13px; color:#64748b;}
 @media(max-width:1000px){body{grid-template-columns:1fr;} .footer{left:0;}}
 
@@ -52,7 +52,7 @@ body{display:grid; grid-template-columns:240px 1fr; background:#f8fafc; color:#3
 .table-box table {
   border-collapse: collapse;
   width: 100%;
-  table-layout: fixed; /* penting agar wrap dan scroll horizontal tetap bekerja */
+  overflow-y: auto;
 }
 
 .table-box th, .table-box td {
