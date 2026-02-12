@@ -395,39 +395,42 @@ function logout(){
 // URL GAS (pastikan deploy web app publik)
 const urlGAS="https://script.google.com/macros/s/AKfycbzAgsgCzCzZtMG95zOhco0QJ3i8V8PzDuCraBw-siBFQ4Msy940rusqrHTqwzqUMWI6yA/exec";
 
-async function loadDashboard(){
-    try{
-        console.log("Fetch GAS...", urlGAS);
+async function loadDashboard() {
+    try {
         const res = await fetch(urlGAS);
-
-        if(!res.ok){
-            throw new Error("Fetch gagal: " + res.status + " " + res.statusText);
-        }
-
         const data = await res.json();
-        console.log("Data dari GAS:", data);
 
         // Update card
-        document.querySelector("#cardTotal p").textContent = data.total ?? 0;
-        document.querySelector("#cardSelesai p").textContent = data.selesai ?? 0;
-        document.querySelector("#cardTerbayar p").textContent = data.terbayar ?? 0;
-        document.querySelector("#cardLPT p").textContent = data.lpt ?? 0;
-        document.querySelector("#cardProses p").textContent = data.proses ?? 0;
+        document.querySelector("#cardTotal p").textContent = data.total;
+        document.querySelector("#cardSelesai p").textContent = data.selesai;
+        document.querySelector("#cardTerbayar p").textContent = data.terbayar;
+        document.querySelector("#cardLPT p").textContent = data.lpt;
+        document.querySelector("#cardProses p").textContent = data.proses;
 
-    }catch(err){
-        console.error("Error loadDashboard:", err);
-        alert("Gagal memuat data dashboard! Cek console untuk detail.");
-        
-        // fallback supaya card tetap 0
-        document.querySelector("#cardTotal p").textContent = 0;
-        document.querySelector("#cardSelesai p").textContent = 0;
-        document.querySelector("#cardTerbayar p").textContent = 0;
-        document.querySelector("#cardLPT p").textContent = 0;
-        document.querySelector("#cardProses p").textContent = 0;
+        // ===== UPDATE TABEL KEGIATAN HARI INI =====
+        const tbody = document.querySelector(".chart-box table tbody");
+        tbody.innerHTML = ""; // kosongkan dulu tabel lama
+
+        // data.rows = semua data dari row 4
+        // ambil kolom: C = index 2, D = index 3, E = index 4
+        data.rows.forEach(row => {
+            if(row[2]) { // pastikan ada Uraian/Nomor ST
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td>${row[2]}</td>
+                    <td>${row[3]}</td>
+                    <td>${row[4]}</td>
+                `;
+                tbody.appendChild(tr);
+            }
+        });
+
+    } catch(err) {
+        console.error(err);
+        alert("Gagal memuat data dashboard!");
     }
 }
 
-// panggil loadDashboard
 loadDashboard();
 </script>
 
