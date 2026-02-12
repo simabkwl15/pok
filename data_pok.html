@@ -374,10 +374,10 @@ function logout(){
 }
 
     // Ambil nama user dari session
-const namaUser = sessionStorage.getItem("namaUser");
+const namaUser = sessionStorage.getItem("nama");
 
-if (namaUser) {
-    document.getElementById("namaUser").textContent = namaUser;
+if (nama) {
+    document.getElementById("nama").textContent = nama;
 } else {
     // kalau tidak ada session, paksa balik ke login
     window.location.replace("index.html");
@@ -388,5 +388,6 @@ loadData();
 
 </body>
 </html>
+
 
 
