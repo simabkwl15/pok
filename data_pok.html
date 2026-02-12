@@ -718,9 +718,9 @@ function renderDetailTable(data){
         <tr>
           <td>${d.uraian || ""}</td>
 
-          <td style="text-align:center;">
-              ${formatDate(d.tgl_st)}
-          </td>
+          <td>${d.pelaksana || ""}</td>
+
+          <td>${d.tujuan || ""}</td>
 
           <td style="text-align:center;">
               ${formatDate(d.tgl_mulai)}
@@ -863,6 +863,7 @@ setInterval(autoRefresh, 30000);
   
 </body>
 </html>
+
 
 
 
