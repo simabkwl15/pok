@@ -9,6 +9,70 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <style>
+.popup-overlay{
+  position:fixed;
+  top:0; left:0;
+  width:100%; height:100%;
+  background:rgba(0,0,0,0.4);
+  display:none;
+  justify-content:center;
+  align-items:center;
+  z-index:9999;
+}
+
+.popup-box{
+  background:#fff;
+  width:900px;
+  border-radius:8px;
+  padding:20px;
+}
+
+.popup-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:15px;
+}
+
+.popup-body{
+  display:flex;
+  gap:30px;
+}
+
+.form-left,
+.form-right{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+}
+
+.form-left input,
+.form-right input,
+textarea{
+  margin-bottom:10px;
+  padding:6px;
+}
+
+.popup-footer{
+  text-align:right;
+  margin-top:15px;
+}
+
+.btn-simpan{
+  padding:6px 15px;
+  background:#2e86de;
+  color:white;
+  border:none;
+  border-radius:4px;
+}
+
+.close-btn{
+  cursor:pointer;
+}
+</style>
+
+    
+<style>
     
 .modal-content.large{
     width:900px;
@@ -372,7 +436,8 @@ function renderTable(data){
             <td class="text-center">${sd}</td>
             <td class="text-center">
                 ${kode && kode.length>27 ? `
-                    <button class="btn-small btn-rekam">Rekam</button>
+                    <button class="btn-small btn-rekam" onclick='openRekam(${JSON.stringify(row)})'>Rekam</button>
+
                     <button class="btn-small btn-detil">Detil</button>
                 ` : ""}
             </td>
@@ -435,6 +500,42 @@ if (nama) {
     window.location.replace("index.html");
 }
 
+function openRekam(row){
+    const [kode,uraian,pagu,blokir,realisasi,sisa,,sd]=row;
+
+    document.getElementById("popupRekam").style.display="flex";
+
+    document.getElementById("f_mak").value = kode || "";
+    document.getElementById("f_uraian_mak").value = uraian || "";
+    document.getElementById("f_pagu").value = formatNumber(pagu);
+    document.getElementById("f_blokir").value = formatNumber(blokir);
+    document.getElementById("f_realisasi").value = formatNumber(realisasi);
+    document.getElementById("f_sisa").value = formatNumber(sisa);
+    document.getElementById("f_sd").value = sd || "";
+}
+
+function closePopup(){
+    document.getElementById("popupRekam").style.display="none";
+}
+
+function simpanRekam(){
+    const data = {
+        id: document.getElementById("f_id").value,
+        uraian: document.getElementById("f_uraian").value,
+        tanggal: document.getElementById("f_tgl").value,
+        estimasi: document.getElementById("f_estimasi").value,
+        tujuan: document.getElementById("f_tujuan").value,
+        mak: document.getElementById("f_mak").value,
+        sd: document.getElementById("f_sd").value
+    };
+
+    console.log("Data dikirim:", data);
+
+    // nanti kita sambungkan ke GAS
+    alert("Data siap dikirim 🚀");
+}
+
+    
 function autoRefresh(){
     fetch(urlGAS)
     .then(res => res.json())
@@ -543,9 +644,69 @@ setInterval(autoRefresh, 30000);
   </div>
 </div>
 
+<!-- POPUP REKAM -->
+<div id="popupRekam" class="popup-overlay">
+  <div class="popup-box">
+    <div class="popup-header">
+      <h3>Rekam Kegiatan</h3>
+      <span class="close-btn" onclick="closePopup()">✖</span>
+    </div>
+
+    <div class="popup-body">
+
+      <div class="form-left">
+        <label>ID Usulan</label>
+        <input type="text" id="f_id">
+
+        <label>No ST/ND / Uraian Kegiatan</label>
+        <textarea id="f_uraian"></textarea>
+
+        <label>Tgl ST/ND</label>
+        <input type="date" id="f_tgl">
+
+        <label>Estimasi Biaya</label>
+        <input type="number" id="f_estimasi">
+
+        <label>Status Dana</label>
+        <input type="text" id="f_sd" readonly>
+
+        <label>Tujuan</label>
+        <input type="text" id="f_tujuan">
+
+      </div>
+
+      <div class="form-right">
+        <label>MAK</label>
+        <input type="text" id="f_mak" readonly>
+
+        <label>Uraian MAK</label>
+        <textarea id="f_uraian_mak" readonly></textarea>
+
+        <label>Pagu</label>
+        <input type="text" id="f_pagu" readonly>
+
+        <label>Blokir</label>
+        <input type="text" id="f_blokir" readonly>
+
+        <label>Realisasi</label>
+        <input type="text" id="f_realisasi" readonly>
+
+        <label>Sisa</label>
+        <input type="text" id="f_sisa" readonly>
+      </div>
+
+    </div>
+
+    <div class="popup-footer">
+      <button class="btn-simpan" onclick="simpanRekam()">Simpan</button>
+    </div>
+  </div>
+</div>
+
     
 </body>
 </html>
+
 
 
 
