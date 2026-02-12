@@ -430,7 +430,15 @@ document.addEventListener("DOMContentLoaded", function(){
 
 function goDashboard(){ window.location.href="dashboard.html"; }
 function goPOK(){ window.location.href="data_pok.html"; }
-function goKegiatan(){ window.location.href="data_kegiatan.html"; }
+function goKegiatan(){
+    const kantor = sessionStorage.getItem("kantor");
+    if(!kantor){
+        alert("Session kantor belum ada. Silakan refresh dashboard!");
+        return;
+    }
+    window.location.href = "data_kegiatan.html";
+}
+
     
 function logout(){
     sessionStorage.clear();
