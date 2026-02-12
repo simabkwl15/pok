@@ -510,17 +510,16 @@ function generateID(){
 }
   
 function openRekam(row){
-    const [kode,uraian,pagu,blokir,realisasi,sisa,,sd]=row;
-  
+
+    const [kode, uraian, pagu, blokir, realisasi, sisa, sd] = row;
+
+    document.getElementById("popupRekam").style.display="flex";
+
     const today = new Date();
-    const yyyy = today.getFullYear();
-    const mm = String(today.getMonth() + 1).padStart(2, '0');
-    const dd = String(today.getDate()).padStart(2, '0');
-    document.getElementById("f_tgl").value = `${yyyy}-${mm}-${dd}`;
+    document.getElementById("f_tgl").value =
+        today.toISOString().split("T")[0];
 
     document.getElementById("f_id").value = generateID();
-  
-    document.getElementById("popupRekam").style.display="flex";
 
     document.getElementById("f_mak").value = kode || "";
     document.getElementById("f_uraian_mak").value = uraian || "";
@@ -530,13 +529,13 @@ function openRekam(row){
     document.getElementById("f_sisa").value = formatNumber(sisa);
     document.getElementById("f_sd").value = sd || "";
 
-  // kosongkan status dana saat awal load
+    document.getElementById("f_estimasi").value = "";
+
     const statusBox = document.getElementById("f_sd_status");
     statusBox.value = "";
     statusBox.style.color = "black";
-
-  
 }
+
 
 function closePopup(){
     document.getElementById("popupRekam").style.display="none";
@@ -588,7 +587,7 @@ function simpanRekam(){
 }
 
 function loadTujuan(){
-    fetch("URL_GAS_KAMU?action=ref_sbm")
+    fetch(urlGAS + "?action=ref_sbm")
     .then(res=>res.json())
     .then(data=>{
         const datalist=document.getElementById("listTujuan");
@@ -632,99 +631,6 @@ setInterval(autoRefresh, 30000);
 
 </script>
 
-<div id="modalRekam" class="modal">
-  <div class="modal-content large">
-
-    <div class="modal-header">
-      <h3>Rekam Kegiatan</h3>
-      <span class="close-btn" onclick="closeModal()">&times;</span>
-    </div>
-
-    <div class="modal-body-grid">
-
-      <!-- KIRI -->
-      <div class="form-column">
-
-        <div class="form-group">
-          <label>ID Usulan</label>
-          <input type="text" id="idUsulan">
-        </div>
-
-        <div class="form-group">
-          <label>No ST/ND / Uraian Kegiatan</label>
-          <textarea id="uraianKegiatan" rows="4"></textarea>
-        </div>
-
-        <div class="form-group">
-          <label>Tgl ST/ND</label>
-          <input type="date" id="tglStnd">
-        </div>
-
-        <div class="form-group">
-          <label>Estimasi Biaya</label>
-          <input type="number" id="estimasiBiaya">
-        </div>
-
-        <div class="form-group">
-          <label>Status Dana</label>
-          <select id="statusDana">
-            <option>PNBP</option>
-            <option>RM</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label>Tujuan</label>
-          <input type="text" id="tujuan">
-        </div>
-
-      </div>
-
-      <!-- KANAN -->
-      <div class="form-column">
-
-        <div class="form-group">
-          <label>MAK</label>
-          <input type="text" id="mak" readonly>
-        </div>
-
-        <div class="form-group">
-          <label>Uraian MAK</label>
-          <textarea id="uraianMak" rows="3" readonly></textarea>
-        </div>
-
-        <div class="form-group">
-          <label>Pagu</label>
-          <input type="text" id="pagu" readonly>
-        </div>
-
-        <div class="form-group">
-          <label>Blokir</label>
-          <input type="text" id="blokir" readonly>
-        </div>
-
-        <div class="form-group">
-          <label>Realisasi</label>
-          <input type="text" id="realisasi" readonly>
-        </div>
-
-        <div class="form-group">
-          <label>Sisa</label>
-          <input type="text" id="sisa" readonly>
-        </div>
-
-      </div>
-
-    </div>
-
-    <div class="modal-footer">
-      <button onclick="closeModal()">Batal</button>
-      <button class="btn-rekam" onclick="submitRekam()">Simpan</button>
-    </div>
-
-  </div>
-</div>
-
 <!-- POPUP REKAM -->
 <div id="popupRekam" class="popup-overlay">
   <div class="popup-box">
@@ -747,9 +653,13 @@ setInterval(autoRefresh, 30000);
 
         <label>Estimasi Biaya</label>
         <input type="text" id="f_estimasi" oninput="formatEstimasi(this)">
-
+        
+        <label>Status Kecukupan Dana</label>
+        <input type="text" id="f_sd_status" readonly>
+        
         <label>Status Dana</label>
         <input type="text" id="f_sd" readonly>
+
 
         <label>Tujuan</label>
         <input type="text" id="f_tujuan" list="listTujuan">
@@ -788,6 +698,7 @@ setInterval(autoRefresh, 30000);
     
 </body>
 </html>
+
 
 
 
