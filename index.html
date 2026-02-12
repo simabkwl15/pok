@@ -154,6 +154,13 @@ button:disabled{
         <small>Sistem Monitoring Anggaran Belanja</small>
     </div>
 
+    <label>Kantor</label>
+    <select id="kantor" style="width:100%;padding:10px;border-radius:8px;border:1px solid #e5e7eb;margin-top:6px;font-size:14px;">
+        <option value="">-- Pilih Kantor --</option>
+        <option value="denpasar">KPKNL Denpasar</option>
+        <option value="jember">KPKNL Jember</option>
+    </select>
+    
     <div class="login-body">
         <label>NIP</label>
         <input type="text" id="nip" placeholder="Masukkan NIP">
@@ -179,6 +186,42 @@ function showLoading(show){
     document.getElementById("btnLogin").disabled = show;
 }
 
+async function login(){
+    const nip = document.getElementById("nip").value.trim();
+    const password = document.getElementById("password").value.trim();
+    const kantor = document.getElementById("kantor").value;
+    const errorMsg = document.getElementById("errorMsg");
+
+    errorMsg.textContent = "";
+
+    if(!nip || !password || !kantor){
+        errorMsg.textContent = "NIP, Password, dan Kantor wajib diisi";
+        return;
+    }
+
+    showLoading(true);
+
+    try{
+        // Kirim kantor juga ke API jika perlu
+        const res = await fetch(`${apiURL}?nip=${nip}&password=${password}&kantor=${kantor}`);
+        const result = await res.json();
+
+        if(result.status === "success"){
+            sessionStorage.setItem("nama", result.nama);
+            sessionStorage.setItem("unit", result.unit);
+            sessionStorage.setItem("kantor", kantor); // simpan kantor
+            window.location.href = "dashboard.html";
+        } else {
+            showLoading(false);
+            errorMsg.textContent = result.message;
+        }
+    } catch(err){
+        showLoading(false);
+        errorMsg.textContent = "Gagal terhubung ke server";
+    }
+}
+
+    
 function togglePass(){
     const p = document.getElementById("password");
     p.type = p.type === "password" ? "text" : "password";
@@ -222,3 +265,4 @@ async function login(){
 
 </body>
 </html>
+
