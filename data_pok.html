@@ -395,7 +395,7 @@ th,td{
 </div>
 
 <script>
-const urlGAS="https://script.google.com/macros/s/AKfycbwKJWcq5-MU3GRfzokOh-r9CY-YQ6A9qPAa7MsJK0R0HfMNnI-7YyWvWPx2si9e7LIXuA/exec";
+const urlGAS="https://script.google.com/macros/s/AKfycbwMYmbcoUbELQkoWiNhg3iDnv9PZ1GAjHlqILFe84Wk5qrzMUdDzYsWElUY_2TPDUiWTg/exec";
 let allData=[];
 
 function formatNumber(num){
@@ -601,6 +601,7 @@ async function simpanRekam(){
         const data = new URLSearchParams();
         data.append("id_usulan", document.getElementById("f_id").value.trim());
         data.append("mak", document.getElementById("f_mak").value.trim());
+        data.append("uraian", document.getElementById("f_uraian").value.trim());
         data.append("tgl_st", document.getElementById("f_tgl").value);
         data.append("estimasi", document.getElementById("f_estimasi").value.replace(/\D/g,''));
         data.append("tujuan", document.getElementById("f_tujuan").value.trim());
@@ -734,6 +735,7 @@ setInterval(autoRefresh, 30000);
     
 </body>
 </html>
+
 
 
 
