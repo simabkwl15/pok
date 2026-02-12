@@ -188,7 +188,12 @@ document.addEventListener("DOMContentLoaded", async function(){
     else document.getElementById("namaUser").textContent = nama;
 
     let allRows = [];
-    const kantor = sessionStorage.getItem("kantor") || "KPKNL Denpasar";
+    const kantor = sessionStorage.getItem("kantor");
+      if(!kantor){
+          alert("Session kantor tidak ditemukan. Silakan login ulang.");
+          window.location.replace("index.html");
+      }
+
 
     async function loadData(){
         try{
