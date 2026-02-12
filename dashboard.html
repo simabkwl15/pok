@@ -400,28 +400,14 @@ async function loadDashboard(){
     showLoading();
     try{
         const res = await fetch(urlGAS);
-        let data = await res.json();
+        const result = await res.json(); // {total, selesai, terbayar, lpt, proses}
 
-        // Hapus baris header atau baris kosong
-        data = data.filter(row => row[0] && row[15]);
+        document.querySelector("#cardTotal p").textContent = result.total;
+        document.querySelector("#cardSelesai p").textContent = result.selesai;
+        document.querySelector("#cardTerbayar p").textContent = result.terbayar;
+        document.querySelector("#cardLPT p").textContent = result.lpt;
+        document.querySelector("#cardProses p").textContent = result.proses;
 
-        const total = data.length;
-
-        let selesai=0, terbayar=0, lpt=0, proses=0;
-
-        data.forEach(row=>{
-            const status = (row[15]||"").toString().toLowerCase().trim(); // kolom P
-            if(status==="selesai") selesai++;
-            else if(status==="terbayar") terbayar++;
-            else if(status==="lpt") lpt++;
-            else if(status==="terlaksana" || status==="rekam data") proses++;
-        });
-
-        document.querySelector("#cardTotal p").textContent = total;
-        document.querySelector("#cardSelesai p").textContent = selesai;
-        document.querySelector("#cardTerbayar p").textContent = terbayar;
-        document.querySelector("#cardLPT p").textContent = lpt;
-        document.querySelector("#cardProses p").textContent = proses;
 
     }catch(err){
         console.error(err);
