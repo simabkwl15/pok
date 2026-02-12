@@ -6,11 +6,9 @@
 <title>Daftar Kegiatan SiMAB</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <style>
-/* --- Styles tetap dari dashboard --- */
 *{margin:0; padding:0; box-sizing:border-box; font-family:'Inter',sans-serif;}
 body{display:grid; grid-template-columns:240px 1fr; background:#f8fafc; color:#334155;}
 .sidebar{height:100vh; background:#ffffff; border-right:1px solid #e5e7eb; display:flex; flex-direction:column; position:sticky; top:0;}
@@ -30,28 +28,12 @@ body{display:grid; grid-template-columns:240px 1fr; background:#f8fafc; color:#3
 .footer{position:fixed; bottom:0; left:240px; right:0; height:45px; background:#ffffff; border-top:1px solid #e5e7eb; display:flex; align-items:center; justify-content:center; font-size:13px; color:#64748b;}
 @media(max-width:1000px){body{grid-template-columns:1fr;} .footer{left:0;}}
 
-/* --- Cards --- */
-.cards{display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:20px; margin-bottom:25px;}
-.card{padding:20px; border-radius:16px; border:1px solid #e5e7eb; transition:0.2s; background:white; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;}
-.card:hover{transform:translateY(-4px);}
-.cards .card:nth-child(1){background:#e0f2fe;color:#2F4F4F;}
-.cards .card:nth-child(2){background:#dcfce7;color:#2F4F4F;}
-.cards .card:nth-child(3){background:#ffedd5;color:#2F4F4F;}
-.cards .card:nth-child(4){background:#FFFACD;color:#2F4F4F;}
-.cards .card:nth-child(5){background:#fee2e2;color:#2F4F4F;}
-.card h3{font-size:13px; margin-bottom:8px;}
-.card span, .card p{font-size:24px; font-weight:700;}
-
-/* --- Dashboard Grid --- */
-.dashboard-grid{display:grid; grid-template-columns:1fr; gap:20px;}
-
-/* --- Search + Radio --- */
+/* --- Filter & Tabel --- */
 .filter-bar{display:flex; align-items:center; gap:20px; margin-bottom:15px;}
 .filter-bar input[type="text"]{flex:1; padding:8px 12px; border-radius:8px; border:1px solid #cbd5e1; font-size:14px;}
 .filter-bar .radio-group{display:flex; gap:12px;}
 .filter-bar .radio-group label{display:flex; align-items:center; gap:4px; font-size:14px; cursor:pointer;}
 
-/* --- Tabel --- */
 .table-box{background:white; border:1px solid #e5e7eb; border-radius:12px; overflow:auto; max-height:calc(100vh - 250px); position:relative;}
 .table-box table{width:100%; border-collapse:collapse;}
 .table-box th, .table-box td{padding:10px; border-bottom:1px solid #e5e7eb; text-align:left; white-space:nowrap;}
@@ -65,10 +47,7 @@ body{display:grid; grid-template-columns:240px 1fr; background:#f8fafc; color:#3
 <body>
 
 <div class="sidebar">
-    <div class="sidebar-brand">
-        <i class="fa-solid fa-layer-group"></i>
-        <span>SiMAB</span>
-    </div>
+    <div class="sidebar-brand"><i class="fa-solid fa-layer-group"></i> <span>SiMAB</span></div>
     <ul>
         <li onclick="goDashboard()"><i class="fa-solid fa-gauge"></i>Dashboard</li>
         <li onclick="goPOK()"><i class="fa-solid fa-folder-open"></i>POK</li>
@@ -129,7 +108,7 @@ body{display:grid; grid-template-columns:240px 1fr; background:#f8fafc; color:#3
 <div class="footer">© KPKNL Denpasar 2026</div>
 
 <script>
-const urlGAS="https://script.google.com/macros/s/AKfycbyzA6kZUjCxi2tGfsFT7wNITQZ3W7-bPkicgOxqgOS8KYN_OFbZsCYTPTJHpViIBgUqZg/exec"; // ganti dengan GAS mu
+const urlGAS="https://script.google.com/macros/s/AKfycbyzA6kZUjCxi2tGfsFT7wNITQZ3W7-bPkicgOxqgOS8KYN_OFbZsCYTPTJHpViIBgUqZg/exec";
 
 document.addEventListener("DOMContentLoaded", async function(){
     const nama = sessionStorage.getItem("nama");
@@ -140,58 +119,90 @@ document.addEventListener("DOMContentLoaded", async function(){
     const kantor = sessionStorage.getItem("kantor") || "KPKNL Denpasar";
 
     async function loadData(){
-        const res = await fetch(`${urlGAS}?kantor=${kantor}`);
-        const data = await res.json();
-        if(data.status !== "success") return;
+        try{
+            const res = await fetch(`${urlGAS}?kantor=${kantor}`);
+            const data = await res.json();
+            if(data.status !== "success") return;
 
-        // pertama kali load hanya status Rekam Data & Terlaksana
-        allRows = data.rows.filter(r=>["Rekam Data","Terlaksana"].includes(r.P));
-        renderTable(allRows);
+            allRows = data.rows.filter(r=>["Rekam Data","Terlaksana"].includes(r.P));
+            renderTable(allRows);
+        } catch(e){ console.error(e); }
     }
 
     function renderTable(rows){
-    const tbody = document.getElementById("dataTableBody");
-    tbody.innerHTML = "";
-    rows.forEach(r=>{
-        const tglMulai = r.G ? new Date(r.G) : null;
-        const tglFormatted = tglMulai ? `${tglMulai.getFullYear()}-${String(tglMulai.getMonth()+1).padStart(2,'0')}-${String(tglMulai.getDate()).padStart(2,'0')}` : "";
-        const jumlahFormatted = Number(r.M||0).toLocaleString('id-ID');
+        const tbody = document.getElementById("dataTableBody");
+        tbody.innerHTML = "";
+        rows.forEach(r=>{
+            const tglMulai = r.G ? new Date(r.G) : null;
+            const tglFormatted = tglMulai ? `${tglMulai.getFullYear()}-${String(tglMulai.getMonth()+1).padStart(2,'0')}-${String(tglMulai.getDate()).padStart(2,'0')}` : "";
+            const jumlahFormatted = Number(r.M||0).toLocaleString('id-ID');
 
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-            <td>${r.A}</td>
-            <td>${r.B}</td>
-            <td>${r.C}</td>
-            <td>${r.D}</td>
-            <td>${r.E}</td>
-            <td>${tglFormatted}</td>
-            <td style="text-align:right;">${jumlahFormatted}</td>
-            <td>${r.N}</td>
-            <td>${r.P}</td>
-            <td class="actions">
-                <button data-tooltip="Ubah"><i class="fa-solid fa-pen-to-square"></i></button>
-                <button data-tooltip="Pelaksana"><i class="fa-solid fa-user-check"></i></button>
-                <button data-tooltip="LPT"><i class="fa-solid fa-file-lines"></i></button>
-                <button data-tooltip="Bayar"><i class="fa-solid fa-hand-holding-dollar"></i></button>
-                <button data-tooltip="SP2D"><i class="fa-solid fa-money-bill-transfer"></i></button>
-                <button data-tooltip="Hapus"><i class="fa-solid fa-trash"></i></button>
-            </td>
-        `;
-        tbody.appendChild(tr);
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td>${r.A}</td>
+                <td>${r.B}</td>
+                <td>${r.C}</td>
+                <td>${r.D}</td>
+                <td>${r.E}</td>
+                <td>${tglFormatted}</td>
+                <td style="text-align:right;">${jumlahFormatted}</td>
+                <td>${r.N}</td>
+                <td>${r.P}</td>
+                <td class="actions">
+                    <button class="btn-ubah" data-tooltip="Ubah"><i class="fa-solid fa-pen-to-square"></i></button>
+                    <button class="btn-pelaksana" data-tooltip="Pelaksana"><i class="fa-solid fa-user-check"></i></button>
+                    <button class="btn-lpt" data-tooltip="LPT"><i class="fa-solid fa-file-lines"></i></button>
+                    <button class="btn-bayar" data-tooltip="Bayar"><i class="fa-solid fa-hand-holding-dollar"></i></button>
+                    <button class="btn-sp2d" data-tooltip="SP2D"><i class="fa-solid fa-money-bill-transfer"></i></button>
+                    <button class="btn-hapus" data-tooltip="Hapus"><i class="fa-solid fa-trash"></i></button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    // search
+    document.getElementById("searchBox").addEventListener("input", function(){
+        const val = this.value.toLowerCase();
+        const filtered = allRows.filter(r=>{
+            return Object.keys(r).filter(k=>k!=="N").some(key=>{
+                return String(r[key]||"").toLowerCase().includes(val);
+            });
+        });
+        renderTable(filtered);
     });
-}
 
-// search semua kolom kecuali User (N)
-document.getElementById("searchBox").addEventListener("input", function(){
-    const val = this.value.toLowerCase();
-    const filtered = allRows.filter(r=>{
-        return Object.keys(r).filter(k=>k!=="N").some(key=>{
-            return String(r[key]||"").toLowerCase().includes(val);
+    // radio filter
+    document.querySelectorAll('input[name="statusFilter"]').forEach(rb=>{
+        rb.addEventListener("change", function(){
+            const val = this.value;
+            let filtered = [];
+            if(val==="Dalam Proses") filtered = allRows.filter(r=>["Rekam Data","Terlaksana"].includes(r.P));
+            else if(val==="LPT") filtered = allRows.filter(r=>r.P==="LPT");
+            else if(val==="Terbayar") filtered = allRows.filter(r=>r.P==="Terbayar");
+            else if(val==="Selesai") filtered = allRows.filter(r=>r.P==="Selesai");
+            else filtered = allRows;
+            renderTable(filtered);
         });
     });
-    renderTable(filtered);
-});
 
+    // event delegation tombol aksi
+    document.getElementById("dataTableBody").addEventListener("click", function(e){
+        const btn = e.target.closest("button");
+        if(!btn) return;
+        const tr = btn.closest("tr");
+        const idKegiatan = tr.cells[0].textContent;
+
+        if(btn.classList.contains("btn-ubah")) alert("Ubah ID: "+idKegiatan);
+        else if(btn.classList.contains("btn-hapus")) alert("Hapus ID: "+idKegiatan);
+        else if(btn.classList.contains("btn-pelaksana")) alert("Pelaksana ID: "+idKegiatan);
+        else if(btn.classList.contains("btn-lpt")) alert("LPT ID: "+idKegiatan);
+        else if(btn.classList.contains("btn-bayar")) alert("Bayar ID: "+idKegiatan);
+        else if(btn.classList.contains("btn-sp2d")) alert("SP2D ID: "+idKegiatan);
+    });
+
+    loadData();
+});
 
 function goDashboard(){ window.location.href="dashboard.html"; }
 function goPOK(){ window.location.href="data_pok.html"; }
