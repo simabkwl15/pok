@@ -456,21 +456,16 @@ function formatNumber(num){
     return Number(num||0).toLocaleString("id-ID");
 }
 
-async function loadData(){
-    showLoading(); // tampilkan overlay
-
-    try{
-        const res = await fetch(urlGAS);
-        const data = await res.json();
-        allData = data;
+function loadData(){
+    fetch(urlGAS)
+    .then(res=>res.json())
+    .then(data=>{
+        allData=data;
         renderTable(allData);
-    }catch(err){
-        console.error(err);
-        alert("Gagal mengambil data!");
-    }finally{
-        hideLoading(); // sembunyikan overlay setelah data tampil / error
-    }
+    });
 }
+
+
 
 function renderTable(data){
     const tbody=document.querySelector("#tabelPOK tbody");
@@ -951,6 +946,7 @@ setInterval(autoRefresh, 30000);
   
 </body>
 </html>
+
 
 
 
