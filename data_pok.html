@@ -395,7 +395,7 @@ th,td{
 </div>
 
 <script>
-const urlGAS="https://script.google.com/macros/s/AKfycbxj0iQ1852SV7bfyg3KlVEHA3xsv0Nx7d792puy3sk-kZ6NDIb6hIXJBfG2Pbyayg0W5w/exec";
+const urlGAS="https://script.google.com/macros/s/AKfycbzR5VyOLOdUze3lsYsP6dnubdQ1oonqAje-zxBGTILIEvKCKhizoRW-BaPCa9dQ4Eaxfg/exec";
 let allData=[];
 
 function formatNumber(num){
@@ -500,9 +500,20 @@ if (nama) {
     window.location.replace("index.html");
 }
 
+function generateID(){
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    let result = "";
+    for(let i=0;i<10;i++){
+        result += chars.charAt(Math.floor(Math.random()*chars.length));
+    }
+    return result;
+}
+  
 function openRekam(row){
     const [kode,uraian,pagu,blokir,realisasi,sisa,,sd]=row;
-
+  
+    document.getElementById("f_id").value = generateID();
+  
     document.getElementById("popupRekam").style.display="flex";
 
     document.getElementById("f_mak").value = kode || "";
@@ -518,6 +529,26 @@ function closePopup(){
     document.getElementById("popupRekam").style.display="none";
 }
 
+function hitungStatusDana(){
+    const pagu = parseFloat(document.getElementById("f_pagu").value.replace(/,/g,'')) || 0;
+    const blokir = parseFloat(document.getElementById("f_blokir").value.replace(/,/g,'')) || 0;
+    const realisasi = parseFloat(document.getElementById("f_realisasi").value.replace(/,/g,'')) || 0;
+    const estimasi = parseFloat(document.getElementById("f_estimasi").value) || 0;
+
+    const sisa = pagu - blokir - realisasi - estimasi;
+
+    const statusBox = document.getElementById("f_sd_status");
+
+    if(sisa >= 0){
+        statusBox.value = "Dana Cukup";
+        statusBox.style.color = "green";
+    }else{
+        statusBox.value = "Dana Tidak Cukup";
+        statusBox.style.color = "red";
+    }
+}
+
+  
 function simpanRekam(){
     const data = {
         id: document.getElementById("f_id").value,
@@ -535,7 +566,25 @@ function simpanRekam(){
     alert("Data siap dikirim 🚀");
 }
 
-    
+function loadTujuan(){
+    fetch("URL_GAS_KAMU?action=ref_sbm")
+    .then(res=>res.json())
+    .then(data=>{
+        const datalist=document.getElementById("listTujuan");
+        datalist.innerHTML="";
+        data.forEach(item=>{
+            const option=document.createElement("option");
+            option.value=item;
+            datalist.appendChild(option);
+        });
+    });
+}
+
+document.addEventListener("DOMContentLoaded",()=>{
+    loadTujuan();
+});
+
+  
 function autoRefresh(){
     fetch(urlGAS)
     .then(res => res.json())
@@ -656,7 +705,7 @@ setInterval(autoRefresh, 30000);
 
       <div class="form-left">
         <label>ID Usulan</label>
-        <input type="text" id="f_id">
+        <input type="text" id="f_id" readonly>
 
         <label>No ST/ND / Uraian Kegiatan</label>
         <textarea id="f_uraian"></textarea>
@@ -665,13 +714,14 @@ setInterval(autoRefresh, 30000);
         <input type="date" id="f_tgl">
 
         <label>Estimasi Biaya</label>
-        <input type="number" id="f_estimasi">
+        <input type="number" id="f_estimasi" oninput="hitungStatusDana()">
 
         <label>Status Dana</label>
         <input type="text" id="f_sd" readonly>
 
         <label>Tujuan</label>
-        <input type="text" id="f_tujuan">
+        <input type="text" id="f_tujuan" list="listTujuan">
+        <datalist id="listTujuan"></datalist>
 
       </div>
 
@@ -706,6 +756,7 @@ setInterval(autoRefresh, 30000);
     
 </body>
 </html>
+
 
 
 
