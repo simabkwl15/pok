@@ -9,6 +9,33 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <style>
+    
+.modal-content.large{
+    width:900px;
+    max-height:90vh;
+    overflow:auto;
+}
+
+.modal-body-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:30px;
+}
+
+.form-column{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+}
+
+textarea{
+    resize:none;
+    padding:8px;
+    border-radius:8px;
+    border:1px solid #cbd5e1;
+}
+
+
 *{
     margin:0;
     padding:0;
@@ -419,12 +446,107 @@ function autoRefresh(){
 
 loadData();
 
-setInterval(autoRefresh, 60000);
+setInterval(autoRefresh, 30000);
 
 </script>
 
+<div id="modalRekam" class="modal">
+  <div class="modal-content large">
+
+    <div class="modal-header">
+      <h3>Rekam Kegiatan</h3>
+      <span class="close-btn" onclick="closeModal()">&times;</span>
+    </div>
+
+    <div class="modal-body-grid">
+
+      <!-- KIRI -->
+      <div class="form-column">
+
+        <div class="form-group">
+          <label>ID Usulan</label>
+          <input type="text" id="idUsulan">
+        </div>
+
+        <div class="form-group">
+          <label>No ST/ND / Uraian Kegiatan</label>
+          <textarea id="uraianKegiatan" rows="4"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Tgl ST/ND</label>
+          <input type="date" id="tglStnd">
+        </div>
+
+        <div class="form-group">
+          <label>Estimasi Biaya</label>
+          <input type="number" id="estimasiBiaya">
+        </div>
+
+        <div class="form-group">
+          <label>Status Dana</label>
+          <select id="statusDana">
+            <option>PNBP</option>
+            <option>RM</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Tujuan</label>
+          <input type="text" id="tujuan">
+        </div>
+
+      </div>
+
+      <!-- KANAN -->
+      <div class="form-column">
+
+        <div class="form-group">
+          <label>MAK</label>
+          <input type="text" id="mak" readonly>
+        </div>
+
+        <div class="form-group">
+          <label>Uraian MAK</label>
+          <textarea id="uraianMak" rows="3" readonly></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Pagu</label>
+          <input type="text" id="pagu" readonly>
+        </div>
+
+        <div class="form-group">
+          <label>Blokir</label>
+          <input type="text" id="blokir" readonly>
+        </div>
+
+        <div class="form-group">
+          <label>Realisasi</label>
+          <input type="text" id="realisasi" readonly>
+        </div>
+
+        <div class="form-group">
+          <label>Sisa</label>
+          <input type="text" id="sisa" readonly>
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="modal-footer">
+      <button onclick="closeModal()">Batal</button>
+      <button class="btn-rekam" onclick="submitRekam()">Simpan</button>
+    </div>
+
+  </div>
+</div>
+
+    
 </body>
 </html>
+
 
 
 
