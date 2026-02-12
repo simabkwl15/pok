@@ -373,9 +373,20 @@ function logout(){
     window.location.replace("index.html");
 }
 
+    // Ambil nama user dari session
+const namaUser = sessionStorage.getItem("namaUser");
+
+if (namaUser) {
+    document.getElementById("namaUser").textContent = namaUser;
+} else {
+    // kalau tidak ada session, paksa balik ke login
+    window.location.replace("index.html");
+}
+
 loadData();
 </script>
 
 </body>
 </html>
+
 
