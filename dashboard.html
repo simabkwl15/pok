@@ -31,7 +31,22 @@
     box-sizing:border-box;
     font-family:'Inter',sans-serif;
 }
+/* di bagian CSS */
+.chart-box table tbody {
+    display:block;
+    max-height:250px; /* tinggi scroll */
+    overflow-y:auto;
+}
 
+.chart-box table thead, 
+.chart-box table tbody tr {
+    display:table;
+    width:100%;
+    table-layout:fixed;
+}
+
+
+    
 body{
     display:grid;
     grid-template-columns:240px 1fr;
@@ -393,43 +408,35 @@ function logout(){
 }
 
 // URL GAS (pastikan deploy web app publik)
-const urlGAS="https://script.google.com/macros/s/AKfycbzZ7y3WdtLn0hdE1upupHNGI0eGHKCINnpxNhz_HxL9XFyomjGeGo3AGgjvEhmSoS9cXg/exec";
+const urlGAS="https://script.google.com/macros/s/AKfycbwtSraDQuW-0B5Mcc3DgR8EDMw102IebkW9YzGGi37l05TrgRbHwN7qa2IlVhHaqvLK6Q/exec";
 
-async function loadDashboard() {
-    try {
+async function loadDashboard(){
+    try{
         const res = await fetch(urlGAS);
         const data = await res.json();
 
-        // Update card
-        document.querySelector("#cardTotal p").textContent = data.total;
-        document.querySelector("#cardSelesai p").textContent = data.selesai;
-        document.querySelector("#cardTerbayar p").textContent = data.terbayar;
-        document.querySelector("#cardLPT p").textContent = data.lpt;
-        document.querySelector("#cardProses p").textContent = data.proses;
+        // Update card dashboard
+        document.querySelector("#cardTotal p").textContent = data.dashboard.total;
+        document.querySelector("#cardSelesai p").textContent = data.dashboard.selesai;
+        document.querySelector("#cardTerbayar p").textContent = data.dashboard.terbayar;
+        document.querySelector("#cardLPT p").textContent = data.dashboard.lpt;
+        document.querySelector("#cardProses p").textContent = data.dashboard.proses;
 
-        // ===== UPDATE TABEL KEGIATAN HARI INI =====
-        const tbody = document.querySelector(".chart-box table tbody");
-        tbody.innerHTML = ""; // kosongkan dulu tabel lama
-
-        // data.rows = semua data dari row 4
-        // ambil kolom: C = index 2, D = index 3, E = index 4
-        data.rows.forEach(row => {
-            if(row[2]) { // pastikan ada Uraian/Nomor ST
-                const tr = document.createElement("tr");
-                tr.innerHTML = `
-                    <td>${row[2]}</td>
-                    <td>${row[3]}</td>
-                    <td>${row[4]}</td>
-                `;
-                tbody.appendChild(tr);
-            }
+        // Update tabel hari ini
+        const tbody = document.querySelector(".chart-box tbody");
+        tbody.innerHTML = "";
+        data.todayRows.forEach(row=>{
+            const tr = document.createElement("tr");
+            tr.innerHTML = `<td>${row.uraian}</td><td>${row.pelaksana}</td><td>${row.tujuan}</td>`;
+            tbody.appendChild(tr);
         });
 
-    } catch(err) {
+    }catch(err){
         console.error(err);
         alert("Gagal memuat data dashboard!");
     }
 }
+
 
 loadDashboard();
 </script>
