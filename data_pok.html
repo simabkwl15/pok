@@ -395,8 +395,7 @@ th,td{
 </div>
 
 <script>
-const urlGAS="https://script.google.com/macros/s/AKfycbxH9VMbkVLUZEb5lqRRfXO0KGfjRiCQn0VocMomMzIIHqQ6Gx4oBYVYQKKxtfNstC67_A/exec";
-const urlGAS_dopost="https://script.google.com/macros/s/AKfycbxwoSD-klQaDxPeyfVjjDAeJ-bBw91bRPGeXPn90uPgtgwQhrLAV4N6DoIxIz5Vf8k9RQ/exec";
+const urlGAS="https://script.google.com/macros/s/AKfycbxMj7uPiyqZtzrOQv6WMalCR7vEMa7qn4IptZahrRsbqJuXb064lhr2yVC1N5UCH8JdOg/exec";
 let allData=[];
 
 function formatNumber(num){
@@ -617,7 +616,7 @@ async function simpanRekam(){
             return;
         }
 
-        const response = await fetch(urlGAS_dopost, {
+        const response = await fetch(urlGAS, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -752,6 +751,7 @@ setInterval(autoRefresh, 30000);
     
 </body>
 </html>
+
 
 
 
