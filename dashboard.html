@@ -496,7 +496,42 @@ function hideLoading() {
 
 loadDashboard();
 
-setInterval(loadDashboard, 60000);
+async function updateDashboard(){
+    const kantor = sessionStorage.getItem("kantor");
+    if(!kantor) return;
+
+    const res = await fetch(`${urlGAS}?kantor=${kantor}`);
+    const data = await res.json();
+
+    // Update card dashboard
+    document.querySelector("#cardTotal p").textContent = data.dashboard?.total || 0;
+    document.querySelector("#cardSelesai p").textContent = data.dashboard?.selesai || 0;
+    document.querySelector("#cardTerbayar p").textContent = data.dashboard?.terbayar || 0;
+    document.querySelector("#cardLPT p").textContent = data.dashboard?.lpt || 0;
+    document.querySelector("#cardProses p").textContent = data.dashboard?.proses || 0;
+
+    // Update tabel hari ini
+    const tbody = document.querySelector(".chart-box tbody");
+    tbody.innerHTML = "";
+    (data.todayRows || []).forEach(row=>{
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td>${row.uraian || ""}</td><td>${row.pelaksana || ""}</td><td>${row.tujuan || ""}</td>`;
+        tbody.appendChild(tr);
+    });
+}
+
+// panggil pertama kali pakai overlay
+document.addEventListener("DOMContentLoaded", async function(){
+    showLoading();
+    try {
+        await updateDashboard();
+    } finally {
+        hideLoading();
+    }
+
+    // auto-refresh tiap 1 menit tanpa overlay
+    setInterval(updateDashboard, 60000);
+});
    
 
 </script>
