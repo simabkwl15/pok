@@ -441,19 +441,11 @@ async function loadDashboard(){
 }
 
 
-function autoRefresh(){
-    fetch(urlGAS)
-    .then(res => res.json())
-    .then(data => {
-        allData = data;
-        //applyFilter(); // refresh tapi tetap pakai filter aktif
-    });
-}
 
 loadDashboard();
 
-setInterval(autoRefresh, 30000);
-    
+setInterval(loadDashboard, 30000);
+   
 
 </script>
 
