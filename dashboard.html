@@ -32,18 +32,27 @@
     font-family:'Inter',sans-serif;
 }
 /* di bagian CSS */
+/* Scrollable tbody untuk tabel Kegiatan Hari Ini */
 .chart-box table tbody {
-    display:block;
-    max-height:250px; /* tinggi scroll */
-    overflow-y:auto;
+    display: block;
+    max-height: 250px; /* tinggi scroll */
+    overflow-y: auto;
+    padding-bottom: 10px; /* jarak bawah agar tidak terlalu mepet */
 }
 
-.chart-box table thead, 
+/* agar header tabel tetap rapi */
+.chart-box table thead,
 .chart-box table tbody tr {
-    display:table;
-    width:100%;
-    table-layout:fixed;
+    display: table;
+    width: 100%;
+    table-layout: fixed;
 }
+
+/* tambahan jarak bawah chart-box */
+.chart-box {
+    margin-bottom: 20px; /* jarak bawah chart-box */
+}
+
 
 
     
