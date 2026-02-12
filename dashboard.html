@@ -393,11 +393,11 @@ function logout(){
 
     const urlGAS="https://script.google.com/macros/s/AKfycbzAgsgCzCzZtMG95zOhco0QJ3i8V8PzDuCraBw-siBFQ4Msy940rusqrHTqwzqUMWI6yA/exec"; // ganti sesuai GAS-mu
 
-function showLoading(){ document.getElementById("overlayLoading").style.display="flex"; }
-function hideLoading(){ document.getElementById("overlayLoading").style.display="none"; }
+//function showLoading(){ document.getElementById("overlayLoading").style.display="flex"; }
+//function hideLoading(){ document.getElementById("overlayLoading").style.display="none"; }
 
 async function loadDashboard(){
-    showLoading();
+    //showLoading();
     try{
         const res = await fetch(urlGAS);
         const data = await res.json();
@@ -412,7 +412,7 @@ async function loadDashboard(){
         console.error(err);
         alert("Gagal memuat data dashboard!");
     }finally{
-        hideLoading();
+        //hideLoading();
     }
 }
 
