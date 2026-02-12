@@ -11,6 +11,24 @@
     
 <style>
 
+.popup-overlay{
+    position:fixed;
+    top:0; left:0;
+    width:100%; height:100%;
+    background:rgba(0,0,0,0.3);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    z-index:99999;
+}
+.popup-box{
+    background:#fff;
+    border-radius:8px;
+    padding:20px;
+    box-shadow:0 5px 15px rgba(0,0,0,0.3);
+}
+
+    
     .cards {
     display:grid;
     grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
@@ -281,6 +299,14 @@ th{
 </head>
 
 <body>
+
+    <div id="overlayLoadingDashboard" class="popup-overlay" style="display:none;">
+        <div class="popup-box" style="width:300px; text-align:center; padding:20px;">
+            <i class="fa-solid fa-spinner fa-spin" style="font-size:32px;"></i>
+            <div style="margin-top:10px; font-weight:600;">Memuat data...</div>
+        </div>
+    </div>
+
 
 <div id="overlayLoading" style="
     position:fixed;
