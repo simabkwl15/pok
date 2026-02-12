@@ -408,11 +408,24 @@ if (nama) {
     window.location.replace("index.html");
 }
 
+function autoRefresh(){
+    fetch(urlGAS)
+    .then(res => res.json())
+    .then(data => {
+        allData = data;
+        applyFilter(); // refresh tapi tetap pakai filter aktif
+    });
+}
+
 loadData();
+
+setInterval(autoRefresh, 60000);
+
 </script>
 
 </body>
 </html>
+
 
 
 
