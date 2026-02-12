@@ -438,7 +438,8 @@ function renderTable(data){
                 ${kode && kode.length>27 ? `
                     <button class="btn-small btn-rekam" onclick='openRekam(${JSON.stringify(row)})'>Rekam</button>
 
-                    <button class="btn-small btn-detil">Detil</button>
+                    <button class="btn-small btn-detil" onclick="lihatDetail('${kode}')">Detil</button>
+
                 ` : ""}
             </td>
         `;
@@ -823,6 +824,7 @@ setInterval(autoRefresh, 30000);
   
 </body>
 </html>
+
 
 
 
