@@ -695,7 +695,7 @@ async function lihatDetail(mak){
         detailDataGlobal = data;
 
         document.getElementById("detailTitle").innerText =
-            "Detil kegiatan pada MAK - " + mak;
+            "Detil kegiatan pada MAK " + mak;
 
         renderDetailTable(data);
 
@@ -847,7 +847,8 @@ setInterval(autoRefresh, 30000);
         <thead>
           <tr>
             <th>Uraian/Nomor ST</th>
-            <th>Tgl ST</th>
+            <th>Pelaksana Tugas</th>
+            <th>Tujuan</th>
             <th>Tgl Mulai</th>
             <th>Jumlah</th>
             <th>Status</th>
@@ -863,6 +864,7 @@ setInterval(autoRefresh, 30000);
   
 </body>
 </html>
+
 
 
 
