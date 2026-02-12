@@ -282,6 +282,25 @@ th{
 
 <body>
 
+<div id="overlayLoading" style="
+    position:fixed;
+    top:0; left:0;
+    width:100%; height:100%;
+    background:rgba(0,0,0,0.3);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    z-index:99999;
+    font-size:18px;
+    color:#fff;
+    display:none;">
+    <div>
+        <i class="fa-solid fa-spinner fa-spin" style="font-size:32px;"></i>
+        <div style="margin-top:10px;">Memuat data dashboard...</div>
+    </div>
+</div>
+
+    
 <div class="sidebar">
     <div class="sidebar-brand">
         <i class="fa-solid fa-layer-group"></i>
@@ -414,6 +433,8 @@ function logout(){
 const urlGAS="https://script.google.com/macros/s/AKfycbwJ-8zAusus3B7hgrvlq4pPr8mLpefVn4AkhZzbD1yFTz0E0Gx8CMTteOOD4W3s5TGPSw/exec";
 
 async function loadDashboard(){
+    showLoading(); // tampilkan overlay
+
     try{
         const kantor = sessionStorage.getItem("kantor"); // ambil kantor
         if(!kantor) {
@@ -426,33 +447,43 @@ async function loadDashboard(){
         const res = await fetch(`${urlGAS}?kantor=${kantor}`);
         const data = await res.json();
 
-        if(data.status !== "success"){
+        if(data.status && data.status !== "success"){
             alert("Gagal memuat data: " + (data.message || "Unknown error"));
             return;
         }
 
         // Update card dashboard
-        document.querySelector("#cardTotal p").textContent = data.dashboard.total;
-        document.querySelector("#cardSelesai p").textContent = data.dashboard.selesai;
-        document.querySelector("#cardTerbayar p").textContent = data.dashboard.terbayar;
-        document.querySelector("#cardLPT p").textContent = data.dashboard.lpt;
-        document.querySelector("#cardProses p").textContent = data.dashboard.proses;
+        document.querySelector("#cardTotal p").textContent = data.dashboard?.total || 0;
+        document.querySelector("#cardSelesai p").textContent = data.dashboard?.selesai || 0;
+        document.querySelector("#cardTerbayar p").textContent = data.dashboard?.terbayar || 0;
+        document.querySelector("#cardLPT p").textContent = data.dashboard?.lpt || 0;
+        document.querySelector("#cardProses p").textContent = data.dashboard?.proses || 0;
 
         // Update tabel hari ini
         const tbody = document.querySelector(".chart-box tbody");
         tbody.innerHTML = "";
-        data.todayRows.forEach(row=>{
+        (data.todayRows || []).forEach(row=>{
             const tr = document.createElement("tr");
-            tr.innerHTML = `<td>${row.uraian}</td><td>${row.pelaksana}</td><td>${row.tujuan}</td>`;
+            tr.innerHTML = `<td>${row.uraian || ""}</td><td>${row.pelaksana || ""}</td><td>${row.tujuan || ""}</td>`;
             tbody.appendChild(tr);
         });
 
     }catch(err){
         console.error(err);
         alert("Gagal memuat data dashboard!");
+    } finally {
+        hideLoading(); // sembunyikan overlay
     }
 }
 
+
+function showLoading() {
+    document.getElementById("overlayLoading").style.display = "flex";
+}
+
+function hideLoading() {
+    document.getElementById("overlayLoading").style.display = "none";
+}
 
 
 
