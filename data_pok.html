@@ -95,15 +95,13 @@ body{
     display:flex;
     align-items:center;
     gap:18px;
-    font-size:14px;
 }
 
 .topbar-right i,
 .user-info{
-    font-size:16px;
     cursor:pointer;
-    color:#475569;
     transition:0.2s;
+    color:#475569;
 }
 
 .topbar-right i:hover,
@@ -121,7 +119,7 @@ body{
 /* CONTENT */
 .content{
     padding:20px 30px;
-    flex:1; /* fleksibel menyesuaikan tinggi */
+    flex:1;
     display:flex;
     flex-direction:column;
 }
@@ -152,18 +150,17 @@ input:focus, select:focus{
 
 /* TABLE */
 .table-container{
-    flex:1; /* otomatis menyesuaikan tinggi tersisa */
+    flex:1;
     overflow:auto;
     background:white;
     border-radius:16px;
     border:1px solid #e5e7eb;
-    display:flex;
-    flex-direction:column;
 }
 
 table{
     width:100%;
-    border-collapse:collapse;
+    border-collapse:separate;
+    border-spacing:0;
     font-size:14px;
 }
 
@@ -171,7 +168,7 @@ thead th{
     position:sticky;
     top:0;
     background:#f1f5f9;
-    z-index:10;
+    z-index:50;
 }
 
 th,td{
@@ -182,13 +179,26 @@ th,td{
 .text-right{text-align:right;}
 .text-center{text-align:center;}
 
+/* ROW HIGHLIGHT */
+.row-pnbp{
+    background:#e0f2fe !important; /* light blue */
+}
+
+.row-rm{
+    background:#dcfce7 !important; /* light green */
+}
+
+/* BUTTON */
 .btn{
     padding:5px 10px;
     border:none;
     border-radius:6px;
     font-size:12px;
     cursor:pointer;
+    transition:0.2s;
 }
+
+.btn:hover{opacity:0.85;}
 
 .btn-rekam{background:#38bdf8;color:white;}
 .btn-detil{background:#6366f1;color:white;}
@@ -207,14 +217,12 @@ th,td{
     bottom:0;
     left:240px;
     right:0;
-    z-index:100;
 }
 </style>
 </head>
 
 <body>
 
-<!-- SIDEBAR -->
 <div class="sidebar">
     <div class="sidebar-brand">
         <i class="fa-solid fa-layer-group"></i>
@@ -234,10 +242,8 @@ th,td{
     </ul>
 </div>
 
-<!-- MAIN -->
 <div class="main">
 
-<!-- TOPBAR -->
 <div class="topbar">
     <div class="topbar-left">
         Sistem Monitoring Anggaran Belanja
@@ -263,13 +269,8 @@ th,td{
 
     <select id="filterSD" onchange="applyFilter()">
         <option value="Semua">Semua</option>
-        <option value="Umum">Umum</option>
-        <option value="PKN">PKN</option>
-        <option value="PN">PN</option>
-        <option value="Lelang">Lelang</option>
-        <option value="Penilaian">Penilaian</option>
-        <option value="HI">HI</option>
-        <option value="KI">KI</option>
+        <option value="PNBP">PNBP</option>
+        <option value="RM">RM</option>
     </select>
 
     <input type="text" id="searchBox" placeholder="Cari kode / uraian..." onkeyup="applyFilter()">
@@ -339,7 +340,12 @@ const tbody=document.querySelector("#tabelPOK tbody");
 tbody.innerHTML="";
 data.forEach(row=>{
 const tr=document.createElement("tr");
-const [kode,uraian,pagu,blokir,realisasi,sisa,,kolomI]=row;
+const [kode,uraian,pagu,blokir,realisasi,sisa,,sd]=row;
+
+if(kode && kode.length>27){
+    if(sd==="PNBP"){ tr.classList.add("row-pnbp"); }
+    if(sd==="RM"){ tr.classList.add("row-rm"); }
+}
 
 tr.innerHTML=`
 <td>${kode||""}</td>
@@ -348,7 +354,7 @@ tr.innerHTML=`
 <td class="text-right">${formatNumber(blokir)}</td>
 <td class="text-right">${formatNumber(realisasi)}</td>
 <td class="text-right">${formatNumber(sisa)}</td>
-<td class="text-center">${kolomI||""}</td>
+<td class="text-center">${sd||""}</td>
 <td class="text-center">
 ${kode&&kode.length>27?`
 <button class="btn btn-rekam">Rekam</button>
@@ -364,8 +370,8 @@ const search=document.getElementById("searchBox").value.toLowerCase();
 const filtered=allData.filter(row=>{
 const kode=(row[0]||"").toLowerCase();
 const uraian=(row[1]||"").toLowerCase();
-const kolomI=(row[7]||"").toLowerCase();
-return (filter==="semua"||kolomI.includes(filter)) &&
+const sd=(row[7]||"").toLowerCase();
+return (filter==="semua"||sd.includes(filter)) &&
        (kode.includes(search)||uraian.includes(search));
 });
 renderTable(filtered);
