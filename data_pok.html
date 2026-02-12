@@ -89,10 +89,10 @@ body{
     z-index:1000;
 }
 
-    .topbar-left{
+.topbar-left{
     font-weight:600;
 }
-    
+
 .topbar-right{
     display:flex;
     align-items:center;
@@ -100,18 +100,22 @@ body{
     font-size:14px;
 }
 
-.topbar-right i,
-.user-info{
+.topbar-right i{
     font-size:16px;
     cursor:pointer;
-    transition:0.2s;
     color:#475569;
+    transition:0.2s;
 }
 
-    
-.topbar-right i:hover,
-.user-info:hover{
+.topbar-right i:hover{
     color:#0369a1;
+}
+
+.user-info{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-weight:500;
 }
 
 /* CONTENT */
@@ -406,6 +410,7 @@ loadData();
 
 </body>
 </html>
+
 
 
 
