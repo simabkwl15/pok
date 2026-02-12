@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard SiMAB</title>
+<title>Daftar Kegiatan SiMAB</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -150,57 +150,46 @@ document.addEventListener("DOMContentLoaded", async function(){
     }
 
     function renderTable(rows){
-        const tbody = document.getElementById("dataTableBody");
-        tbody.innerHTML = "";
-        rows.forEach(r=>{
-            const tr = document.createElement("tr");
-            tr.innerHTML = `
-                <td>${r.A}</td>
-                <td>${r.B}</td>
-                <td>${r.C}</td>
-                <td>${r.D}</td>
-                <td>${r.E}</td>
-                <td>${r.G}</td>
-                <td>${r.M}</td>
-                <td>${r.N}</td>
-                <td>${r.P}</td>
-                <td class="actions">
-                    <button data-tooltip="Ubah"><i class="fa-solid fa-pen-to-square"></i></button>
-                    <button data-tooltip="Pelaksana"><i class="fa-solid fa-user-check"></i></button>
-                    <button data-tooltip="LPT"><i class="fa-solid fa-file-lines"></i></button>
-                    <button data-tooltip="Bayar"><i class="fa-solid fa-hand-holding-dollar"></i></button>
-                    <button data-tooltip="SP2D"><i class="fa-solid fa-money-bill-transfer"></i></button>
-                    <button data-tooltip="Hapus"><i class="fa-solid fa-trash"></i></button>
-                </td>
-            `;
-            tbody.appendChild(tr);
-        });
-    }
+    const tbody = document.getElementById("dataTableBody");
+    tbody.innerHTML = "";
+    rows.forEach(r=>{
+        const tglMulai = r.G ? new Date(r.G) : null;
+        const tglFormatted = tglMulai ? `${tglMulai.getFullYear()}-${String(tglMulai.getMonth()+1).padStart(2,'0')}-${String(tglMulai.getDate()).padStart(2,'0')}` : "";
+        const jumlahFormatted = Number(r.M||0).toLocaleString('id-ID');
 
-    // search filter
-    document.getElementById("searchBox").addEventListener("input", function(){
-        const val = this.value.toLowerCase();
-        const filtered = allRows.filter(r=>{
-            return Object.values(r).some(v=>String(v).toLowerCase().includes(val));
-        });
-        renderTable(filtered);
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+            <td>${r.A}</td>
+            <td>${r.B}</td>
+            <td>${r.C}</td>
+            <td>${r.D}</td>
+            <td>${r.E}</td>
+            <td>${tglFormatted}</td>
+            <td style="text-align:right;">${jumlahFormatted}</td>
+            <td>${r.N}</td>
+            <td>${r.P}</td>
+            <td class="actions">
+                <button data-tooltip="Ubah"><i class="fa-solid fa-pen-to-square"></i></button>
+                <button data-tooltip="Pelaksana"><i class="fa-solid fa-user-check"></i></button>
+                <button data-tooltip="LPT"><i class="fa-solid fa-file-lines"></i></button>
+                <button data-tooltip="Bayar"><i class="fa-solid fa-hand-holding-dollar"></i></button>
+                <button data-tooltip="SP2D"><i class="fa-solid fa-money-bill-transfer"></i></button>
+                <button data-tooltip="Hapus"><i class="fa-solid fa-trash"></i></button>
+            </td>
+        `;
+        tbody.appendChild(tr);
     });
+}
 
-    // radio button filter
-    document.querySelectorAll('input[name="statusFilter"]').forEach(rb=>{
-        rb.addEventListener("change", function(){
-            let statusVal = this.value;
-            let filtered = [];
-            if(statusVal==="Dalam Proses") filtered = allRows.filter(r=>["Rekam Data","Terlaksana"].includes(r.P));
-            else if(statusVal==="LPT") filtered = allRows.filter(r=>r.P==="LPT");
-            else if(statusVal==="Terbayar") filtered = allRows.filter(r=>r.P==="Terbayar");
-            else if(statusVal==="Selesai") filtered = allRows.filter(r=>r.P==="Selesai");
-            else filtered = allRows;
-            renderTable(filtered);
+// search semua kolom kecuali User (N)
+document.getElementById("searchBox").addEventListener("input", function(){
+    const val = this.value.toLowerCase();
+    const filtered = allRows.filter(r=>{
+        return Object.keys(r).filter(k=>k!=="N").some(key=>{
+            return String(r[key]||"").toLowerCase().includes(val);
         });
     });
-
-    loadData();
+    renderTable(filtered);
 });
 
 
