@@ -68,6 +68,12 @@ body{
     background:#f1f5f9;
 }
 
+.sidebar ul li.active{
+    background:#e0f2fe;
+    color:#0369a1;
+    font-weight:600;
+}
+
 .page-header{
     margin-bottom:25px;
 }
@@ -244,13 +250,18 @@ th{
         <span>SiMAB</span>
     </div>
     <ul>
-        <li onclick="goDashboard()"><i class="fa-solid fa-gauge"></i>Dashboard</li>
-        <li onclick="goPOK()"><i class="fa-solid fa-folder-open"></i>POK</li>
+        <li class="active" onclick="goDashboard()">
+            <i class="fa-solid fa-gauge"></i>Dashboard
+        </li>
+        <li onclick="goPOK()">
+            <i class="fa-solid fa-folder-open"></i>POK
+        </li>
         <li><i class="fa-solid fa-list-check"></i>Daftar Kegiatan</li>
         <li><i class="fa-solid fa-wallet"></i>Rencana Penarikan Dana</li>
         <li><i class="fa-solid fa-chart-column"></i>Statistik</li>
         <li><i class="fa-solid fa-circle-info"></i>Tentang</li>
-    </ul>
+</ul>
+
 </div>
 
 <div class="main">
@@ -274,10 +285,6 @@ th{
     </div>
 
     <div class="content">
-        <div class="page-header">
-        <h2>Dashboard</h2>
-            <p>Ringkasan monitoring anggaran dan kegiatan</p>
-        </div>
         <div class="cards">
             <div class="card"><h3>Total Kegiatan</h3><span>120</span></div>
             <div class="card"><h3>Selesai</h3><span>85</span></div>
