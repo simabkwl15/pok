@@ -415,8 +415,21 @@ const urlGAS="https://script.google.com/macros/s/AKfycbwJ-8zAusus3B7hgrvlq4pPr8m
 
 async function loadDashboard(){
     try{
-        const res = await fetch(urlGAS);
+        const kantor = sessionStorage.getItem("kantor"); // ambil kantor
+        if(!kantor) {
+            alert("Kantor tidak ditemukan. Silakan login ulang.");
+            window.location.replace("index.html");
+            return;
+        }
+
+        // kirim parameter kantor ke GAS
+        const res = await fetch(`${urlGAS}?kantor=${kantor}`);
         const data = await res.json();
+
+        if(data.status !== "success"){
+            alert("Gagal memuat data: " + (data.message || "Unknown error"));
+            return;
+        }
 
         // Update card dashboard
         document.querySelector("#cardTotal p").textContent = data.dashboard.total;
@@ -439,6 +452,7 @@ async function loadDashboard(){
         alert("Gagal memuat data dashboard!");
     }
 }
+
 
 
 
