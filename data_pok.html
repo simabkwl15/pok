@@ -395,7 +395,7 @@ th,td{
 </div>
 
 <script>
-const urlGAS="https://script.google.com/macros/s/AKfycbwMYmbcoUbELQkoWiNhg3iDnv9PZ1GAjHlqILFe84Wk5qrzMUdDzYsWElUY_2TPDUiWTg/exec";
+const urlGAS="https://script.google.com/macros/s/AKfycbzONnSH4h4Y0P_Lj1AUPinFINZk5t1K8mju2g10rCxOMckIRgTi2BF8VXY6x19_xdYEoA/exec";
 let allData=[];
 
 function formatNumber(num){
@@ -656,7 +656,64 @@ document.addEventListener("DOMContentLoaded",()=>{
     hitungStatusDana(); // langsung update status
 }
 
-  
+ let detailDataGlobal = [];
+
+async function lihatDetail(mak){
+
+    try{
+
+        const response = await fetch(`${urlGAS}?action=detail&mak=${encodeURIComponent(mak)}`);
+        const data = await response.json();
+
+        detailDataGlobal = data;
+
+        document.getElementById("detailTitle").innerText =
+            "Detil kegiatan pada MAK - " + mak;
+
+        renderDetailTable(data);
+
+        document.getElementById("popupDetail").style.display = "flex";
+
+    }catch(err){
+        console.error(err);
+        alert("Gagal mengambil detail.");
+    }
+}
+
+function renderDetailTable(data){
+
+    const body = document.getElementById("detailBody");
+    body.innerHTML = "";
+
+    data.forEach(d => {
+
+        body.innerHTML += `
+        <tr>
+          <td>${d.uraian || ""}</td>
+          <td>${d.tgl_st || ""}</td>
+          <td>${d.tgl_mulai || ""}</td>
+          <td>${Number(d.jumlah || 0).toLocaleString()}</td>
+          <td>${d.status || ""}</td>
+        </tr>
+        `;
+    });
+}
+
+function filterDetail(){
+
+    const keyword = document.getElementById("searchDetail").value.toLowerCase();
+
+    const filtered = detailDataGlobal.filter(d =>
+        (d.uraian || "").toLowerCase().includes(keyword)
+    );
+
+    renderDetailTable(filtered);
+}
+
+function closeDetail(){
+    document.getElementById("popupDetail").style.display = "none";
+}
+ 
 function autoRefresh(){
     fetch(urlGAS)
     .then(res => res.json())
@@ -732,9 +789,41 @@ setInterval(autoRefresh, 30000);
   </div>
 </div>
 
+<div id="popupDetail" class="popup-overlay" style="display:none;">
+  <div class="popup-box" style="width:80%; max-width:900px;">
     
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+      <h3 id="detailTitle"></h3>
+      <button onclick="closeDetail()">✖</button>
+    </div>
+
+    <input type="text" id="searchDetail" 
+           placeholder="Cari uraian / nomor ST..." 
+           onkeyup="filterDetail()"
+           style="width:100%; padding:8px; margin:10px 0;">
+
+    <div style="max-height:400px; overflow:auto;">
+      <table border="1" width="100%" style="border-collapse:collapse;">
+        <thead>
+          <tr>
+            <th>Uraian/Nomor ST</th>
+            <th>Tgl ST</th>
+            <th>Tgl Mulai</th>
+            <th>Jumlah</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="detailBody"></tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+
+  
 </body>
 </html>
+
 
 
 
