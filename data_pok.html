@@ -749,12 +749,22 @@ function filterDetail(){
 
     const keyword = document.getElementById("searchDetail").value.toLowerCase();
 
-    const filtered = detailDataGlobal.filter(d =>
-        (d.uraian || "").toLowerCase().includes(keyword)
-    );
+    const filtered = detailDataGlobal.filter(d => {
+
+        return (
+            (d.uraian    || "").toString().toLowerCase().includes(keyword) ||
+            (d.pelaksana || "").toString().toLowerCase().includes(keyword) ||
+            (d.tujuan    || "").toString().toLowerCase().includes(keyword) ||
+            (d.tgl_mulai || "").toString().toLowerCase().includes(keyword) ||
+            (d.jumlah    || "").toString().toLowerCase().includes(keyword) ||
+            (d.status    || "").toString().toLowerCase().includes(keyword)
+        );
+
+    });
 
     renderDetailTable(filtered);
 }
+
 
 function closeDetail(){
     document.getElementById("popupDetail").style.display = "none";
@@ -906,6 +916,7 @@ setInterval(autoRefresh, 30000);
   
 </body>
 </html>
+
 
 
 
