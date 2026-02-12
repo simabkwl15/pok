@@ -24,10 +24,7 @@ body{display:grid; grid-template-columns:240px 1fr; background:#f8fafc; color:#3
 .topbar-right i{font-size:16px; cursor:pointer; color:#475569; transition:0.2s;}
 .topbar-right i:hover{color:#0369a1;}
 .user-info{display:flex; align-items:center; gap:8px; font-weight:500;}
-.content {
-    padding: 30px;
-    padding-bottom: 10px; /* lebih kecil supaya tabel mepet footer */
-}
+.content{padding:30px; padding-bottom:80px;}
 .footer{position:fixed; bottom:0; left:240px; right:0; height:45px; background:#ffffff; border-top:1px solid #e5e7eb; display:flex; align-items:center; justify-content:center; font-size:13px; color:#64748b;}
 @media(max-width:1000px){body{grid-template-columns:1fr;} .footer{left:0;}}
 
@@ -46,11 +43,10 @@ body{display:grid; grid-template-columns:240px 1fr; background:#f8fafc; color:#3
   background: white;
 }
 
-/* scroll tabel tetap di dalam table-box */
 .table-box {
-    min-width: 1200px;
-    max-height: calc(100vh - 120px); /* tinggi menyesuaikan topbar + footer */
-    overflow-y: auto;
+  min-width: 1200px; /* minimal lebar agar kolom panjang tidak terpotong */
+  overflow-y: auto;
+  max-height: calc(100vh - 250px);
 }
 
 .table-box table {
@@ -277,37 +273,6 @@ document.addEventListener("DOMContentLoaded", async function(){
     loadData();
 });
 
-function applyFilters() {
-    const searchVal = document.getElementById("searchBox").value.toLowerCase();
-    const statusVal = document.querySelector('input[name="statusFilter"]:checked').value;
-
-    let filtered = allRows;
-
-    // filter status
-    if(statusVal === "Dalam Proses") filtered = filtered.filter(r=>["Rekam Data","Terlaksana"].includes(r.P));
-    else if(statusVal !== "Semua") filtered = filtered.filter(r=>r.P === statusVal);
-
-    // filter search
-    if(searchVal) {
-        filtered = filtered.filter(r=>{
-            return Object.keys(r).filter(k=>k!=="N").some(key=>{
-                return String(r[key]||"").toLowerCase().includes(searchVal);
-            });
-        });
-    }
-
-    renderTable(filtered);
-}
-
-// event listener search
-document.getElementById("searchBox").addEventListener("input", applyFilters);
-
-// event listener radio
-document.querySelectorAll('input[name="statusFilter"]').forEach(rb=>{
-    rb.addEventListener("change", applyFilters);
-});
-
-  
 function goDashboard(){ window.location.href="dashboard.html"; }
 function goPOK(){ window.location.href="data_pok.html"; }
 function goKegiatan(){ window.location.href="data_kegiatan.html"; }
