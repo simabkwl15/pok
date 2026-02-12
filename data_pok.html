@@ -66,14 +66,43 @@ body{
 /* MAIN */
 .main{min-height:100vh;display:flex;flex-direction:column;}
 
+/* TOPBAR */
 .topbar{
     height:60px;
     background:#ffffff;
     border-bottom:1px solid #e5e7eb;
     display:flex;
+    justify-content:space-between;
     align-items:center;
     padding:0 30px;
-    font-weight:600;
+    position:sticky;
+    top:0;
+    z-index:1000;
+}
+
+.topbar-left{font-weight:600;}
+
+.topbar-right{
+    display:flex;
+    align-items:center;
+    gap:18px;
+    font-size:14px;
+}
+
+.topbar-right i{
+    font-size:16px;
+    cursor:pointer;
+    color:#475569;
+    transition:0.2s;
+}
+
+.topbar-right i:hover{color:#0369a1;}
+
+.user-info{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-weight:500;
 }
 
 .content{
@@ -142,9 +171,6 @@ th,td{
 .btn-rekam{background:#38bdf8;color:white;}
 .btn-detil{background:#6366f1;color:white;}
 
-.highlight-rm{background:#dcfce7;}
-.highlight-pnbp{background:#fef9c3;}
-
 /* FOOTER */
 .footer{
     position:fixed;
@@ -188,8 +214,25 @@ th,td{
 <!-- MAIN -->
 <div class="main">
 
+<!-- TOPBAR -->
 <div class="topbar">
-    Sistem Monitoring Anggaran Belanja
+    <div class="topbar-left">
+        Sistem Monitoring Anggaran Belanja
+    </div>
+
+    <div class="topbar-right">
+        <i class="fa-regular fa-calendar"></i>
+        <i class="fa-solid fa-gear"></i>
+
+        <div class="user-info">
+            <i class="fa-regular fa-user"></i>
+            <span id="namaUser"></span>
+        </div>
+
+        <i class="fa-solid fa-right-from-bracket"
+           title="Logout"
+           onclick="logout()"></i>
+    </div>
 </div>
 
 <div class="content">
@@ -240,6 +283,20 @@ th,td{
 const urlGAS="https://script.google.com/macros/s/AKfycbxkeZjWQumvORWktLRLLvkEGq9NUBrHlxKhQxStPadlfnoO6rQusVMw5QxRZ9qmpV4Flw/exec";
 let allData=[];
 
+document.addEventListener("DOMContentLoaded",function(){
+    const nama=sessionStorage.getItem("nama");
+    if(!nama){
+        window.location.replace("index.html");
+    }else{
+        document.getElementById("namaUser").textContent=nama;
+    }
+});
+
+function logout(){
+    sessionStorage.clear();
+    window.location.replace("index.html");
+}
+
 function formatNumber(num){return Number(num||0).toLocaleString("id-ID");}
 
 function loadData(){
@@ -272,7 +329,7 @@ tr.innerHTML=`
 <td class="text-right">${formatNumber(sisa)}</td>
 <td class="text-center">${kolomI||""}</td>
 <td class="text-center">
-${kode && kode.length>27?`
+${kode&&kode.length>27?`
 <button class="btn btn-rekam">Rekam</button>
 <button class="btn btn-detil">Detil</button>`:""}
 </td>`;
@@ -287,9 +344,8 @@ const filtered=allData.filter(row=>{
 const kode=(row[0]||"").toLowerCase();
 const uraian=(row[1]||"").toLowerCase();
 const kolomI=(row[7]||"").toLowerCase();
-const matchFilter=filter==="semua"||kolomI.includes(filter);
-const matchSearch=kode.includes(search)||uraian.includes(search);
-return matchFilter&&matchSearch;
+return (filter==="semua"||kolomI.includes(filter)) &&
+       (kode.includes(search)||uraian.includes(search));
 });
 renderTable(filtered);
 }
@@ -302,4 +358,3 @@ loadData();
 
 </body>
 </html>
-
