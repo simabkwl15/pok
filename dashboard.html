@@ -10,6 +10,21 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     
 <style>
+
+    .cards {
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    gap:20px;
+    margin-bottom:30px;
+}
+
+.card {
+    background:white; padding:20px; border-radius:12px; box-shadow:0 2px 6px rgba(0,0,0,0.05);
+    display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center;
+}
+.card h3{ font-size:20px; margin-bottom:10px; }
+.card p{ font-size:24px; font-weight:600; }
+
 *{
     margin:0;
     padding:0;
@@ -169,6 +184,7 @@ body{
 .cards .card:nth-child(1){background:#e0f2fe;color:#2F4F4F;}
 .cards .card:nth-child(2){background:#dcfce7;color:#2F4F4F;}
 .cards .card:nth-child(3){background:#ffedd5;color:#2F4F4F;}
+.cards .card:nth-child(4){background:#FFFACD;color:#2F4F4F;}
 .cards .card:nth-child(4){background:#fee2e2;color:#2F4F4F;}
 
 .card h3{
@@ -286,6 +302,14 @@ th{
 
     <div class="content">
         <div class="cards">
+            <div class="card" id="cardTotal"><h3>Total Kegiatan</h3><p>0</p></div>
+            <div class="card" id="cardSelesai"><h3>Selesai</h3><p>0</p></div>
+            <div class="card" id="cardTerbayar"><h3>Terbayar</h3><p>0</p></div>
+            <div class="card" id="cardLPT"><h3>LPT</h3><p>0</p></div>
+            <div class="card" id="cardProses"><h3>Dalam Proses</h3><p>0</p></div>
+        </div>
+
+        <div class="cards">
             <div class="card"><h3>Total Kegiatan</h3><span>120</span></div>
             <div class="card"><h3>Selesai</h3><span>85</span></div>
             <div class="card"><h3>Terbayar</h3><span>42</span></div>
@@ -373,7 +397,49 @@ function logout(){
     sessionStorage.clear();
     window.location.replace("index.html");
 }
+
+    const urlGAS="https://script.google.com/macros/s/AKfycbzyFYxOWERPZdOZNa1PJoc0c-0brcdPuFqLpvSTGTKwwBELse2wFwnAsK4aJ-Pjr1FjXw/exec"; // ganti sesuai GAS-mu
+
+function showLoading(){ document.getElementById("overlayLoading").style.display="flex"; }
+function hideLoading(){ document.getElementById("overlayLoading").style.display="none"; }
+
+async function loadDashboard(){
+    showLoading();
+    try{
+        const res = await fetch(urlGAS);
+        const data = await res.json();
+
+        const total = data.length;
+
+        let selesai=0, terbayar=0, lpt=0, proses=0;
+
+        data.forEach(row=>{
+            const status = (row[15]||"").toString().toLowerCase(); // kolom P = index 15
+            if(status==="selesai") selesai++;
+            else if(status==="terbayar") terbayar++;
+            else if(status==="lpt") lpt++;
+            else if(status==="terlaksana" || status==="rekam data") proses++;
+        });
+
+        document.querySelector("#cardTotal p").textContent = total;
+        document.querySelector("#cardSelesai p").textContent = selesai;
+        document.querySelector("#cardTerbayar p").textContent = terbayar;
+        document.querySelector("#cardLPT p").textContent = lpt;
+        document.querySelector("#cardProses p").textContent = proses;
+
+    }catch(err){
+        console.error(err);
+        alert("Gagal memuat data dashboard!");
+    }finally{
+        hideLoading();
+    }
+}
+
+loadDashboard();
+
 </script>
 
+
+    
 </body>
 </html>
