@@ -267,7 +267,7 @@ th,td{
             </select>
             <input type="text" id="searchBox" placeholder="Cari kode / uraian..." onkeyup="applyFilter()">
             <button class="btn-download" onclick="downloadExcel()">
-                <i class="fa-solid fa-file-excel"></i> Download Excel
+                <i class="fa-solid fa-file-excel"></i> 
             </button>
         </div>
 
@@ -349,19 +349,30 @@ function renderTable(data){
 }
 
 function applyFilter(){
-    const kategori=document.getElementById("filterPok").value.toLowerCase();
-    const search=document.getElementById("searchBox").value.toLowerCase();
 
-    const filtered=allData.filter(row=>{
-        const kode=(row[0]||"").toLowerCase();
-        const uraian=(row[1]||"").toLowerCase();
+    const kategori = document.getElementById("filterPok").value.toLowerCase();
+    const search   = document.getElementById("searchBox").value.toLowerCase();
 
-        return (kategori==="semua" || uraian.includes(kategori))
-        && (kode.includes(search) || uraian.includes(search));
+    const filtered = allData.filter(row => {
+
+        const kode    = (row[0] || "").toLowerCase();
+        const uraian  = (row[1] || "").toLowerCase();
+        const kolomI  = (row[7] || "").toLowerCase(); // ✅ ambil dari kolom I
+
+        const cocokKategori = 
+            kategori === "semua" || 
+            kolomI === kategori;   // filter exact match kolom I
+
+        const cocokSearch =
+            kode.includes(search) ||
+            uraian.includes(search);
+
+        return cocokKategori && cocokSearch;
     });
 
     renderTable(filtered);
 }
+
 
 function downloadExcel(){
     let table=document.getElementById("tabelPOK").outerHTML;
@@ -395,6 +406,7 @@ loadData();
 
 </body>
 </html>
+
 
 
 
