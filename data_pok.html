@@ -542,10 +542,29 @@ function closePopup(){
 
 function hitungStatusDana(){
 
-    const pagu = parseFloat(document.getElementById("f_pagu").value.replace(/,/g,'')) || 0;
-    const blokir = parseFloat(document.getElementById("f_blokir").value.replace(/,/g,'')) || 0;
-    const realisasi = parseFloat(document.getElementById("f_realisasi").value.replace(/,/g,'')) || 0;
-    const estimasi = parseFloat(document.getElementById("f_estimasi").value.replace(/,/g,'')) || 0;
+    const pagu = parseFloat(
+        document.getElementById("f_pagu").value
+        .replace(/\./g,'')
+        .replace(/,/g,'')
+    ) || 0;
+
+    const blokir = parseFloat(
+        document.getElementById("f_blokir").value
+        .replace(/\./g,'')
+        .replace(/,/g,'')
+    ) || 0;
+
+    const realisasi = parseFloat(
+        document.getElementById("f_realisasi").value
+        .replace(/\./g,'')
+        .replace(/,/g,'')
+    ) || 0;
+
+    const estimasi = parseFloat(
+        document.getElementById("f_estimasi").value
+        .replace(/\./g,'')
+        .replace(/,/g,'')
+    ) || 0;
 
     const sisa = pagu - blokir - realisasi - estimasi;
 
@@ -565,7 +584,6 @@ function hitungStatusDana(){
         statusBox.style.color = "red";
     }
 }
-
 
   
 function simpanRekam(){
@@ -697,6 +715,7 @@ setInterval(autoRefresh, 30000);
     
 </body>
 </html>
+
 
 
 
