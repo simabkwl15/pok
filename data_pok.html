@@ -64,7 +64,11 @@ body{
 }
 
 /* MAIN */
-.main{min-height:100vh;display:flex;flex-direction:column;}
+.main{
+    display:flex;
+    flex-direction:column;
+    min-height:100vh;
+}
 
 /* TOPBAR */
 .topbar{
@@ -89,26 +93,32 @@ body{
     font-size:14px;
 }
 
-.topbar-right i{
+.topbar-right i,
+.user-info{
     font-size:16px;
     cursor:pointer;
     color:#475569;
     transition:0.2s;
 }
 
-.topbar-right i:hover{color:#0369a1;}
+.topbar-right i:hover,
+.user-info:hover{
+    color:#0369a1;
+}
 
 .user-info{
     display:flex;
     align-items:center;
     gap:8px;
     font-weight:500;
-    cursor:pointer;   /* <-- tambahan ini saja */
 }
 
+/* CONTENT */
 .content{
-    padding:30px;
-    padding-bottom:80px;
+    padding:20px 30px;
+    flex:1; /* fleksibel menyesuaikan tinggi */
+    display:flex;
+    flex-direction:column;
 }
 
 /* FILTER */
@@ -137,14 +147,20 @@ input:focus, select:focus{
 
 /* TABLE */
 .table-container{
-    max-height:500px;
+    flex:1; /* otomatis menyesuaikan tinggi tersisa */
     overflow:auto;
     background:white;
     border-radius:16px;
     border:1px solid #e5e7eb;
+    display:flex;
+    flex-direction:column;
 }
 
-table{width:100%;border-collapse:collapse;font-size:14px;}
+table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:14px;
+}
 
 thead th{
     position:sticky;
@@ -174,10 +190,6 @@ th,td{
 
 /* FOOTER */
 .footer{
-    position:fixed;
-    bottom:0;
-    left:240px;
-    right:0;
     height:45px;
     background:#ffffff;
     border-top:1px solid #e5e7eb;
@@ -186,6 +198,11 @@ th,td{
     justify-content:center;
     font-size:13px;
     color:#64748b;
+    position:fixed;
+    bottom:0;
+    left:240px;
+    right:0;
+    z-index:100;
 }
 </style>
 </head>
@@ -359,4 +376,3 @@ loadData();
 
 </body>
 </html>
-
