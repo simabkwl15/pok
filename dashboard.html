@@ -391,7 +391,7 @@ function logout(){
     window.location.replace("index.html");
 }
 
-    const urlGAS="https://script.google.com/macros/s/AKfycbzyFYxOWERPZdOZNa1PJoc0c-0brcdPuFqLpvSTGTKwwBELse2wFwnAsK4aJ-Pjr1FjXw/exec"; // ganti sesuai GAS-mu
+    const urlGAS="https://script.google.com/macros/s/AKfycbxbgOldavcAlPDNYsENRjqDmw2BW1QNrdjX3PpjyEJ2bma7D2LaacdLDbCUBTv4fkAplg/exec"; // ganti sesuai GAS-mu
 
 function showLoading(){ document.getElementById("overlayLoading").style.display="flex"; }
 function hideLoading(){ document.getElementById("overlayLoading").style.display="none"; }
@@ -400,14 +400,17 @@ async function loadDashboard(){
     showLoading();
     try{
         const res = await fetch(urlGAS);
-        const data = await res.json();
+        let data = await res.json();
+
+        // Hapus baris header atau baris kosong
+        data = data.filter(row => row[0] && row[15]);
 
         const total = data.length;
 
         let selesai=0, terbayar=0, lpt=0, proses=0;
 
         data.forEach(row=>{
-            const status = (row[15]||"").toString().toLowerCase(); // kolom P = index 15
+            const status = (row[15]||"").toString().toLowerCase().trim(); // kolom P
             if(status==="selesai") selesai++;
             else if(status==="terbayar") terbayar++;
             else if(status==="lpt") lpt++;
@@ -427,6 +430,7 @@ async function loadDashboard(){
         hideLoading();
     }
 }
+
 
 loadDashboard();
 
