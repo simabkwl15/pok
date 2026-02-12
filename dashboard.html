@@ -3,19 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard SiMAB</title>
+<title>POK - SiMAB</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <style>
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:'Inter',sans-serif;
-}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif;}
 
 body{
     display:grid;
@@ -29,8 +23,6 @@ body{
     height:100vh;
     background:#ffffff;
     border-right:1px solid #e5e7eb;
-    display:flex;
-    flex-direction:column;
     position:sticky;
     top:0;
 }
@@ -64,38 +56,18 @@ body{
     transition:0.2s;
 }
 
-.sidebar ul li:hover{
-    background:#f1f5f9;
-}
-
+.sidebar ul li:hover{background:#f1f5f9;}
 .sidebar ul li.active{
     background:#e0f2fe;
     color:#0369a1;
     font-weight:600;
 }
 
-.page-header{
-    margin-bottom:25px;
-}
-
-.page-header h2{
-    font-size:22px;
-    font-weight:700;
-    margin-bottom:4px;
-    color:#0f172a;
-}
-
-.page-header p{
-    font-size:14px;
-    color:#64748b;
-}
-
-    
 /* MAIN */
 .main{
-    min-height:100vh;
     display:flex;
     flex-direction:column;
+    height:100vh;
 }
 
 /* TOPBAR */
@@ -112,87 +84,72 @@ body{
     z-index:1000;
 }
 
-.topbar-left{
-    font-weight:600;
-}
-
 .topbar-right{
     display:flex;
     align-items:center;
     gap:18px;
-    font-size:14px;
 }
 
-.topbar-right i{
-    font-size:16px;
-    cursor:pointer;
-    color:#475569;
-    transition:0.2s;
-}
-
-.topbar-right i:hover{
-    color:#0369a1;
-}
-
+.topbar-right i,
 .user-info{
-    display:flex;
-    align-items:center;
-    gap:8px;
-    font-weight:500;
+    cursor:pointer;
+    transition:0.2s;
+    color:#475569;
+}
+
+.topbar-right i:hover,
+.user-info:hover{
+    color:#0369a1;
 }
 
 /* CONTENT */
 .content{
     padding:30px;
-    padding-bottom:80px; /* agar tidak tertutup footer */
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    overflow:hidden;
 }
 
-.cards{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-    gap:20px;
-    margin-bottom:25px;
-}
-
-.card{
-    padding:20px;
+/* FILTER BAR */
+.filter-bar{
+    background:white;
+    padding:18px;
     border-radius:16px;
     border:1px solid #e5e7eb;
-    transition:0.2s;
-    background:white;
+    margin-bottom:20px;
+    display:flex;
+    align-items:center;
+    gap:15px;
 }
 
-.card:hover{
-    transform:translateY(-4px);
+select,input{
+    padding:8px 12px;
+    border-radius:8px;
+    border:1px solid #cbd5e1;
+    font-size:14px;
 }
 
-.cards .card:nth-child(1){background:#e0f2fe;color:#9E9E95;}
-.cards .card:nth-child(2){background:#dcfce7;color:#9E9E95;}
-.cards .card:nth-child(3){background:#ffedd5;color:#9E9E95;}
-.cards .card:nth-child(4){background:#fee2e2;color:#9E9E95;}
-
-.card h3{
+button{
+    padding:8px 14px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
     font-size:13px;
-    margin-bottom:8px;
 }
 
-.card span{
-    font-size:24px;
-    font-weight:700;
+.btn-download{
+    background:#38bdf8;
+    color:white;
 }
 
-.dashboard-grid{
-    display:grid;
-    grid-template-columns:2fr 1fr;
-    gap:20px;
-}
-
-.chart-box{
+/* TABLE */
+.table-container{
+    flex:1;
+    overflow:auto;
     background:white;
-    padding:20px;
     border-radius:16px;
     border:1px solid #e5e7eb;
-    height:350px;
 }
 
 table{
@@ -201,18 +158,35 @@ table{
     font-size:14px;
 }
 
-th, td{
+thead th{
+    position:sticky;
+    top:0;
+    background:#f1f5f9;
+    z-index:100;
+}
+
+th,td{
     padding:10px;
     border-bottom:1px solid #e5e7eb;
-    text-align:left;
 }
 
-th{
-    background:#f1f5f9;
-    font-weight:600;
+.text-right{text-align:right;}
+.text-center{text-align:center;}
+
+.row-pnbp{background:#e0f2fe;}
+.row-rm{background:#dcfce7;}
+
+.btn-small{
+    padding:5px 10px;
+    font-size:12px;
+    border-radius:6px;
+    margin:2px;
 }
 
-/* FOOTER FREEZE */
+.btn-rekam{background:#38bdf8;color:white;}
+.btn-detil{background:#6366f1;color:white;}
+
+/* FOOTER */
 .footer{
     position:fixed;
     bottom:0;
@@ -227,18 +201,6 @@ th{
     font-size:13px;
     color:#64748b;
 }
-
-@media(max-width:1000px){
-    body{
-        grid-template-columns:1fr;
-    }
-    .footer{
-        left:0;
-    }
-    .dashboard-grid{
-        grid-template-columns:1fr;
-    }
-}
 </style>
 </head>
 
@@ -250,128 +212,154 @@ th{
         <span>SiMAB</span>
     </div>
     <ul>
-        <li class="active" onclick="goDashboard()">
+        <li onclick="goDashboard()">
             <i class="fa-solid fa-gauge"></i>Dashboard
         </li>
-        <li onclick="goPOK()">
+        <li class="active" onclick="goPOK()">
             <i class="fa-solid fa-folder-open"></i>POK
         </li>
-        <li><i class="fa-solid fa-list-check"></i>Daftar Kegiatan</li>
-        <li><i class="fa-solid fa-wallet"></i>Rencana Penarikan Dana</li>
-        <li><i class="fa-solid fa-chart-column"></i>Statistik</li>
-        <li><i class="fa-solid fa-circle-info"></i>Tentang</li>
-</ul>
-
+    </ul>
 </div>
 
 <div class="main">
 
-    <div class="topbar">
-        <div class="topbar-left">
-            Sistem Monitoring Anggaran Belanja
-        </div>
-
-        <div class="topbar-right">
-            <i class="fa-regular fa-calendar"></i>
-            <i class="fa-solid fa-gear"></i>
-
-            <div class="user-info">
-                <i class="fa-regular fa-user"></i>
-                <span id="namaUser"></span>
-            </div>
-
-            <i class="fa-solid fa-right-from-bracket" title="Logout" onclick="logout()"></i>
-        </div>
-    </div>
-
-    <div class="content">
-        <div class="cards">
-            <div class="card"><h3>Total Kegiatan</h3><span>120</span></div>
-            <div class="card"><h3>Selesai</h3><span>85</span></div>
-            <div class="card"><h3>Terbayar</h3><span>42</span></div>
-            <div class="card"><h3>Dalam Proses</h3><span>8</span></div>
-        </div>
-
-        <div class="dashboard-grid">
-
-            <!-- DIGANTI MENJADI TABEL -->
-            <div class="chart-box">
-                <h3 style="margin-bottom:15px;">Kegiatan Hari Ini</h3>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Uraian / No ST</th>
-                            <th>Pelaksana Tugas</th>
-                            <th>Tujuan</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>ST-001 / Rapat Evaluasi</td>
-                            <td>Budi Santoso</td>
-                            <td>Monitoring Realisasi</td>
-                        </tr>
-                        <tr>
-                            <td>ST-002 / Verifikasi POK</td>
-                            <td>Siti Aminah</td>
-                            <td>Validasi Administrasi</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- PIE CHART TETAP -->
-            <div class="chart-box">
-                <h3>Jenis Kegiatan</h3>
-                <canvas id="pieChart"></canvas>
-            </div>
-
-        </div>
+<div class="topbar">
+    <div><strong>Sistem Monitoring Anggaran Belanja</strong></div>
+    <div class="topbar-right">
+        <i class="fa-regular fa-calendar"></i>
+        <i class="fa-solid fa-gear"></i>
+        <i class="fa-solid fa-right-from-bracket" onclick="logout()"></i>
     </div>
 </div>
 
-<!-- FOOTER -->
+<div class="content">
+
+<div class="filter-bar">
+    <strong>Filter POK</strong>
+
+    <select id="filterPok" onchange="applyFilter()">
+        <option>Semua</option>
+        <option>Umum</option>
+        <option>PKN</option>
+        <option>PN</option>
+        <option>Lelang</option>
+        <option>Penilaian</option>
+        <option>HI</option>
+        <option>KI</option>
+    </select>
+
+    <input type="text" id="searchBox" placeholder="Cari kode / uraian..." onkeyup="applyFilter()">
+
+    <button class="btn-download" onclick="downloadExcel()">
+        <i class="fa-solid fa-file-excel"></i> Download Excel
+    </button>
+</div>
+
+<div class="table-container">
+<table id="tabelPOK">
+<thead>
+<tr>
+<th>Kode</th>
+<th>Uraian</th>
+<th>Pagu</th>
+<th>Blokir</th>
+<th>Realisasi</th>
+<th>Sisa</th>
+<th>SD</th>
+<th>Aksi</th>
+</tr>
+</thead>
+<tbody></tbody>
+</table>
+</div>
+
+</div>
+</div>
+
 <div class="footer">
-    © KPKNL Denpasar 2026
+© KPKNL Denpasar 2026
 </div>
 
 <script>
-document.addEventListener("DOMContentLoaded", function(){
+const urlGAS="https://script.google.com/macros/s/AKfycbxkeZjWQumvORWktLRLLvkEGq9NUBrHlxKhQxStPadlfnoO6rQusVMw5QxRZ9qmpV4Flw/exec";
+let allData=[];
 
-    const nama = sessionStorage.getItem("nama");
-
-    if(!nama){
-        window.location.replace("index.html");
-    } else {
-        document.getElementById("namaUser").textContent = nama;
-    }
-
-    new Chart(document.getElementById('pieChart'),{
-        type:'doughnut',
-        data:{
-            labels:['Barang','Jasa','Perjalanan Dinas','Lainnya'],
-            datasets:[{
-                data:[35,25,20,20],
-                backgroundColor:['#bae6fd','#bbf7d0','#fed7aa','#fecaca']
-            }]
-        },
-        options:{
-            responsive:true,
-            maintainAspectRatio:false,
-            plugins:{legend:{position:'bottom'}},
-            cutout:'65%'
-        }
-    });
-
-});
-
-function goDashboard(){ window.location.href="dashboard.html"; }
-function goPOK(){ window.location.href="data_pok.html"; }
-
-function logout(){
-    sessionStorage.clear();
-    window.location.replace("index.html");
+function formatNumber(num){
+    return Number(num||0).toLocaleString("id-ID");
 }
+
+function loadData(){
+fetch(urlGAS)
+.then(res=>res.json())
+.then(data=>{
+allData=data;
+renderTable(allData);
+});
+}
+
+function renderTable(data){
+const tbody=document.querySelector("#tabelPOK tbody");
+tbody.innerHTML="";
+
+data.forEach(row=>{
+const tr=document.createElement("tr");
+const [kode,uraian,pagu,blokir,realisasi,sisa,,sdRaw]=row;
+const sd=(sdRaw||"").toString().trim().toUpperCase();
+
+if(kode && kode.length>27){
+    if(sd==="PNBP"){tr.classList.add("row-pnbp");}
+    if(sd==="RM"){tr.classList.add("row-rm");}
+}
+
+tr.innerHTML=`
+<td>${kode||""}</td>
+<td>${uraian||""}</td>
+<td class="text-right">${formatNumber(pagu)}</td>
+<td class="text-right">${formatNumber(blokir)}</td>
+<td class="text-right">${formatNumber(realisasi)}</td>
+<td class="text-right">${formatNumber(sisa)}</td>
+<td class="text-center">${sd}</td>
+<td class="text-center">
+${kode && kode.length>27 ?
+`<button class="btn-small btn-rekam">Rekam</button>
+<button class="btn-small btn-detil">Detil</button>` : ""}
+</td>`;
+tbody.appendChild(tr);
+});
+}
+
+function applyFilter(){
+const kategori=document.getElementById("filterPok").value.toLowerCase();
+const search=document.getElementById("searchBox").value.toLowerCase();
+
+const filtered=allData.filter(row=>{
+const kode=(row[0]||"").toLowerCase();
+const uraian=(row[1]||"").toLowerCase();
+
+return (kategori==="semua" || uraian.includes(kategori)) &&
+       (kode.includes(search) || uraian.includes(search));
+});
+renderTable(filtered);
+}
+
+function downloadExcel(){
+let table=document.getElementById("tabelPOK").outerHTML;
+let blob=new Blob([table],{type:"application/vnd.ms-excel"});
+let url=URL.createObjectURL(blob);
+let a=document.createElement("a");
+a.href=url;
+a.download="Data_POK.xls";
+a.click();
+}
+
+function goDashboard(){window.location.href="dashboard.html";}
+function goPOK(){window.location.href="data_pok.html";}
+function logout(){
+sessionStorage.clear();
+window.location.replace("index.html");
+}
+
+loadData();
 </script>
 
 </body>
