@@ -6,7 +6,7 @@
 <title>POK - SiMAB</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/js/all.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif;}
@@ -104,15 +104,15 @@ body{
 
 /* CONTENT */
 .content{
-    padding:20px 30px;
+    padding:30px;
     flex:1;
     display:flex;
     flex-direction:column;
     overflow:hidden;
 }
 
-/* FILTER */
-.filter-container{
+/* FILTER BAR */
+.filter-bar{
     background:white;
     padding:18px;
     border-radius:16px;
@@ -123,29 +123,46 @@ body{
     gap:15px;
 }
 
+select,input{
+    padding:8px 12px;
+    border-radius:8px;
+    border:1px solid #cbd5e1;
+    font-size:14px;
+}
+
+button{
+    padding:8px 14px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:13px;
+}
+
+.btn-download{
+    background:#38bdf8;
+    color:white;
+}
+
 /* TABLE */
 .table-container{
     flex:1;
-    overflow-y:auto;
+    overflow:auto;
     background:white;
     border-radius:16px;
     border:1px solid #e5e7eb;
 }
 
-/* PENTING supaya sticky stabil */
 table{
     width:100%;
     border-collapse:collapse;
     font-size:14px;
 }
 
-/* FREEZE HEADER FIX 100% */
 thead th{
     position:sticky;
     top:0;
     background:#f1f5f9;
     z-index:100;
-    border-bottom:1px solid #e5e7eb;
 }
 
 th,td{
@@ -156,22 +173,14 @@ th,td{
 .text-right{text-align:right;}
 .text-center{text-align:center;}
 
-/* ROW COLOR */
-.row-pnbp{
-    background:#e0f2fe !important;
-}
+.row-pnbp{background:#e0f2fe;}
+.row-rm{background:#dcfce7;}
 
-.row-rm{
-    background:#dcfce7 !important;
-}
-
-/* BUTTON */
-.btn{
+.btn-small{
     padding:5px 10px;
-    border:none;
-    border-radius:6px;
     font-size:12px;
-    cursor:pointer;
+    border-radius:6px;
+    margin:2px;
 }
 
 .btn-rekam{background:#38bdf8;color:white;}
@@ -179,6 +188,10 @@ th,td{
 
 /* FOOTER */
 .footer{
+    position:fixed;
+    bottom:0;
+    left:240px;
+    right:0;
     height:45px;
     background:#ffffff;
     border-top:1px solid #e5e7eb;
@@ -199,7 +212,12 @@ th,td{
         <span>SiMAB</span>
     </div>
     <ul>
-        <li class="active"><i class="fa-solid fa-folder-open"></i>POK</li>
+        <li onclick="goDashboard()">
+            <i class="fa-solid fa-gauge"></i>Dashboard
+        </li>
+        <li class="active" onclick="goPOK()">
+            <i class="fa-solid fa-folder-open"></i>POK
+        </li>
     </ul>
 </div>
 
@@ -210,19 +228,31 @@ th,td{
     <div class="topbar-right">
         <i class="fa-regular fa-calendar"></i>
         <i class="fa-solid fa-gear"></i>
+        <i class="fa-solid fa-right-from-bracket" onclick="logout()"></i>
     </div>
 </div>
 
 <div class="content">
 
-<div class="filter-container">
-    <strong>Filter:</strong>
-    <select id="filterSD" onchange="applyFilter()">
-        <option value="Semua">Semua</option>
-        <option value="PNBP">PNBP</option>
-        <option value="RM">RM</option>
+<div class="filter-bar">
+    <strong>Filter POK</strong>
+
+    <select id="filterPok" onchange="applyFilter()">
+        <option>Semua</option>
+        <option>Umum</option>
+        <option>PKN</option>
+        <option>PN</option>
+        <option>Lelang</option>
+        <option>Penilaian</option>
+        <option>HI</option>
+        <option>KI</option>
     </select>
+
     <input type="text" id="searchBox" placeholder="Cari kode / uraian..." onkeyup="applyFilter()">
+
+    <button class="btn-download" onclick="downloadExcel()">
+        <i class="fa-solid fa-file-excel"></i> Download Excel
+    </button>
 </div>
 
 <div class="table-container">
@@ -251,10 +281,20 @@ th,td{
 </div>
 
 <script>
+const urlGAS="https://script.google.com/macros/s/AKfycbxkeZjWQumvORWktLRLLvkEGq9NUBrHlxKhQxStPadlfnoO6rQusVMw5QxRZ9qmpV4Flw/exec";
 let allData=[];
 
 function formatNumber(num){
     return Number(num||0).toLocaleString("id-ID");
+}
+
+function loadData(){
+fetch(urlGAS)
+.then(res=>res.json())
+.then(data=>{
+allData=data;
+renderTable(allData);
+});
 }
 
 function renderTable(data){
@@ -264,12 +304,11 @@ tbody.innerHTML="";
 data.forEach(row=>{
 const tr=document.createElement("tr");
 const [kode,uraian,pagu,blokir,realisasi,sisa,,sdRaw]=row;
-
 const sd=(sdRaw||"").toString().trim().toUpperCase();
 
 if(kode && kode.length>27){
-    if(sd==="PNBP"){ tr.classList.add("row-pnbp"); }
-    else if(sd==="RM"){ tr.classList.add("row-rm"); }
+    if(sd==="PNBP"){tr.classList.add("row-pnbp");}
+    if(sd==="RM"){tr.classList.add("row-rm");}
 }
 
 tr.innerHTML=`
@@ -281,13 +320,46 @@ tr.innerHTML=`
 <td class="text-right">${formatNumber(sisa)}</td>
 <td class="text-center">${sd}</td>
 <td class="text-center">
-${kode&&kode.length>27?`
-<button class="btn btn-rekam">Rekam</button>
-<button class="btn btn-detil">Detil</button>`:""}
+${kode && kode.length>27 ?
+`<button class="btn-small btn-rekam">Rekam</button>
+<button class="btn-small btn-detil">Detil</button>` : ""}
 </td>`;
 tbody.appendChild(tr);
 });
 }
+
+function applyFilter(){
+const kategori=document.getElementById("filterPok").value.toLowerCase();
+const search=document.getElementById("searchBox").value.toLowerCase();
+
+const filtered=allData.filter(row=>{
+const kode=(row[0]||"").toLowerCase();
+const uraian=(row[1]||"").toLowerCase();
+
+return (kategori==="semua" || uraian.includes(kategori)) &&
+       (kode.includes(search) || uraian.includes(search));
+});
+renderTable(filtered);
+}
+
+function downloadExcel(){
+let table=document.getElementById("tabelPOK").outerHTML;
+let blob=new Blob([table],{type:"application/vnd.ms-excel"});
+let url=URL.createObjectURL(blob);
+let a=document.createElement("a");
+a.href=url;
+a.download="Data_POK.xls";
+a.click();
+}
+
+function goDashboard(){window.location.href="dashboard.html";}
+function goPOK(){window.location.href="data_pok.html";}
+function logout(){
+sessionStorage.clear();
+window.location.replace("index.html");
+}
+
+loadData();
 </script>
 
 </body>
