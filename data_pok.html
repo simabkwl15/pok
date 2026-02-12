@@ -398,6 +398,32 @@ th,td{
 const urlGAS="https://script.google.com/macros/s/AKfycbzONnSH4h4Y0P_Lj1AUPinFINZk5t1K8mju2g10rCxOMckIRgTi2BF8VXY6x19_xdYEoA/exec";
 let allData=[];
 
+function formatDate(dateStr){
+  if(!dateStr) return "";
+  const d = new Date(dateStr);
+  if(isNaN(d)) return dateStr;
+
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth()+1).padStart(2,'0');
+  const dd = String(d.getDate()).padStart(2,'0');
+
+  return `${yyyy}-${mm}-${dd}`;
+}
+
+ function getStatusStyle(status){
+  if(!status) return "";
+
+  const s = status.toLowerCase();
+
+  if(s === "rekam data") return "background:#ffc0cb;";          // light pink
+  if(s === "terlaksana") return "background:#d9d9d9;";         // abu2
+  if(s === "lpt") return "background:#fff3b0;";                // light yellow
+  if(s === "terbayar") return "background:#c6efce;";           // light green
+  if(s === "selesai") return "background:#cfe2ff;";            // light blue
+
+  return "";
+}
+ 
 function formatNumber(num){
     return Number(num||0).toLocaleString("id-ID");
 }
@@ -691,14 +717,27 @@ function renderDetailTable(data){
         body.innerHTML += `
         <tr>
           <td>${d.uraian || ""}</td>
-          <td>${d.tgl_st || ""}</td>
-          <td>${d.tgl_mulai || ""}</td>
-          <td>${Number(d.jumlah || 0).toLocaleString()}</td>
-          <td>${d.status || ""}</td>
+
+          <td style="text-align:center;">
+              ${formatDate(d.tgl_st)}
+          </td>
+
+          <td style="text-align:center;">
+              ${formatDate(d.tgl_mulai)}
+          </td>
+
+          <td style="text-align:center;">
+              ${Number(d.jumlah || 0).toLocaleString()}
+          </td>
+
+          <td style="text-align:center; ${getStatusStyle(d.status)}">
+              ${d.status || ""}
+          </td>
         </tr>
         `;
     });
 }
+
 
 function filterDetail(){
 
@@ -824,6 +863,7 @@ setInterval(autoRefresh, 30000);
   
 </body>
 </html>
+
 
 
 
