@@ -58,10 +58,7 @@ body{
     transition:0.2s;
 }
 
-.sidebar ul li:hover{
-    background:#f1f5f9;
-}
-
+.sidebar ul li:hover{ background:#f1f5f9; }
 .sidebar ul li.active{
     background:#e0f2fe;
     color:#0369a1;
@@ -105,9 +102,7 @@ body{
 }
 
 .topbar-right i:hover,
-.user-info:hover{
-    color:#0369a1;
-}
+.user-info:hover{ color:#0369a1; }
 
 .user-info{
     display:flex;
@@ -148,7 +143,7 @@ input:focus, select:focus{
     border-color:#38bdf8;
 }
 
-/* TABLE */
+/* TABLE FIX FREEZE */
 .table-container{
     flex:1;
     overflow:auto;
@@ -157,6 +152,7 @@ input:focus, select:focus{
     border:1px solid #e5e7eb;
 }
 
+/* penting supaya sticky stabil */
 table{
     width:100%;
     border-collapse:separate;
@@ -164,11 +160,18 @@ table{
     font-size:14px;
 }
 
+/* freeze header */
+thead{
+    position:sticky;
+    top:0;
+    z-index:10;
+}
+
 thead th{
     position:sticky;
     top:0;
     background:#f1f5f9;
-    z-index:50;
+    z-index:20;
 }
 
 th,td{
@@ -181,11 +184,11 @@ th,td{
 
 /* ROW HIGHLIGHT */
 .row-pnbp{
-    background:#e0f2fe !important; /* light blue */
+    background:#e0f2fe !important;
 }
 
 .row-rm{
-    background:#dcfce7 !important; /* light green */
+    background:#dcfce7 !important;
 }
 
 /* BUTTON */
@@ -199,7 +202,6 @@ th,td{
 }
 
 .btn:hover{opacity:0.85;}
-
 .btn-rekam{background:#38bdf8;color:white;}
 .btn-detil{background:#6366f1;color:white;}
 
@@ -223,6 +225,7 @@ th,td{
 
 <body>
 
+<!-- SIDEBAR -->
 <div class="sidebar">
     <div class="sidebar-brand">
         <i class="fa-solid fa-layer-group"></i>
@@ -248,17 +251,14 @@ th,td{
     <div class="topbar-left">
         Sistem Monitoring Anggaran Belanja
     </div>
-
     <div class="topbar-right">
         <i class="fa-regular fa-calendar"></i>
         <i class="fa-solid fa-gear"></i>
-
         <div class="user-info">
             <i class="fa-regular fa-user"></i>
             <span id="namaUser"></span>
         </div>
-
-        <i class="fa-solid fa-right-from-bracket" title="Logout" onclick="logout()"></i>
+        <i class="fa-solid fa-right-from-bracket" onclick="logout()"></i>
     </div>
 </div>
 
@@ -266,13 +266,11 @@ th,td{
 
 <div class="filter-container">
     <strong>Filter:</strong>
-
     <select id="filterSD" onchange="applyFilter()">
         <option value="Semua">Semua</option>
         <option value="PNBP">PNBP</option>
         <option value="RM">RM</option>
     </select>
-
     <input type="text" id="searchBox" placeholder="Cari kode / uraian..." onkeyup="applyFilter()">
 </div>
 
@@ -319,7 +317,9 @@ function logout(){
     window.location.replace("index.html");
 }
 
-function formatNumber(num){return Number(num||0).toLocaleString("id-ID");}
+function formatNumber(num){
+    return Number(num||0).toLocaleString("id-ID");
+}
 
 function loadData(){
 fetch(urlGAS)
@@ -338,13 +338,18 @@ renderTable(allData);
 function renderTable(data){
 const tbody=document.querySelector("#tabelPOK tbody");
 tbody.innerHTML="";
+
 data.forEach(row=>{
 const tr=document.createElement("tr");
 const [kode,uraian,pagu,blokir,realisasi,sisa,,sd]=row;
 
 if(kode && kode.length>27){
-    if(sd==="PNBP"){ tr.classList.add("row-pnbp"); }
-    if(sd==="RM"){ tr.classList.add("row-rm"); }
+    if((sd||"").toUpperCase()==="PNBP"){
+        tr.classList.add("row-pnbp");
+    }
+    if((sd||"").toUpperCase()==="RM"){
+        tr.classList.add("row-rm");
+    }
 }
 
 tr.innerHTML=`
@@ -367,6 +372,7 @@ tbody.appendChild(tr);
 function applyFilter(){
 const filter=document.getElementById("filterSD").value.toLowerCase();
 const search=document.getElementById("searchBox").value.toLowerCase();
+
 const filtered=allData.filter(row=>{
 const kode=(row[0]||"").toLowerCase();
 const uraian=(row[1]||"").toLowerCase();
