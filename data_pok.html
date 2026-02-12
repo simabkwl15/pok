@@ -80,9 +80,7 @@ body{
     z-index:1000;
 }
 
-.topbar-left{
-    font-weight:600;
-}
+.topbar-left{font-weight:600;}
 
 .topbar-right{
     display:flex;
@@ -98,9 +96,7 @@ body{
     transition:0.2s;
 }
 
-.topbar-right i:hover{
-    color:#0369a1;
-}
+.topbar-right i:hover{color:#0369a1;}
 
 .user-info{
     display:flex;
@@ -109,6 +105,26 @@ body{
     font-weight:500;
 }
 
+.content{
+    padding:30px;
+    padding-bottom:80px;
+}
+
+    /* TOPBAR BUTTON CURSOR */
+.topbar i,
+.topbar button,
+.topbar .topbar-btn {
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.topbar i:hover,
+.topbar button:hover,
+.topbar .topbar-btn:hover {
+    opacity: 0.8;
+}
+
+    
 /* FILTER */
 .filter-container{
     background:white;
@@ -357,4 +373,3 @@ loadData();
 
 </body>
 </html>
-
