@@ -672,9 +672,9 @@ async function simpanRekam(){
 
         await fetch(urlGAS, {
             method: "POST",
-            body: data,
-            mode: "no-cors"
+            body: data
         });
+
 
         alert("Data berhasil disimpan ✅");
         closePopup();
@@ -809,7 +809,7 @@ function hideLoading(){
 }
   
 function autoRefresh(){
-    fetch(urlGAS)
+    fetch(`${urlGAS}?kantor=${encodeURIComponent(kantor)}`)
     .then(res => res.json())
     .then(data => {
         allData = data;
@@ -817,9 +817,12 @@ function autoRefresh(){
     });
 }
 
-loadData();
 
-setInterval(autoRefresh, 30000);
+document.addEventListener("DOMContentLoaded", ()=>{
+    loadTujuan();
+    loadData();
+    setInterval(autoRefresh, 30000);
+});
 
 </script>
 
@@ -944,6 +947,7 @@ setInterval(autoRefresh, 30000);
   
 </body>
 </html>
+
 
 
 
