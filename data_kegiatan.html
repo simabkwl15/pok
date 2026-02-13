@@ -195,15 +195,16 @@ document.addEventListener("DOMContentLoaded", async function(){
       }
 
 
-    async function loadData(){
-        try{
+    async function loadData() {
+        try {
             const res = await fetch(`${urlGAS}?kantor=${kantor}`);
             const data = await res.json();
             if(data.status !== "success") return;
-            allRows = data.rows.filter(r=>["Rekam Data","Terlaksana"].includes(r.P));
-            renderTable(allRows);
+            allRows = data.rows; // semua data
+            renderTable(allRows); // tampilkan default
         } catch(e){ console.error(e); }
     }
+
 
     function renderTable(rows){
         const tbody = document.getElementById("dataTableBody");
@@ -249,42 +250,41 @@ document.addEventListener("DOMContentLoaded", async function(){
     });
 
     // Ambil semua radio buttons
-document.querySelectorAll('input[name="statusFilter"]').forEach(rb=>{
-    rb.addEventListener("change", function(){
+document.querySelectorAll('input[name="statusFilter"]').forEach(rb => {
+    rb.addEventListener("change", function () {
         const val = this.value;
         let filtered = [];
 
-        switch(val){
+        switch (val) {
             case "Dalam Proses":
-                filtered = allRows.filter(r=>["Rekam Data","Terlaksana"].includes(r.P));
+                filtered = allRows.filter(r => ["Rekam Data", "Terlaksana"].includes(r.P));
                 break;
             case "LPT":
-                filtered = allRows.filter(r=>r.P==="LPT");
+                filtered = allRows.filter(r => r.P === "LPT");
                 break;
             case "Terbayar":
-                filtered = allRows.filter(r=>r.P==="Terbayar");
+                filtered = allRows.filter(r => r.P === "Terbayar");
                 break;
             case "Selesai":
-                filtered = allRows.filter(r=>r.P==="Selesai");
+                filtered = allRows.filter(r => r.P === "Selesai");
                 break;
             case "Semua":
-                filtered = allRows; // semua baris tanpa filter
+                filtered = allRows.filter(r => ["Rekam Data","Terlaksana","LPT","Terbayar","Selesai"].includes(r.P));
                 break;
         }
 
-        // Jika ada input search, kombinasikan filter search + status
+        // Gabungkan dengan search jika ada
         const searchVal = document.getElementById("searchBox").value.toLowerCase();
-        if(searchVal){
-            filtered = filtered.filter(r=>{
-                return Object.keys(r).filter(k=>k!=="N").some(key=>{
-                    return String(r[key]||"").toLowerCase().includes(searchVal);
-                });
-            });
+        if (searchVal) {
+            filtered = filtered.filter(r => 
+                Object.keys(r).some(k => String(r[k]||"").toLowerCase().includes(searchVal))
+            );
         }
 
         renderTable(filtered);
     });
 });
+
 
     document.getElementById("dataTableBody").addEventListener("click", function(e){
         const btn = e.target.closest("button");
