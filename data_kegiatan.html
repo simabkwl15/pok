@@ -195,39 +195,46 @@ document.addEventListener("DOMContentLoaded", async function(){
       }
 
 
+    let skipFirstLoadRows = true; // flag agar row 2 & 3 hanya di-skip saat load pertama
+
     async function loadData(){
         try{
             const res = await fetch(`${urlGAS}?kantor=${kantor}`);
             const data = await res.json();
             if(data.status !== "success") return;
     
-            // Semua data dari GAS
-            allRows = data.rows;
+            allRows = data.rows; // semua data dari sheet
     
-            // Filter awal: skip row 2 dan 3 (index 1 dan 2) saat load pertama
-            const initialRows = allRows.filter((r, idx) => idx !== 1 && idx !== 2);
-    
-            // Render default radio (Dalam Proses)
+            // filter default radio
             const defaultRadio = document.querySelector('input[name="statusFilter"]:checked').value;
-            let filtered = filterByStatus(initialRows, defaultRadio);
     
+            let initialRows = allRows;
+    
+            if(skipFirstLoadRows){
+                // skip row 2 & 3 saat load pertama
+                initialRows = allRows.filter((r, idx) => idx !== 1 && idx !== 2);
+                skipFirstLoadRows = false; // jangan skip lagi
+            }
+    
+            // filter sesuai radio default
+            const filtered = filterByStatus(initialRows, defaultRadio);
             renderTable(filtered);
     
         } catch(e){ console.error(e); }
     }
   
 // Fungsi helper untuk filter status
-      function filterByStatus(rows, status){
-          switch(status){
-              case "Dalam Proses": return rows.filter(r => ["Rekam Data", "Terlaksana"].includes(r.P));
-              case "LPT": return rows.filter(r => r.P==="LPT");
-              case "Terbayar": return rows.filter(r => r.P==="Terbayar");
-              case "Selesai": return rows.filter(r => r.P==="Selesai");
-              case "Semua": return rows.filter(r => ["Rekam Data","Terlaksana","LPT","Terbayar","Selesai"].includes(r.P));
-              default: return rows;
-          }
-      }
-
+      / fungsi filter berdasarkan status radio
+        function filterByStatus(rows, status){
+            switch(status){
+                case "Dalam Proses": return rows.filter(r => ["Rekam Data","Terlaksana"].includes(r.P));
+                case "LPT": return rows.filter(r => r.P==="LPT");
+                case "Terbayar": return rows.filter(r => r.P==="Terbayar");
+                case "Selesai": return rows.filter(r => r.P==="Selesai");
+                case "Semua": return rows.filter(r => ["Rekam Data","Terlaksana","LPT","Terbayar","Selesai"].includes(r.P));
+                default: return rows;
+            }
+        }
   
     function renderTable(rows){
         const tbody = document.getElementById("dataTableBody");
@@ -262,18 +269,22 @@ document.addEventListener("DOMContentLoaded", async function(){
         });
     }
 
-    document.getElementById("searchBox").addEventListener("input", function(){
-        const val = this.value.toLowerCase();
-        const filtered = allRows.filter(r=>{
-            return Object.keys(r).filter(k=>k!=="N").some(key=>{
-                return String(r[key]||"").toLowerCase().includes(val);
-            });
-        });
-        renderTable(filtered);
-    });
-
-   
-    // Event radio button tetap sama
+    // search
+      document.getElementById("searchBox").addEventListener("input", function(){
+          const val = this.value.toLowerCase();
+          const radioVal = document.querySelector('input[name="statusFilter"]:checked').value;
+          let filtered = filterByStatus(allRows, radioVal); // pakai semua data
+      
+          if(val){
+              filtered = filtered.filter(r =>
+                  Object.keys(r).some(k => String(r[k]||"").toLowerCase().includes(val))
+              );
+          }
+      
+          renderTable(filtered);
+      });
+         
+    // radio filter
     document.querySelectorAll('input[name="statusFilter"]').forEach(rb=>{
         rb.addEventListener("change", function(){
             const val = this.value;
