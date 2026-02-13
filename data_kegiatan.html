@@ -248,18 +248,43 @@ document.addEventListener("DOMContentLoaded", async function(){
         renderTable(filtered);
     });
 
-    document.querySelectorAll('input[name="statusFilter"]').forEach(rb=>{
-        rb.addEventListener("change", function(){
-            const val = this.value;
-            let filtered = [];
-            if(val==="Dalam Proses") filtered = allRows.filter(r=>["Rekam Data","Terlaksana"].includes(r.P));
-            else if(val==="LPT") filtered = allRows.filter(r=>r.P==="LPT");
-            else if(val==="Terbayar") filtered = allRows.filter(r=>r.P==="Terbayar");
-            else if(val==="Selesai") filtered = allRows.filter(r=>r.P==="Selesai");
-            else filtered = allRows;
-            renderTable(filtered);
-        });
+    // Ambil semua radio buttons
+document.querySelectorAll('input[name="statusFilter"]').forEach(rb=>{
+    rb.addEventListener("change", function(){
+        const val = this.value;
+        let filtered = [];
+
+        switch(val){
+            case "Dalam Proses":
+                filtered = allRows.filter(r=>["Rekam Data","Terlaksana"].includes(r.P));
+                break;
+            case "LPT":
+                filtered = allRows.filter(r=>r.P==="LPT");
+                break;
+            case "Terbayar":
+                filtered = allRows.filter(r=>r.P==="Terbayar");
+                break;
+            case "Selesai":
+                filtered = allRows.filter(r=>r.P==="Selesai");
+                break;
+            case "Semua":
+                filtered = allRows; // semua baris tanpa filter
+                break;
+        }
+
+        // Jika ada input search, kombinasikan filter search + status
+        const searchVal = document.getElementById("searchBox").value.toLowerCase();
+        if(searchVal){
+            filtered = filtered.filter(r=>{
+                return Object.keys(r).filter(k=>k!=="N").some(key=>{
+                    return String(r[key]||"").toLowerCase().includes(searchVal);
+                });
+            });
+        }
+
+        renderTable(filtered);
     });
+});
 
     document.getElementById("dataTableBody").addEventListener("click", function(e){
         const btn = e.target.closest("button");
