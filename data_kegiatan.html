@@ -28,6 +28,35 @@ body{display:grid; grid-template-columns:240px 1fr; background:#f8fafc; color:#3
 .footer{position:fixed; bottom:0; left:240px; right:0; height:45px; background:#ffffff; border-top:1px solid #e5e7eb; display:flex; align-items:center; justify-content:center; font-size:13px; color:#64748b;}
 @media(max-width:1000px){body{grid-template-columns:1fr;} .footer{left:0;}}
 
+/* Overlay loading */
+.loading{
+  position: fixed;
+  inset:0;
+  background: rgba(255,255,255,0.7);
+  display: none;
+  justify-content:center;
+  align-items:center;
+  z-index: 9999;
+}
+.spinner{
+  width:45px;
+  height:45px;
+  border:5px solid #e5e7eb;
+  border-top:5px solid #38bdf8;
+  border-radius:50%;
+  animation:spin 1s linear infinite;
+}
+@keyframes spin{
+  to { transform: rotate(360deg); }
+}
+
+/* Status colors */
+td.status-RekamData{ background:#fca5a5; }       /* pink */
+td.status-Terlaksana{ background:#d1d5db; }      /* abu */
+td.status-LPT{ background:#fde68a; }             /* yellow */
+td.status-Terbayar{ background:#4ade80; }        /* hijau */
+td.status-Selesai{ background:#60a5fa; color:white; } /* biru */
+  
 /* --- Filter --- */
 .filter-bar{display:flex; align-items:center; gap:20px; margin-bottom:15px;}
 .filter-bar input[type="text"]{flex:1; padding:8px 12px; border-radius:8px; border:1px solid #cbd5e1; font-size:14px;}
@@ -115,6 +144,10 @@ body{display:grid; grid-template-columns:240px 1fr; background:#f8fafc; color:#3
 
 <body>
 
+<div class="loading" id="loadingOverlay">
+  <div class="spinner"></div>
+</div>
+  
 <div class="sidebar">
     <div class="sidebar-brand"><i class="fa-solid fa-layer-group"></i> <span>SiMAB</span></div>
     <ul>
@@ -208,6 +241,7 @@ document.addEventListener("DOMContentLoaded", async function(){
         }
     }
 
+    // render table
     function renderTable(rows){
         const tbody = document.getElementById("dataTableBody");
         tbody.innerHTML = "";
@@ -215,8 +249,19 @@ document.addEventListener("DOMContentLoaded", async function(){
             const tglMulai = r.G ? new Date(r.G) : null;
             const tglFormatted = tglMulai ? `${tglMulai.getFullYear()}-${String(tglMulai.getMonth()+1).padStart(2,'0')}-${String(tglMulai.getDate()).padStart(2,'0')}` : "";
             const jumlahFormatted = Number(r.M||0).toLocaleString('id-ID');
-
+    
             const tr = document.createElement("tr");
+    
+            // assign class status untuk coloring
+            let statusClass = "";
+            switch(r.P){
+                case "Rekam Data": statusClass="status-RekamData"; break;
+                case "Terlaksana": statusClass="status-Terlaksana"; break;
+                case "LPT": statusClass="status-LPT"; break;
+                case "Terbayar": statusClass="status-Terbayar"; break;
+                case "Selesai": statusClass="status-Selesai"; break;
+            }
+    
             tr.innerHTML = `
               <td>${r.A}</td>
               <td class="wrap">${r.B}</td>
@@ -226,7 +271,7 @@ document.addEventListener("DOMContentLoaded", async function(){
               <td>${tglFormatted}</td>
               <td style="text-align:right;">${jumlahFormatted}</td>
               <td>${r.N}</td>
-              <td>${r.P}</td>
+              <td class="${statusClass}">${r.P}</td>
               <td class="actions">
                   <button class="btn-ubah" data-tooltip="Ubah"><i class="fa-solid fa-pen-to-square"></i></button>
                   <button class="btn-pelaksana" data-tooltip="Pelaksana"><i class="fa-solid fa-user-check"></i></button>
@@ -236,31 +281,33 @@ document.addEventListener("DOMContentLoaded", async function(){
                   <button class="btn-hapus" data-tooltip="Hapus"><i class="fa-solid fa-trash"></i></button>
               </td>
           `;
+    
             tbody.appendChild(tr);
         });
     }
 
     async function loadData(){
-        try{
-            const res = await fetch(`${urlGAS}?kantor=${kantor}`);
-            const data = await res.json();
-            if(data.status !== "success") return;
+    try{
+        showLoading(true);
+        const res = await fetch(`${urlGAS}?kantor=${kantor}`);
+        const data = await res.json();
+        showLoading(false);
 
-            allRows = data.rows; // simpan semua
+        if(data.status !== "success") return;
 
-            let initialRows = allRows;
+        allRows = data.rows;
+        const defaultRadio = document.querySelector('input[name="statusFilter"]:checked').value;
 
-            if(skipFirstLoadRows){
-                initialRows = allRows.filter((r, idx) => idx !== 1 && idx !== 2);
-                skipFirstLoadRows = false;
-            }
-
-            const defaultRadio = document.querySelector('input[name="statusFilter"]:checked').value;
-            const filtered = filterByStatus(initialRows, defaultRadio);
-            renderTable(filtered);
-
-        } catch(e){ console.error(e); }
+        // skip row 2 & 3 saat load pertama
+        const initialRows = allRows.filter((r, idx) => idx !== 1 && idx !== 2);
+        const filtered = filterByStatus(initialRows, defaultRadio);
+        renderTable(filtered);
+    } catch(e){
+        showLoading(false);
+        console.error(e);
     }
+}
+
 
     // search
     document.getElementById("searchBox").addEventListener("input", function(){
@@ -315,6 +362,10 @@ document.addEventListener("DOMContentLoaded", async function(){
     loadData();
 });
 
+function showLoading(show){
+    document.getElementById("loadingOverlay").style.display = show ? "flex" : "none";
+}
+  
 function goDashboard(){ window.location.href="dashboard.html"; }
 function goPOK(){ window.location.href="data_pok.html"; }
 function goKegiatan(){ window.location.href="data_kegiatan.html"; }
