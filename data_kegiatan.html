@@ -107,15 +107,25 @@ td.status-Selesai{ background:#60a5fa; color:white; } /* biru */
   z-index: 10;
 }
 
+  .table-box td.status {
+  text-align: center;      /* horizontal center */
+  vertical-align: middle;   /* vertical center */
+  font-weight: 600;         /* opsional agar lebih jelas */
+  color: white;             /* biar kontras dengan background */
+  border-radius: 6px;       /* agar background lebih rapi */
+}
+
 /* freeze kolom aksi di kanan */
 .table-box td.actions {
   position: sticky;
   right: 0;
   background: white;
   display: flex;
+  justify-content: center;   /* horizontal center */
+  align-items: center;       /* vertical center */
   gap: 5px;
-  justify-content: center;
   z-index: 5;
+  height: 100%; /* agar flex vertical penuh */
 }
 
 .table-box td.actions button {
@@ -123,7 +133,18 @@ td.status-Selesai{ background:#60a5fa; color:white; } /* biru */
   background: none;
   cursor: pointer;
   font-size: 16px;
-  position: relative;
+  display: flex;             /* agar icon juga center */
+  justify-content: center;
+  align-items: center;
+  padding: 5px;
+  width: 30px;               /* ukuran tombol seragam */
+  height: 30px;              /* tinggi tombol */
+  border-radius: 6px;        /* opsional */
+  transition: 0.2s;
+}
+
+.table-box td.actions button:hover{
+  background: #f1f5f9; /* hover tombol */
 }
 
 .table-box td.actions button:hover::after {
@@ -139,6 +160,7 @@ td.status-Selesai{ background:#60a5fa; color:white; } /* biru */
   white-space: nowrap;
   font-size: 12px;
 }
+
 </style>
 </head>
 
@@ -362,6 +384,18 @@ document.addEventListener("DOMContentLoaded", async function(){
     loadData();
 });
 
+function getStatusColor(status){
+    switch(status){
+        case "Rekam Data": return "#f87171"; // pink
+        case "Terlaksana": return "#9ca3af"; // abu
+        case "LPT": return "#facc15";        // kuning
+        case "Terbayar": return "#22c55e";   // hijau
+        case "Selesai": return "#3b82f6";    // biru
+        default: return "#6b7280";            // default abu gelap
+    }
+}
+
+  
 function showLoading(show){
     document.getElementById("loadingOverlay").style.display = show ? "flex" : "none";
 }
