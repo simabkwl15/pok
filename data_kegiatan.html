@@ -267,15 +267,18 @@ document.addEventListener("DOMContentLoaded", async function(){
         const val = this.value.toLowerCase();
         const radioVal = document.querySelector('input[name="statusFilter"]:checked').value;
         let filtered = filterByStatus(allRows, radioVal);
-
+    
         if(val){
             filtered = filtered.filter(r =>
-                Object.keys(r).some(k => String(r[k]||"").toLowerCase().includes(val))
+                Object.keys(r)
+                      .filter(k => k !== "N") // skip kolom User
+                      .some(k => String(r[k]||"").toLowerCase().includes(val))
             );
         }
-
+    
         renderTable(filtered);
     });
+
 
     // radio filter
     document.querySelectorAll('input[name="statusFilter"]').forEach(rb=>{
