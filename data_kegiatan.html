@@ -189,53 +189,25 @@ document.addEventListener("DOMContentLoaded", async function(){
 
     let allRows = [];
     const kantor = sessionStorage.getItem("kantor");
-      if(!kantor){
-          alert("Session kantor tidak ditemukan. Silakan login ulang.");
-          window.location.replace("index.html");
-      }
-
-
-    let skipFirstLoadRows = true; // flag agar row 2 & 3 hanya di-skip saat load pertama
-
-    async function loadData(){
-        try{
-            const res = await fetch(`${urlGAS}?kantor=${kantor}`);
-            const data = await res.json();
-            if(data.status !== "success") return;
-    
-            allRows = data.rows; // semua data dari sheet
-    
-            // filter default radio
-            const defaultRadio = document.querySelector('input[name="statusFilter"]:checked').value;
-    
-            let initialRows = allRows;
-    
-            if(skipFirstLoadRows){
-                // skip row 2 & 3 saat load pertama
-                initialRows = allRows.filter((r, idx) => idx !== 1 && idx !== 2);
-                skipFirstLoadRows = false; // jangan skip lagi
-            }
-    
-            // filter sesuai radio default
-            const filtered = filterByStatus(initialRows, defaultRadio);
-            renderTable(filtered);
-    
-        } catch(e){ console.error(e); }
+    if(!kantor){
+        alert("Session kantor tidak ditemukan. Silakan login ulang.");
+        window.location.replace("index.html");
     }
-  
-// Fungsi helper untuk filter status
-      / fungsi filter berdasarkan status radio
-        function filterByStatus(rows, status){
-            switch(status){
-                case "Dalam Proses": return rows.filter(r => ["Rekam Data","Terlaksana"].includes(r.P));
-                case "LPT": return rows.filter(r => r.P==="LPT");
-                case "Terbayar": return rows.filter(r => r.P==="Terbayar");
-                case "Selesai": return rows.filter(r => r.P==="Selesai");
-                case "Semua": return rows.filter(r => ["Rekam Data","Terlaksana","LPT","Terbayar","Selesai"].includes(r.P));
-                default: return rows;
-            }
+
+    let skipFirstLoadRows = true; // skip row 2 & 3 hanya saat load pertama
+
+    // fungsi filter berdasarkan status radio
+    function filterByStatus(rows, status){
+        switch(status){
+            case "Dalam Proses": return rows.filter(r => ["Rekam Data","Terlaksana"].includes(r.P));
+            case "LPT": return rows.filter(r => r.P==="LPT");
+            case "Terbayar": return rows.filter(r => r.P==="Terbayar");
+            case "Selesai": return rows.filter(r => r.P==="Selesai");
+            case "Semua": return rows.filter(r => ["Rekam Data","Terlaksana","LPT","Terbayar","Selesai"].includes(r.P));
+            default: return rows;
         }
-  
+    }
+
     function renderTable(rows){
         const tbody = document.getElementById("dataTableBody");
         tbody.innerHTML = "";
@@ -264,44 +236,65 @@ document.addEventListener("DOMContentLoaded", async function(){
                   <button class="btn-hapus" data-tooltip="Hapus"><i class="fa-solid fa-trash"></i></button>
               </td>
           `;
-
             tbody.appendChild(tr);
         });
     }
 
+    async function loadData(){
+        try{
+            const res = await fetch(`${urlGAS}?kantor=${kantor}`);
+            const data = await res.json();
+            if(data.status !== "success") return;
+
+            allRows = data.rows; // simpan semua
+
+            let initialRows = allRows;
+
+            if(skipFirstLoadRows){
+                initialRows = allRows.filter((r, idx) => idx !== 1 && idx !== 2);
+                skipFirstLoadRows = false;
+            }
+
+            const defaultRadio = document.querySelector('input[name="statusFilter"]:checked').value;
+            const filtered = filterByStatus(initialRows, defaultRadio);
+            renderTable(filtered);
+
+        } catch(e){ console.error(e); }
+    }
+
     // search
-      document.getElementById("searchBox").addEventListener("input", function(){
-          const val = this.value.toLowerCase();
-          const radioVal = document.querySelector('input[name="statusFilter"]:checked').value;
-          let filtered = filterByStatus(allRows, radioVal); // pakai semua data
-      
-          if(val){
-              filtered = filtered.filter(r =>
-                  Object.keys(r).some(k => String(r[k]||"").toLowerCase().includes(val))
-              );
-          }
-      
-          renderTable(filtered);
-      });
-         
+    document.getElementById("searchBox").addEventListener("input", function(){
+        const val = this.value.toLowerCase();
+        const radioVal = document.querySelector('input[name="statusFilter"]:checked').value;
+        let filtered = filterByStatus(allRows, radioVal);
+
+        if(val){
+            filtered = filtered.filter(r =>
+                Object.keys(r).some(k => String(r[k]||"").toLowerCase().includes(val))
+            );
+        }
+
+        renderTable(filtered);
+    });
+
     // radio filter
     document.querySelectorAll('input[name="statusFilter"]').forEach(rb=>{
         rb.addEventListener("change", function(){
             const val = this.value;
             const searchVal = document.getElementById("searchBox").value.toLowerCase();
             let filtered = filterByStatus(allRows, val);
-    
+
             if(searchVal){
                 filtered = filtered.filter(r =>
                     Object.keys(r).some(k => String(r[k]||"").toLowerCase().includes(searchVal))
                 );
             }
-    
+
             renderTable(filtered);
         });
     });
 
-
+    // tombol aksi
     document.getElementById("dataTableBody").addEventListener("click", function(e){
         const btn = e.target.closest("button");
         if(!btn) return;
